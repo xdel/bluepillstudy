@@ -1,0 +1,25 @@
+---- FirstPdeVA Matches (3 in 1 files) ----
+Paging.c (common):706
+  PULONG64 FirstPdeVA, FirstPdpteVA, FirstPml4eVA;
+  PULONG64 FirstPdeVa_Legacy;
+  ULONG64 i, j;
+Paging.c (common):716
+  FirstPdeVA = (PULONG64) MmAllocateContiguousMemorySpecifyCache (64 * PAGE_SIZE, l1, l2, l3, MmCached);
+  if (!FirstPdeVA)
+    return STATUS_INSUFFICIENT_RESOURCES;
+
+  RtlZeroMemory (FirstPdeVA, 64 * PAGE_SIZE);
+
+  FirstPdePA = MmGetPhysicalAddress (FirstPdeVA);
+
+  _KdPrint (("MmInitIdentityPageTable: FirstPdeVA 0x%p FirstPdePA 0x%llX\n", FirstPdeVA, FirstPdePA.QuadPart));
+  for (i = 0; i < 64; i++) {
+    for (j = 0; j < 512; j++) {
+      *FirstPdeVA = ((i * 0x40000000) + j * 0x200000) | P_WRITABLE | P_PRESENT | P_CACHE_DISABLED | P_LARGE;
+      FirstPdeVA++;
+    }
+  }
+Paging.c (common):760
+  _KdPrint (("MmInitIdentityPageTable: FirstPml4eVA 0x%p g_IdentityPageTableBasePhysicalAddress 0x%llX\n", FirstPdeVA,
+             g_IdentityPageTableBasePhysicalAddress.QuadPart));
+  *FirstPml4eVA = (FirstPdptePA.QuadPart) | P_WRITABLE | P_PRESENT | P_CACHE_DISABLED;
