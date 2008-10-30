@@ -119,8 +119,8 @@ VOID NTAPI ComPrint (
     return;
 #endif
 
-  va_start (args, fmt);//Õâ¾ä»°Ê²Ã´ÒâË¼å£¿
-  CmAcquireSpinLock (&g_ComSpinLock);//Õâ¸öº¯Êı²é²»µ½
+  va_start (args, fmt);//Õâ¾ä»°Ê²Ã´ÒâË¼å£¿ qaz: ´¦Àí¿É±ä²ÎÊı,ÓëcÓïÑÔÏàÀàËÆ.
+  CmAcquireSpinLock (&g_ComSpinLock);//Õâ¸öº¯Êı²é²»µ½. qaz: ÔÚ»ã±àcommon-com.asm¶¨Òå.
 
 #ifdef COMPRINT_OVERFLOW_PROTECTION
 
