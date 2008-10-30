@@ -1,0 +1,13 @@
+---- g_PageTableBases Matches (12 in 1 files) ----
+Paging.c (common):static PUCHAR g_PageTableBases[4] = {
+Paging.c (common):		MmFindPageByHostVA(GlobalOffset4*8+g_PageTableBases[3],&Pml4e);
+Paging.c (common):		MmFindPageByHostVA(GlobalOffset3*8+g_PageTableBases[2],&Pdpe);
+Paging.c (common):		MmFindPageByHostVA(GlobalOffset2*8+g_PageTableBases[1],&Pde);
+Paging.c (common):		MmFindPageByHostVA(GlobalOffset1*8+g_PageTableBases[0],&Pte);
+Paging.c (common):			GlobalOffset4*8+g_PageTableBases[3],
+Paging.c (common):			GlobalOffset3*8+g_PageTableBases[2],
+Paging.c (common):			GlobalOffset2*8+g_PageTableBases[1],
+Paging.c (common):			GlobalOffset1*8+g_PageTableBases[0]);
+Paging.c (common):			GlobalOffset*8+g_PageTableBases[0],
+Paging.c (common):  LowerPageTableHostVA = GlobalOffset * 8 + g_PageTableBases[PageTableLevel - 2];//LowerPageTableHostVA的低3位肯定是0，这个地址一会儿会被用来寻找Page
+Paging.c (common):        LowerPageTable = (PULONG64) (g_PageTableBases[bLevel - 2] + 8 * (i << (9 * (5 - bLevel))));
