@@ -211,12 +211,13 @@ CmIOOutD PROC
 	ret
 CmIOOutD ENDP
 
+;qaz: 初始化一个变量为0,参数通过rcs传输
 CmInitSpinLock PROC
 	and	dword ptr [rcx], 0
 	ret
 CmInitSpinLock ENDP
 
-
+;qaz: test & set指令,自旋直到锁释放
 CmAcquireSpinLock PROC
 loop_down:
 	lock	bts dword ptr [rcx], 0
@@ -224,7 +225,7 @@ loop_down:
 	ret
 CmAcquireSpinLock ENDP
 
-
+;qaz: reset指令,重新初始化为零
 CmReleaseSpinLock PROC
 	lock	btr dword ptr [rcx], 0
 	ret
