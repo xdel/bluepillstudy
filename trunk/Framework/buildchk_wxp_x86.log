@@ -152,7 +152,7 @@ common.c
 traps.c
 memory.c
 Generating Code...
- link.exe /out:..\bin\i386\newbp3.sys /machine:ix86 @d:\helloworld\common\objchk_wxp_x86\i386\lnk.rsp
+ link.exe /out:..\bin\i386\newbp.sys /machine:ix86 @d:\helloworld\common\objchk_wxp_x86\i386\lnk.rsp
 Microsoft (R) Incremental Linker Version 8.00.50727.278
 Copyright (C) Microsoft Corporation.  All rights reserved.
 /MERGE:_PAGE=PAGE 
@@ -178,7 +178,7 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 /align:0x80 /stub:e:\winddk\6001.18001\lib\wxp\stub512.com 
 /subsystem:native,5.01 
 /entry:GsDriverEntry@8 
-/out:..\bin\i386\newbp3.sys 
+/out:..\bin\i386\newbp.sys 
 d:\helloworld\common\objchk_wxp_x86\i386\cpuid.obj 
 d:\helloworld\common\objchk_wxp_x86\i386\common-asm.obj 
 d:\helloworld\common\objchk_wxp_x86\i386\regs.obj 
