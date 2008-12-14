@@ -45,7 +45,7 @@ NTSTATUS DriverEntry (
 )
 {
     NTSTATUS Status;
-
+	CmDebugBreak();
    // ULONG ulOldCR3;
 	DbgPrint("Hello world!");
     //__asm { int 3 }
@@ -71,11 +71,11 @@ NTSTATUS DriverEntry (
 
 
 
-    if (!NT_SUCCESS (Status = HvmSwallowBluepill ())) //<------------------1 Finish
-    {
-        DbgPrint("HELLOWORLD: HvmSwallowBluepill() failed with status 0x%08hX\n", Status);
-        return Status;
-    }
+    //if (!NT_SUCCESS (Status = HvmSwallowBluepill ())) //<------------------1 Finish
+    //{
+    //    DbgPrint("HELLOWORLD: HvmSwallowBluepill() failed with status 0x%08hX\n", Status);
+    //    return Status;
+    //}
 //
 //    // vt is on
 //    // make all the kernel memory not writable
