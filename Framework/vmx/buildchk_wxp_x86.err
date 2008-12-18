@@ -1,5 +1,0 @@
-errors in directory d:\helloworld\vmx
-d:\helloworld\vmx\sources(8) : error U1033: syntax error : 'vmxtraps.c' unexpected
-errors in directory d:\helloworld\vmx
-nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS1 NOLINK=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR= failed - rc = 2
-
