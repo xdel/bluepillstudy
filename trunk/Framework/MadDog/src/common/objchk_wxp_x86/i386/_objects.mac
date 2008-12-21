@@ -1,0 +1,25 @@
+
+
+386_OBJECTS=\
+ $(OBJ_PATH)\$O\cpuid.obj \
+ $(OBJ_PATH)\$O\common-asm.obj \
+ $(OBJ_PATH)\$O\regs.obj \
+ $(OBJ_PATH)\$O\vmx-asm.obj \
+ $(OBJ_PATH)\$O\msr.obj \
+ $(OBJ_PATH)\$O\newbp.obj \
+ $(OBJ_PATH)\$O\hvm.obj \
+ $(OBJ_PATH)\$O\common.obj \
+ $(OBJ_PATH)\$O\traps.obj \
+ $(OBJ_PATH)\$O\memory.obj \
+
+
+
+
+
+# lowercased
+BASEDIR=e:\winddk\6001.18001
+OBJECT_ROOT=e:\winddk\6001.18001
+MAKEDIR_LOWERCASE=d:\helloworld\common
+OBJ_PATH=d:\helloworld\common
+CONCURRENT_MIDL=0
+CONCURRENT_MANIFEST_BUILD=0
