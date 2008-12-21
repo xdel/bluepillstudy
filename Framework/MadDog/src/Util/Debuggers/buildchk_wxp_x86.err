@@ -1,0 +1,6 @@
+errors in directory d:\helloworld\util\debuggers
+d:\helloworld\util\debuggers\printinfos.c(44) : error C2036: 'PVOID' : unknown size
+d:\helloworld\util\debuggers\printinfos.c(44) : error C2095: 'memcpy' : actual parameter has type 'void' : parameter 1
+d:\helloworld\util\debuggers\printinfos.c(47) : error C2036: 'PVOID' : unknown size
+d:\helloworld\util\debuggers\printinfos.c(47) : error C2120: 'void' illegal with all types
+link : error LNK1181: cannot open input file 'd:\helloworld\util\debuggers\objchk_wxp_x86\i386\printinfos.obj'
