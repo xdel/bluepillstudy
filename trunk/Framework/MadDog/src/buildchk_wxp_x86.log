@@ -6,73 +6,16 @@ skipping post pass 0 command
 2>Compiling (NoSync) d:\helloworld\util\debuggers *************
 2>'nmake.exe /nologo BUILDMSG=Stop. -i /nologo /f e:\winddk\6001.18001\bin\makefile.def BUILD_PASS=PASS1 NOLINK=1 MAKEDIR_RELATIVE_TO_BASEDIR='
 2>BUILDMSG: Processing d:\helloworld\util\debuggers
-2>d:\helloworld\util\debuggers: TARGETPATH is ..\..\lib
-2>BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
 1>d:\helloworld\vmx: TARGETPATH is ..\lib
+2>d:\helloworld\util\debuggers: TARGETPATH is ..\..\lib
 1>BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
-2> cl.exe @d:\helloworld\util\debuggers\objchk_wxp_x86\i386\cl.rsp
+2>BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
 1> cl.exe @d:\helloworld\vmx\objchk_wxp_x86\i386\cl.rsp
-2>Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
-2>Copyright (C) Microsoft Corporation.  All rights reserved.
-2>cl /Fo"d:\helloworld\util\debuggers\objchk_wxp_x86\i386/"
-2> /FC
-2> /MT
-2> /U_MT
-2> /Ii386
-2> /I.
-2> /I.
-2> /Ie:\winddk\6001.18001\inc
-2> /Id:\helloworld\util\debuggers\objchk_wxp_x86\i386
-2> /IE:\WinDDK\6001.18001\inc\api
-2> /IE:\WinDDK\6001.18001\inc\api
-2> /IE:\WinDDK\6001.18001\inc\ddk
-2> /IE:\WinDDK\6001.18001\inc\ddk
-2> /IE:\WinDDK\6001.18001\inc\crt
-2> /D_X86_=1
-2> /Di386=1
-2> /DSTD_CALL
-2> /DCONDITION_HANDLING=1
-2> /DNT_INST=0
-2> /DWIN32=100
-2> /D_NT1X_=100
-2> /DWINNT=1
-2> /D_WIN32_WINNT=0x0501
-2> /DWINVER=0x0501
-2> /D_WIN32_IE=0x0603
-2> /DWIN32_LEAN_AND_MEAN=1
-2> /DDEVL=1
-2> /DDBG=1
-2> /D__BUILDMACHINE__=WinDDK
-2> /DFPO=0
-2> /DDEPRECATE_DDK_FUNCTIONS=1
-2> /DMSC_NOOPT
-2> /DNTDDI_VERSION=0x05010200
-2> /c
-2> /Zc:wchar_t-
-2> /Zl
-2> /Zp8
-2> /Gy
-2> /Gm-
-2> -cbstring
-2> /W3
-2> /Gz
-2> /hotpatch
-2> /EHs-c-
-2> /GR-
-2> /GF
-2> /GS
-2> /Z7
-2> /Od
-2> /Oi
-2> /Oy-
-2> /Z7
-2> /DKMDF_MAJOR_VERSION=01
-2> /DKMDF_MINOR_VERSION=007
-2> /FIE:\WinDDK\6001.18001\inc\api\warning.h
-2> .\printinfos.c 
-2>printinfos.c
+2> cl.exe @d:\helloworld\util\debuggers\objchk_wxp_x86\i386\cl.rsp
 1>Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
 1>Copyright (C) Microsoft Corporation.  All rights reserved.
+2>Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
+2>Copyright (C) Microsoft Corporation.  All rights reserved.
 1>cl /Fo"d:\helloworld\vmx\objchk_wxp_x86\i386/"
 1> /FC
 1> /MT
@@ -99,37 +42,94 @@ skipping post pass 0 command
 1> /DWINVER=0x0501
 1> /D_WIN32_IE=0x0603
 1> /DWIN32_LEAN_AND_MEAN=1
+2>cl /Fo"d:\helloworld\util\debuggers\objchk_wxp_x86\i386/"
 1> /DDEVL=1
 1> /DDBG=1
+2> /FC
 1> /D__BUILDMACHINE__=WinDDK
+2> /MT
 1> /DFPO=0
+2> /U_MT
 1> /DDEPRECATE_DDK_FUNCTIONS=1
+2> /Ii386
+2> /I.
+2> /I.
 1> /DMSC_NOOPT
 1> /DNTDDI_VERSION=0x05010200
+2> /Ie:\winddk\6001.18001\inc
+2> /Id:\helloworld\util\debuggers\objchk_wxp_x86\i386
+2> /IE:\WinDDK\6001.18001\inc\api
+2> /IE:\WinDDK\6001.18001\inc\api
+2> /IE:\WinDDK\6001.18001\inc\ddk
 1> /c
+2> /IE:\WinDDK\6001.18001\inc\ddk
 1> /Zc:wchar_t-
+2> /IE:\WinDDK\6001.18001\inc\crt
 1> /Zl
+2> /D_X86_=1
 1> /Zp8
 1> /Gy
+2> /Di386=1
 1> /Gm-
 1> -cbstring
 1> /W3
+2> /DSTD_CALL
+2> /DCONDITION_HANDLING=1
+2> /DNT_INST=0
 1> /Gz
+2> /DWIN32=100
+2> /D_NT1X_=100
 1> /hotpatch
 1> /EHs-c-
+2> /DWINNT=1
+2> /D_WIN32_WINNT=0x0501
 1> /GR-
+2> /DWINVER=0x0501
 1> /GF
+2> /D_WIN32_IE=0x0603
 1> /GS
 1> /Z7
 1> /Od
+2> /DWIN32_LEAN_AND_MEAN=1
 1> /Oi
+2> /DDEVL=1
+2> /DDBG=1
+2> /D__BUILDMACHINE__=WinDDK
 1> /Oy-
+2> /DFPO=0
 1> /Z7
+2> /DDEPRECATE_DDK_FUNCTIONS=1
 1> /DKMDF_MAJOR_VERSION=01
 1> /DKMDF_MINOR_VERSION=007
+2> /DMSC_NOOPT
 1> /FIE:\WinDDK\6001.18001\inc\api\warning.h
+2> /DNTDDI_VERSION=0x05010200
 1> .\vmx.c .\vmxtraps.c .\vmxdebug.c 
+2> /c
+2> /Zc:wchar_t-
+2> /Zl
+2> /Zp8
+2> /Gy
+2> /Gm-
+2> -cbstring
+2> /W3
+2> /Gz
+2> /hotpatch
+2> /EHs-c-
 1>vmx.c
+2> /GR-
+2> /GF
+2> /GS
+2> /Z7
+2> /Od
+2> /Oi
+2> /Oy-
+2> /Z7
+2> /DKMDF_MAJOR_VERSION=01
+2> /DKMDF_MINOR_VERSION=007
+2> /FIE:\WinDDK\6001.18001\inc\api\warning.h
+2> .\printinfos.c 
+2>printinfos.c
 2>d:\helloworld\util\debuggers\printinfos.c(44) : warning C4022: 'memcpy' : pointer mismatch for actual parameter 1
 2>warnings in directory d:\helloworld\util\debuggers
 2>d:\helloworld\util\debuggers\printinfos.c(44) : warning C4022: 'memcpy' : pointer mismatch for actual parameter 1

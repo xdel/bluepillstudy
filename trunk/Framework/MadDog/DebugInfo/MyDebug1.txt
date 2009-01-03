@@ -1,13 +1,24 @@
 
- TT: Radio state info: onBreak instruction exception - code 80000003 (first chance)
+ TT: Radio state info: onModLoad: a9488000 a948ee80   newbp.sys
+Break instruction exception - code 80000003 (first chance)
+Loading symbols for a9488000        newbp.sys ->   newbp.sys
 newbp!CmDebugBreak:
-a716d4e0 cc              int     3
-1: kd> g
+a94884e0 cc              int     3
+0: kd> g
 Hello world!HvmInit(): Your Intel CPU supports VT Technology.
 HELLOWORLD: Successful in execute HvmInit()HelloWorld:HvmSwallowBluepill(): Going to subvert 2 processors
 HelloWorld:HvmSwallowBluepill():Installing HelloWorld VT Root Manager on processor #0
 HvmSubvertCpu(): Running on processor #0
+Breakpoint 0 hit
+newbp!HvmSubvertCpu+0x1b:
+a9488a3b 8d45f8          lea     eax,[ebp-8]
+0: kd> g
 HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0xa
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1f
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x20
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1c
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0xd
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x0
 HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x12
 HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x13
 HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x14
@@ -18,24 +29,23 @@ HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x17
 HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x19
 HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1b
 HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1a
-Helloworld:VmxInitialize(): OriginaVmxonR VA: 0x87a13000
-Helloworld:VmxInitialize(): OriginaVmxonR PA: 0x7a13000
-Helloworld:VmxInitialize(): Vmcs VA: 0x879c9000
-Helloworld:VmxInitialize(): Vmcs PA: 0x79c9000
+Helloworld:VmxInitialize(): OriginaVmxonR VA: 0x85508000
+Helloworld:VmxInitialize(): OriginaVmxonR PA: 0x5508000
+Helloworld:VmxInitialize(): Vmcs VA: 0x854fd000
+Helloworld:VmxInitialize(): Vmcs PA: 0x54fd000
+VmxInitialize(): MSRBitmap VA: 0x878f8000
+VmxInitialize(): MSRBitmap PA: 0x78f8000
 Helloworld:VmxEnable(): CR4 after VmxEnable: 0x26d9
+Helloworld:VmxEnable(): VmxonPA:  0x5508000
 Helloworld:VmxEnable(): vmcs_revision_id: 0x5  Eflags: 0x1b0400 
 Helloworld:VmxSetupVMCS(): Exit
 Helloworld:VmxInitialize(): Vmx enabled
 Helloworld:Guest MSR_EFER Read 0x0 
-HvmSubvertCpu(): RFLAGS = 0x46
+HvmSubvertCpu(): RFLAGS = 0x200046
 VmxVirtualize(): VmxRead: 0x0 
-VmxVirtualize(): EFlags before vmxLaunch: 0x82 
-VmxVirtualize(): PCPU: 0x87a8e394 
-VmxVirtualize(): Rsp: 0xf78e2bec 
-Breakpoint 2 hit
-newbp!VmxVirtualize+0x79:
-a716e859 e8320f0000      call    newbp!VmxDumpVmcs (a716f790)
-0: kd> g
+VmxVirtualize(): EFlags before vmxLaunch: 0x200082 
+VmxVirtualize(): PCPU: 0x854ed384 
+VmxVirtualize(): Rsp: 0xf78debec 
 
 
 
@@ -186,9 +196,9 @@ GUEST_TR_BASE 0x6814: 0x80042000
 GUEST_GDTR_BASE 0x6816: 0x8003f000
 GUEST_IDTR_BASE 0x6818: 0x8003f400
 GUEST_DR7 0x681A: 0x400
-GUEST_RSP 0x681C: 0xf78e2c1c
-GUEST_RIP 0x681E: 0xA716D529
-GUEST_RFLAGS 0x6820: 0x202
+GUEST_RSP 0x681C: 0xf78dec1c
+GUEST_RIP 0x681E: 0xA9488529
+GUEST_RFLAGS 0x6820: 0x200202
 GUEST_PENDING_DBG_EXCEPTIONS 0x6822: 0x0
 GUEST_SYSENTER_ESP 0x6824: 0xf78af000
 GUEST_SYSENTER_EIP 0x6826: 0x804dd89f
@@ -206,12 +216,8 @@ HOST_GDTR_BASE 0x6C0C: 0x8003f000
 HOST_IDTR_BASE 0x6C0E: 0x8003f400
 HOST_IA32_SYSENTER_ESP 0x6C10: 0xf78af000
 HOST_IA32_SYSENTER_EIP 0x6C12: 0x804dd89f
-HOST_RSP 0x6C14: 0x87a15c00
-HOST_RIP 0x6C16: 0xa716d6bd
-Breakpoint 1 hit
-newbp!VmxVirtualize+0x7e:
-a716e85e e852eeffff      call    newbp!VmxLaunch (a716d6b5)
-0: kd> g
+HOST_RSP 0x6C14: 0x8794cc00
+HOST_RIP 0x6C16: 0xa94886bd
 Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
 Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
 Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
@@ -1012,13 +1018,812 @@ Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
 Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
 Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
 Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
-VmxHandleInterception(): TrFindRegisteredTrap() failed for exitcode 0x1C
-!!!VMX CRASH!!!
-rax 0xEC5660
-rcx 0x0
-rdx 0xFFDFF13C
-rbx 0xF78E2B50
-rsp 0xF78E2728
-rbp 0xF78E273C
-rsi 0xFFDFF13C
-rdi 0x0
+HvmResumeGuest(): Processor #0, irql 2 in GUEST
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+HelloWorld:HvmSwallowBluepill():Installing HelloWorld VT Root Manager on processor #1
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+HvmSubvertCpu(): Running on processor #1

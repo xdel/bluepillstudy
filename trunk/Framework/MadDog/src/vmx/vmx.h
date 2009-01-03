@@ -37,6 +37,10 @@
 #define MSR_IA32_SYSENTER_EIP		0x176
 #define MSR_IA32_DEBUGCTL			0x1d9
 
+
+#define EFER_LME     (1<<8)
+
+
 /*
  * Intel CPU flags in CR0
  */
@@ -124,6 +128,7 @@
 
 
 #define	VMX_VMCS_SIZE_IN_PAGES	1
+#define	VMX_MSRBitmap_SIZE_IN_PAGES	1
 #define	VMX_VMXONR_SIZE_IN_PAGES	2
 
 typedef enum SEGREGS
@@ -156,8 +161,8 @@ typedef struct _VMX
   //PHYSICAL_ADDRESS IOBitmapBPA; // points to IOBitMapB
   //PVOID IOBitmapB;
 
-  //PHYSICAL_ADDRESS MSRBitmapPA; // points to MsrBitMap
-  //PVOID MSRBitmap;
+  PHYSICAL_ADDRESS MSRBitmapPA; // points to MsrBitMap
+  PVOID MSRBitmap;
 
   ULONG GuestCR0;             //Guest's CR0. 
   ULONG GuestCR3;             //Guest's CR3. for storing guest cr3 when guest diasble paging.

@@ -125,20 +125,20 @@ static NTSTATUS NTAPI VmxInitialize (
     RtlZeroMemory (Cpu->Vmx.IOBitmapB, PAGE_SIZE);
 
     _KdPrint (("VmxInitialize(): IOBitmapB VA: 0x%x\n", Cpu->Vmx.IOBitmapB));
-    _KdPrint (("VmxInitialize(): IOBitmapB PA: 0x%llx\n", Cpu->Vmx.IOBitmapBPA.QuadPart));
+    _KdPrint (("VmxInitialize(): IOBitmapB PA: 0x%llx\n", Cpu->Vmx.IOBitmapBPA.QuadPart));*/
 
     Cpu->Vmx.MSRBitmap = MmAllocateContiguousPages(
         VMX_MSRBitmap_SIZE_IN_PAGES, 
         &Cpu->Vmx.MSRBitmapPA);
     if (!Cpu->Vmx.MSRBitmap) 
     {
-        _KdPrint (("VmxInitialize(): Failed to allocate memory for  MSRBitmap\n"));
+        DbgPrint("VmxInitialize(): Failed to allocate memory for  MSRBitmap\n");
         return STATUS_INSUFFICIENT_RESOURCES;
     }
     RtlZeroMemory (Cpu->Vmx.MSRBitmap, PAGE_SIZE);
 
-    _KdPrint (("VmxInitialize(): MSRBitmap VA: 0x%x\n", Cpu->Vmx.MSRBitmap));
-    _KdPrint (("VmxInitialize(): MSRBitmap PA: 0x%llx\n", Cpu->Vmx.MSRBitmapPA.QuadPart));*/
+    DbgPrint("VmxInitialize(): MSRBitmap VA: 0x%x\n", Cpu->Vmx.MSRBitmap);
+    DbgPrint("VmxInitialize(): MSRBitmap PA: 0x%llx\n", Cpu->Vmx.MSRBitmapPA.QuadPart);
 
     // call VMXON, should fill the version first
     if (!NT_SUCCESS (VmxEnable (Cpu->Vmx.OriginaVmxonR))) //<----------------4.1 Finished
@@ -247,7 +247,7 @@ NTSTATUS NTAPI VmxEnable (
     vmxmsr = MsrRead (MSR_IA32_VMX_BASIC);
     *((ULONG64 *) VmxonVA) = (vmxmsr & 0xffffffff);       //set up vmcs_revision_id
     VmxonPA = MmGetPhysicalAddress (VmxonVA);
-    //DbgPrint("Helloworld:VmxEnable(): VmxonPA:  0x%llx\n", VmxonPA.QuadPart);
+    DbgPrint("Helloworld:VmxEnable(): VmxonPA:  0x%llx\n", VmxonPA.QuadPart);
     //VmxTurnOn (MmGetPhysicalAddress (VmxonVA));
 	VmxTurnOn(VmxonPA);
     flags = RegGetRflags ();
