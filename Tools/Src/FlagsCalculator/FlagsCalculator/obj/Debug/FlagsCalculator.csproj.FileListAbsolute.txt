@@ -1,0 +1,8 @@
+F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\bin\Debug\FlagsCalculator.exe
+F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\bin\Debug\FlagsCalculator.pdb
+F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\ResolveAssemblyReference.cache
+F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.Form1.resources
+F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.Properties.Resources.resources
+F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.csproj.GenerateResource.Cache
+F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.exe
+F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.pdb
