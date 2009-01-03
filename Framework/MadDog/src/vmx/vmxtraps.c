@@ -20,6 +20,20 @@ static BOOLEAN NTAPI VmxDispatchINVD (
   PNBP_TRAP Trap,
   BOOLEAN WillBeAlsoHandledByGuestHv
 );
+
+extern BOOLEAN NTAPI VmxDispatchMsrRead (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv
+);
+
+extern BOOLEAN NTAPI VmxDispatchMsrWrite (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv
+);
 /**
  * effects: Register traps in this function
  * requires: <Cpu> is valid
@@ -57,31 +71,33 @@ NTSTATUS NTAPI VmxRegisterTraps (
   }
   TrRegisterTrap (Cpu, Trap);//<----------------4.3//Finish
 
-  //  Status = TrInitializeGeneralTrap (
-  //      Cpu, 
-  //      EXIT_REASON_MSR_READ, 
-  //      0, // length of the instruction, 0 means length need to be get from vmcs later. 
-  //      VmxDispatchMsrRead, 
-  //      &Trap);
-  //if (!NT_SUCCESS (Status)) 
-  //{
-  //  _KdPrint (("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status));
-  //  return Status;
-  //}
-  //TrRegisterTrap (Cpu, Trap);
+    Status = TrInitializeGeneralTrap (
+        Cpu, 
+        EXIT_REASON_MSR_READ, 
+        0, // length of the instruction, 0 means length need to be get from vmcs later. 
+        VmxDispatchMsrRead, 
+		//VmxDispatchVmxInstrDummy,
+        &Trap);
+  if (!NT_SUCCESS (Status)) 
+  {
+    DbgPrint("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status);
+    return Status;
+  }
+  TrRegisterTrap (Cpu, Trap);
 
-  //Status = TrInitializeGeneralTrap (
-  //    Cpu, 
-  //    EXIT_REASON_MSR_WRITE, 
-  //    0,   // length of the instruction, 0 means length need to be get from vmcs later. 
-  //    VmxDispatchMsrWrite, 
-  //    &Trap);
-  //if (!NT_SUCCESS (Status)) 
-  //{
-  //  _KdPrint (("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status));
-  //  return Status;
-  //}
-  //TrRegisterTrap (Cpu, Trap);
+  Status = TrInitializeGeneralTrap (
+      Cpu, 
+      EXIT_REASON_MSR_WRITE, 
+      0,   // length of the instruction, 0 means length need to be get from vmcs later. 
+      VmxDispatchMsrWrite, 
+	  //VmxDispatchVmxInstrDummy,
+      &Trap);
+  if (!NT_SUCCESS (Status)) 
+  {
+    DbgPrint("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status);
+    return Status;
+  }
+  TrRegisterTrap (Cpu, Trap);
 
   Status = TrInitializeGeneralTrap (
       Cpu, 
@@ -228,3 +244,122 @@ static BOOLEAN NTAPI VmxDispatchINVD (
 
   return TRUE;
 }
+
+static BOOLEAN NTAPI VmxDispatchMsrRead (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv
+)
+{
+  LARGE_INTEGER MsrValue;
+  ULONG32 ecx;
+  ULONG inst_len;
+
+  if (!Cpu || !GuestRegs)
+    return TRUE;
+
+  inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+  if (Trap->General.RipDelta == 0)
+    Trap->General.RipDelta = inst_len;
+
+  ecx = GuestRegs->ecx;
+
+  switch (ecx) 
+  {
+  case MSR_IA32_SYSENTER_CS:
+    MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_CS);
+    break;
+  case MSR_IA32_SYSENTER_ESP:
+    MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_ESP);
+    break;
+  case MSR_IA32_SYSENTER_EIP:
+    MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_EIP);
+    DbgPrint("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
+        VmxRead(GUEST_RIP), 
+        MsrValue.QuadPart);
+    break;
+  case MSR_GS_BASE:
+    MsrValue.QuadPart = VmxRead (GUEST_GS_BASE);
+    break;
+  case MSR_FS_BASE:
+    MsrValue.QuadPart = VmxRead (GUEST_FS_BASE);
+    break;
+  case MSR_EFER:
+    MsrValue.QuadPart = Cpu->Vmx.GuestEFER;
+    //_KdPrint(("Guestip 0x%llx MSR_EFER Read 0x%llx 0x%llx \n",VmxRead(GUEST_RIP),ecx,MsrValue.QuadPart));
+    break;
+  default:
+    if (ecx <= 0x1fff
+        || (ecx >= 0xC0000000 && ecx <= 0xC0001fff))
+    {
+        MsrValue.QuadPart = MsrRead (ecx);
+    }
+  }
+
+  GuestRegs->eax = MsrValue.LowPart;
+  GuestRegs->edx = MsrValue.HighPart;
+
+  return TRUE;
+}
+
+
+static BOOLEAN NTAPI VmxDispatchMsrWrite (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv
+)
+{
+  LARGE_INTEGER MsrValue;
+  ULONG32 ecx;
+  ULONG inst_len;
+
+  if (!Cpu || !GuestRegs)
+    return TRUE;
+
+  inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+  if (Trap->General.RipDelta == 0)
+    Trap->General.RipDelta = inst_len;
+
+  ecx = GuestRegs->ecx;
+
+  MsrValue.LowPart = (ULONG32) GuestRegs->eax;
+  MsrValue.HighPart = (ULONG32) GuestRegs->edx;
+
+  switch (ecx) 
+  {
+  case MSR_IA32_SYSENTER_CS:
+    VmxWrite (GUEST_SYSENTER_CS, MsrValue.QuadPart);
+    break;
+  case MSR_IA32_SYSENTER_ESP:
+    VmxWrite (GUEST_SYSENTER_ESP, MsrValue.QuadPart);
+    break;
+  case MSR_IA32_SYSENTER_EIP:
+    VmxWrite (GUEST_SYSENTER_EIP, MsrValue.QuadPart);
+    DbgPrint("VmxDispatchMsrRead(): Guest EIP: 0x%x want to write MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
+        VmxRead(GUEST_RIP), 
+        MsrValue.QuadPart);
+    break;
+  case MSR_GS_BASE:
+    VmxWrite (GUEST_GS_BASE, MsrValue.QuadPart);
+    break;
+  case MSR_FS_BASE:
+    VmxWrite (GUEST_FS_BASE, MsrValue.QuadPart);
+    break;
+  case MSR_EFER:
+    //_KdPrint(("Guestip 0x%llx MSR_EFER write 0x%llx 0x%llx\n",VmxRead(GUEST_RIP),ecx,MsrValue.QuadPart)); 
+    Cpu->Vmx.GuestEFER = MsrValue.QuadPart;
+    MsrWrite (MSR_EFER, (MsrValue.QuadPart) | EFER_LME);
+    break;
+  default:
+    if (ecx <= 0x1fff
+        || (ecx >= 0xC0000000 && ecx <= 0xC0001fff))
+    {
+        MsrWrite (ecx, MsrValue.QuadPart);
+    }
+  }
+
+  return TRUE;
+}
+
