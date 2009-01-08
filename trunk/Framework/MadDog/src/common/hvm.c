@@ -67,7 +67,7 @@ NTSTATUS NTAPI HvmSpitOutBluepill (
  * 在操作系统运行时刻动态安装helloworld
  */
 NTSTATUS NTAPI HvmSwallowBluepill()
-{
+{//SAME
 	CCHAR cProcessorNumber;
 	NTSTATUS Status, CallbackStatus;
 
@@ -148,8 +148,9 @@ NTSTATUS NTAPI HvmSubvertCpu (
     PHYSICAL_ADDRESS HostStackPA;
 
     DbgPrint("HvmSubvertCpu(): Running on processor #%d\n", KeGetCurrentProcessorNumber());
-
-    //if (!VmxIsImplemented()) 
+	
+	//区别1:删除了对VT技术再次确认，因为认为这个是多余的。
+    //if (!Hvm->ArchIsHvmImplemented()) 
     //{
     //    DbgPrint (("HvmSubvertCpu(): HVM extensions not implemented on this processor\n"));
     //    return STATUS_NOT_SUPPORTED;
@@ -191,7 +192,8 @@ NTSTATUS NTAPI HvmSubvertCpu (
         DbgPrint("HvmSubvertCpu(): Failed to allocate memory for IDT\n");
         return STATUS_INSUFFICIENT_RESOURCES;
     }
-
+	
+	//区别2:删除了SparePage
     // allocate a 4k page. Fail the init if we can't allocate such page
     // (e.g. all allocations reside on 2mb pages).
 

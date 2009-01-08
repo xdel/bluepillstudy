@@ -16,9 +16,11 @@
 
 #include <ntddk.h>
 #include "hvm.h"
-//#include "PrintInfos.h"
+#include "PrintInfos.h"
 //#include "version.h"
 //#include "hvm.h"
 //#include "paging.h"
 //#include "portio.h"
 //#include "dbgclient.h"
+
+#define DbgPrint WriteDbgInfo

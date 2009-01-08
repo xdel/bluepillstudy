@@ -1,0 +1,6 @@
+TARGETNAME=Util
+TARGETPATH=..\..\..\lib
+TARGETTYPE=DRIVER_LIBRARY
+INCLUDES= .; $(BASEDIR)\inc;..\..\..\Util\Headers;
+SOURCES=\
+	PrintInfos.c 

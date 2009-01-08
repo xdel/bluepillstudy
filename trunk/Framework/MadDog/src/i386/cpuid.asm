@@ -15,7 +15,6 @@ GetCpuIdInfo PROC StdCall _fn,ret_eax,ret_ebx,ret_ecx,ret_edx
     mov eax,_fn
     
     cpuid
-
     
     mov esi,ret_eax
     mov [esi], eax
