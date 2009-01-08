@@ -16,6 +16,8 @@ BOOLEAN CmIsBitSet (
 /**
  * effects:Raise the interruption level to dispatch level, then
  * install VM Root hypervisor by call <CallbackProc>
+ * 首先设置运行在哪个logical processor,然后提升中断优先级，侵染，
+ * 最后下降中断优先级
  */
 NTSTATUS NTAPI CmDeliverToProcessor (
   CCHAR cProcessorNumber,
@@ -23,7 +25,7 @@ NTSTATUS NTAPI CmDeliverToProcessor (
   PVOID CallbackParam,
   PNTSTATUS pCallbackStatus
 )
-{ //Finish
+{ //Finish//SAME
   NTSTATUS CallbackStatus;
   KIRQL OldIrql;
 

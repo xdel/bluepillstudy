@@ -170,7 +170,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
   BOOLEAN WillBeAlsoHandledByGuestHv
-)//Finished
+)//Finished//same
 {
   ULONG32 fn, eax, ebx, ecx, edx;
   ULONG inst_len;
@@ -202,7 +202,8 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   GuestRegs->ebx = ebx;
   GuestRegs->ecx = ecx;
   GuestRegs->edx = edx;
-
+  
+	VmxDumpVmcs();
   DbgPrint("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx);
   return TRUE;
 }

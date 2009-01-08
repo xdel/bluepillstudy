@@ -32,6 +32,16 @@ ENDM
 
 .CODE
 
+CmCli PROC
+	cli
+	ret
+CmCli  ENDP
+
+CmSti PROC
+	sti
+	ret
+CmSti ENDP
+
 CmDebugBreak PROC
 	int	3
 	ret
@@ -84,15 +94,5 @@ CmSlipIntoMatrix PROC StdCall _GuestRsp
 	ret
 
 CmSlipIntoMatrix ENDP
-
-CmCli PROC
-	cli
-	ret
-CmCli  ENDP
-
-CmSti PROC
-	sti
-	ret
-CmSti ENDP
 
 END

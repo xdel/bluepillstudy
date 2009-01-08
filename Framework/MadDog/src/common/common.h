@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ntddk.h>
+
 //#include "hvm.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
@@ -12,6 +13,7 @@
 #define ITL_TAG	'LTI'
 
 #define	DEBUG_LEVEL	2
+
 //#define USE_LOCAL_DBGPRINTS
 //#define USE_COM_PRINTS
 
@@ -201,11 +203,11 @@ typedef struct
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
 
-VOID NTAPI CmClgi (
-);
+//VOID NTAPI CmClgi (
+//);
 
-VOID NTAPI CmStgi (
-);
+//VOID NTAPI CmStgi (
+//);
 
 VOID NTAPI CmCli (
 );
@@ -237,19 +239,19 @@ VOID NTAPI CmReloadIdtr (
   ULONG IdtLimit
 );
 
-VOID NTAPI CmSetBluepillESDS (
-);
+//VOID NTAPI CmSetBluepillESDS (
+//);
 
-VOID NTAPI CmSetBluepillGS (
-);
+//VOID NTAPI CmSetBluepillGS (
+//);
 
-VOID NTAPI CmSetDS (
-  USHORT Selector
-);
-
-VOID NTAPI CmSetES (
-  USHORT Selector
-);
+//VOID NTAPI CmSetDS (
+//  USHORT Selector
+//);
+//
+//VOID NTAPI CmSetES (
+//  USHORT Selector
+//);
 
 VOID NTAPI CmSetFS (
   ULONG Selector

@@ -1,8 +1,9 @@
 TARGETNAME=newbp
 TARGETPATH=..\bin
 TARGETTYPE=DRIVER
-TARGETLIBS=..\lib\*\vmx.lib
-INCLUDES=.; ..\vmx; ..\Util\*;
+TARGETLIBS=..\lib\*\vmx.lib \
+	 ..\lib\*\Util.lib 
+INCLUDES=.; ..\vmx; ..\Util\Headers;
 SOURCES=\
     newbp.c \
 	hvm.c \
