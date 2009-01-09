@@ -1,0 +1,10 @@
+DIRS= \
+     vmx \
+     svm \     
+     common \
+     Util
+    
+
+     
+
+ 
