@@ -1,0 +1,20 @@
+TARGETNAME=newbp
+TARGETPATH=..\bin
+TARGETTYPE=DRIVER
+TARGETLIBS=$(PROJ_ROOT)\lib\*\vmx.lib \
+	 $(PROJ_ROOT)\lib\*\Util.lib 
+INCLUDES=.; $(PROJ_ROOT)\vmx; $(PROJ_ROOT)\Util\Headers;
+SOURCES=\
+    newbp.c \
+	hvm.c \
+	common.c \
+	traps.c \
+	memory.c \
+
+I386_SOURCES=\
+    cpuid.asm \
+    common-asm.asm \
+    regs.asm \
+    vmx-asm.asm \
+    msr.asm 
+
