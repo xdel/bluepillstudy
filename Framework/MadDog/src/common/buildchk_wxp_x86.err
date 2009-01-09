@@ -1,2 +1,0 @@
-errors in directory f:\开发\prp项目3\资料\bluepill\helloworld\common
-f:\开发\prp项目3\资料\bluepill\helloworld\common\hvm.c(115) : error C2129: static function 'BOOLEAN VmxIsImplemented()' declared but nlink : error LNK1181: cannot open input file 'f:\开发\prp项目3\资料\bluepill\helloworld\common\objchk_wxp_x86\i386\hvm.
