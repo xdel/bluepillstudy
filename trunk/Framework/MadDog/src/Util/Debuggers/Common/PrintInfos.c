@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <string.h>
+//#include <stdio.h>
+//#include <string.h>
 #include <stdarg.h>
 #include "PrintInfos.h"
 
@@ -37,7 +37,8 @@ NTSTATUS NTAPI WriteDbgInfo (PUCHAR fmt,...)
 	ULONG32 length ;
 
 	va_start (args, fmt);
-	length = snprintf (str,sizeof(str),fmt,args);
+	//length = snprintf (str,sizeof(str),fmt,args);
+	length = vsnprintf ((PUCHAR) & str, sizeof (str), (PUCHAR) fmt, args);
 
 	return _WriteInfo(str,length);
 
@@ -48,6 +49,13 @@ void NTAPI WriteInfoInit()
 	CmInitSpinLock (&g_PrintSpinLock);
 }
 
+void NTAPI WriteInfoDispose()
+{
+	if(!g_debugWindowAddrVA)
+	{
+		ExFreePoolWithTag(g_debugWindowAddrVA,DEBUG_WINDOW_TAG);
+	}
+}
 static NTSTATUS _CreateDebugWindow(ULONG32 numContinuousPages)
 {
 	PHYSICAL_ADDRESS l1, l2, l3;
@@ -55,7 +63,8 @@ static NTSTATUS _CreateDebugWindow(ULONG32 numContinuousPages)
 	l2.QuadPart = -1;
 	l3.QuadPart = 0x200000;
 
-	g_debugWindowAddrVA = MmAllocateContiguousMemorySpecifyCache (numContinuousPages * PAGE_SIZE, l1, l2, l3, MmCached);
+	//g_debugWindowAddrVA = MmAllocateContiguousMemorySpecifyCache (numContinuousPages * PAGE_SIZE, l1, l2, l3, MmCached);
+	g_debugWindowAddrVA = ExAllocatePoolWithTag (NonPagedPool, numContinuousPages * PAGE_SIZE, DEBUG_WINDOW_TAG);
 	RtlZeroMemory (g_debugWindowAddrVA, numContinuousPages * PAGE_SIZE);
 	
 	if(!g_debugWindowAddrVA)
@@ -67,7 +76,7 @@ static NTSTATUS _CreateDebugWindow(ULONG32 numContinuousPages)
 	return STATUS_SUCCESS;
 }
 
-static VOID _AppendStringToAddress(PVOID addrVA,PUCHAR str,ULONG32 strLength)
+static VOID _AppendStringToAddress(PUCHAR str,ULONG32 strLength)
 {
 	//Step 1.Overflow Check
 	if(appendIndex+strLength+2>bufferLength)
@@ -75,9 +84,9 @@ static VOID _AppendStringToAddress(PVOID addrVA,PUCHAR str,ULONG32 strLength)
 		return;
 	}
 	//Step 1.Append <str> at the end of the debug window.
-	memcpy(((PUCHAR)g_debugWindowAddrVA)[appendIndex],(PVOID)str,strLength);
+	memcpy(&((PUCHAR)g_debugWindowAddrVA)[appendIndex],(PVOID)str,strLength);
 	//Step 2.Append a '\0' at the end of this str.
-	appendIndex += strLength+2;
+	appendIndex += (strLength+2);
 	((PUCHAR)g_debugWindowAddrVA)[appendIndex-2] = '\r';
 	((PUCHAR)g_debugWindowAddrVA)[appendIndex-1] = '\n';
 }
@@ -100,7 +109,7 @@ static NTSTATUS NTAPI _WriteInfo(PUCHAR str,ULONG32 strLength)
 		}
 	}
 	//Step 2.Append the <str> at the end of the debug window.
-	_AppendStringToAddress(g_debugWindowAddrVA,str,strLength);
+	_AppendStringToAddress(str,strLength);
 	CmReleaseSpinLock (&g_PrintSpinLock);
 	return STATUS_SUCCESS;
 }

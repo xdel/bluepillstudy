@@ -3,7 +3,7 @@ TARGETPATH=..\bin
 TARGETTYPE=DRIVER
 TARGETLIBS=$(PROJ_ROOT)\lib\*\vmx.lib \
 	 $(PROJ_ROOT)\lib\*\Util.lib 
-INCLUDES=.; $(PROJ_ROOT)\vmx; $(PROJ_ROOT)\Util\Headers;
+INCLUDES=.; $(PROJ_ROOT)\Util\Headers; $(PROJ_ROOT)\vmx; 
 SOURCES=\
     newbp.c \
 	hvm.c \

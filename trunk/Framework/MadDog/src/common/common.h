@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ntddk.h>
-
+#include "PrintInfos.h"
 //#include "hvm.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
@@ -13,6 +13,8 @@
 #define ITL_TAG	'LTI'
 
 #define	DEBUG_LEVEL	2
+
+#define USE_DEBUG_LIBRUARY
 
 //#define USE_LOCAL_DBGPRINTS
 //#define USE_COM_PRINTS
@@ -45,6 +47,10 @@
 
 	#define BP_EXIT_EAX		200
 #endif // BP_KNOCK
+
+#ifdef USE_DEBUG_LIBRUARY
+#define Print(x) WriteDbgInfo x
+#endif
 
 #define REG_MASK			0x07
 

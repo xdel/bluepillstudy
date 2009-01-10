@@ -1,8 +1,9 @@
 DIRS= \
+     Util \
      vmx \
      svm \     
      common \
-     Util
+     
     
 
      

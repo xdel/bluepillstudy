@@ -1,11 +1,13 @@
 #pragma once
 
 #include <ntddk.h>
+#include "snprintf.h"
 
 #define NUM_DEBUG_PAGES 512
 
 extern PVOID g_debugWindowAddrVA;
 typedef ULONG PRINTSPIN_LOCK, *PPRINTSPIN_LOCK;
+#define DEBUG_WINDOW_TAG 'DBG'
 /*************************Public Functions*****************/
 
 /**
@@ -20,11 +22,13 @@ NTSTATUS NTAPI WriteDbgInfo (PUCHAR fmt,...);
  **/
 void NTAPI WriteInfoInit();
 
+void NTAPI WriteInfoDispose();
+
 /**************Private Functions**************/
 
 static NTSTATUS _CreateDebugWindow(ULONG32 numContinuousPages);
 
-static VOID _AppendStringToAddress(PVOID addrVA,PUCHAR str,ULONG32 strLength);
+static VOID _AppendStringToAddress(PUCHAR str,ULONG32 strLength);
 
 /**
  * Effects: Append the string <str> into the end of the debug window

@@ -24,18 +24,18 @@ NTSTATUS DriverUnload (
     //FIXME: do not turn SVM/VMX when it has been turned on by the guest in the meantime (e.g. VPC, VMWare)
     NTSTATUS Status;
 
-    DbgPrint("\r\n");
-    DbgPrint("NEWBLUEPILL: Unloading started\n");
+    Print(("\r\n"));
+    Print(("NEWBLUEPILL: Unloading started\n"));
 
     if (!NT_SUCCESS (Status = HvmSpitOutBluepill ())) 
     {
-        DbgPrint("NEWBLUEPILL: HvmSpitOutBluepill() failed with status 0x%08hX\n",Status);
+        Print(("NEWBLUEPILL: HvmSpitOutBluepill() failed with status 0x%08hX\n",Status));
         return Status;
     }
 
-    DbgPrint("NEWBLUEPILL: Unloading finished\n");
+    Print(("NEWBLUEPILL: Unloading finished\n"));
 
-
+	WriteInfoDispose();
     return STATUS_SUCCESS;
 }
 
@@ -48,7 +48,7 @@ NTSTATUS DriverEntry (
     CmDebugBreak();
    // ULONG ulOldCR3;
     WriteInfoInit();
-	DbgPrint("Hello world!");
+	Print(("Hello world!"));
     //__asm { int 3 }
 
     // test for our pagetabel
@@ -63,10 +63,11 @@ NTSTATUS DriverEntry (
 
     if (!NT_SUCCESS (Status = HvmInit ())) 
     {
-        DbgPrint("HELLOWORLD: HvmInit() failed with status 0x%08hX\n", Status);
-        return Status;
+        Print(("HELLOWORLD: HvmInit() failed with status 0x%08hX\n", Status));
+		WriteInfoDispose();
+		return Status;
     }
-	DbgPrint("HELLOWORLD: Successful in execute HvmInit()", Status);
+	Print(("HELLOWORLD: Successful in execute HvmInit()"));
 
 
 
@@ -74,8 +75,9 @@ NTSTATUS DriverEntry (
 
     if (!NT_SUCCESS (Status = HvmSwallowBluepill ())) //<------------------1 Finish
     {
-        DbgPrint("HELLOWORLD: HvmSwallowBluepill() failed with status 0x%08hX\n", Status);
-        return Status;
+        Print(("HELLOWORLD: HvmSwallowBluepill() failed with status 0x%08hX\n", Status));
+		WriteInfoDispose();
+		return Status;
     }
 //
 //    // vt is on
@@ -84,9 +86,9 @@ NTSTATUS DriverEntry (
 //
       DriverObject->DriverUnload = DriverUnload;
 //
-		DbgPrint("HELLOWORLD: Initialization finished\n");
+		Print(("HELLOWORLD: Initialization finished\n"));
 	#if DEBUG_LEVEL>1
-		DbgPrint("HELLOWORLD: EFLAGS = %#x\n", RegGetRflags ());
+		Print(("HELLOWORLD: EFLAGS = %#x\n", RegGetRflags ()));
 	#endif
 ////
 ////    //__asm

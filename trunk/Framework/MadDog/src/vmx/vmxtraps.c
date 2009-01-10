@@ -66,7 +66,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
         &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    DbgPrint("VmxRegisterTraps(): Failed to register VmxDispatchCpuid with status 0x%08hX\n", Status);
+    Print(("VmxRegisterTraps(): Failed to register VmxDispatchCpuid with status 0x%08hX\n", Status));
     return Status;
   }
   TrRegisterTrap (Cpu, Trap);//<----------------4.3//Finish
@@ -80,7 +80,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
         &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    DbgPrint("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status);
+    Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status));
     return Status;
   }
   TrRegisterTrap (Cpu, Trap);
@@ -94,7 +94,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    DbgPrint("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status);
+    Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status));
     return Status;
   }
   TrRegisterTrap (Cpu, Trap);
@@ -107,7 +107,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    DbgPrint ("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status);
+    Print(("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status));
     return Status;
   }
   TrRegisterTrap (Cpu, Trap);
@@ -120,7 +120,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    DbgPrint("VmxRegisterTraps(): Failed to register VmxDispatchINVD with status 0x%08hX\n", Status);
+    Print(("VmxRegisterTraps(): Failed to register VmxDispatchINVD with status 0x%08hX\n", Status));
     return Status;
   }
   TrRegisterTrap (Cpu, Trap);
@@ -133,7 +133,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    DbgPrint("VmxRegisterTraps(): Failed to register VmxDispatchPageFault with status 0x%08hX\n", Status);
+    Print(("VmxRegisterTraps(): Failed to register VmxDispatchPageFault with status 0x%08hX\n", Status));
     return Status;
   }
   TrRegisterTrap (Cpu, Trap);
@@ -149,7 +149,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
           &Trap);
     if (!NT_SUCCESS (Status)) 
     {
-      DbgPrint("VmxRegisterTraps(): Failed to register VmxDispatchVmon with status 0x%08hX\n", Status);
+      Print(("VmxRegisterTraps(): Failed to register VmxDispatchVmon with status 0x%08hX\n", Status));
       return Status;
     }
     TrRegisterTrap (Cpu, Trap);
@@ -180,7 +180,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   fn = GuestRegs->eax;
 
 #if DEBUG_LEVEL>1
-  DbgPrint("Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x%x\n", fn);
+  Print(("Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x%x\n", fn));
 #endif
 
   inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
@@ -189,7 +189,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 
   if (fn == BP_KNOCK_EAX) 
   {
-    DbgPrint("Helloworld:Magic knock received: %p\n", BP_KNOCK_EAX);
+    Print(("Helloworld:Magic knock received: %p\n", BP_KNOCK_EAX));
     GuestRegs->eax = BP_KNOCK_EAX_ANSWER;
 	GuestRegs->ebx = BP_KNOCK_EBX_ANSWER;
 	GuestRegs->edx = BP_KNOCK_EDX_ANSWER;
@@ -204,7 +204,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   GuestRegs->edx = edx;
   
 	VmxDumpVmcs();
-  DbgPrint("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx);
+  Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
   return TRUE;
 }
 
@@ -218,7 +218,7 @@ static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
   ULONG32 inst_len;
   if (!Cpu || !GuestRegs)
     return TRUE;
-  DbgPrint("VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!\n");
+  Print(("VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!\n"));
 
   inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
   Trap->General.RipDelta = inst_len;
@@ -276,9 +276,9 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
     break;
   case MSR_IA32_SYSENTER_EIP:
     MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_EIP);
-    DbgPrint("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
+    Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
         VmxRead(GUEST_RIP), 
-        MsrValue.QuadPart);
+        MsrValue.QuadPart));
     break;
   case MSR_GS_BASE:
     MsrValue.QuadPart = VmxRead (GUEST_GS_BASE);
@@ -338,9 +338,9 @@ static BOOLEAN NTAPI VmxDispatchMsrWrite (
     break;
   case MSR_IA32_SYSENTER_EIP:
     VmxWrite (GUEST_SYSENTER_EIP, MsrValue.QuadPart);
-    DbgPrint("VmxDispatchMsrRead(): Guest EIP: 0x%x want to write MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
+    Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x want to write MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
         VmxRead(GUEST_RIP), 
-        MsrValue.QuadPart);
+        MsrValue.QuadPart));
     break;
   case MSR_GS_BASE:
     VmxWrite (GUEST_GS_BASE, MsrValue.QuadPart);

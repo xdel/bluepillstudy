@@ -66,7 +66,7 @@ NTSTATUS NTAPI CmInitializeSegmentSelector (
 
     if (Selector & 0x4) 
     {
-		DbgPrint("Helloworld:CmInitializeSegmentSelector(): Given selector (0x%X) points to LDT\n", Selector);
+		KdPrint(("Helloworld:CmInitializeSegmentSelector(): Given selector (0x%X) points to LDT\n", Selector));
         return STATUS_INVALID_PARAMETER;
     }
 

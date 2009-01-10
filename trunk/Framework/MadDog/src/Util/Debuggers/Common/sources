@@ -1,9 +1,10 @@
 TARGETNAME=Util
-TARGETPATH=..\..\..\lib
+TARGETPATH=$(PROJ_ROOT)\lib
 TARGETTYPE=DRIVER_LIBRARY
-INCLUDES= .; $(BASEDIR)\inc;..\..\..\Util\Headers;
+INCLUDES= . ; $(BASEDIR)\inc; $(PROJ_ROOT)\Util\Headers;
 SOURCES=\
-	PrintInfos.c 
+	PrintInfos.c \
+	snprintf.c
 
 I386_SOURCES=\
 	debugger-asm.asm

@@ -36,12 +36,12 @@ static BOOLEAN NTAPI VmxIsImplemented()
 	GetCpuIdInfo (0, &eax, &ebx, &ecx, &edx);
 	if (eax < 1) 
 	{
-		DbgPrint("VmxIsImplemented(): Extended CPUID functions not implemented\n");
+		Print(("VmxIsImplemented(): Extended CPUID functions not implemented\n"));
 		return FALSE;
 	}
 	if (!(ebx == 0x756e6547 && ecx == 0x6c65746e && edx == 0x49656e69)) 
 	{
-		DbgPrint("VmxIsImplemented(): Not an INTEL processor\n");
+		Print(("VmxIsImplemented(): Not an INTEL processor\n"));
 		return FALSE;
 	}
 
@@ -78,24 +78,24 @@ static NTSTATUS NTAPI VmxInitialize (
         &Cpu->Vmx.OriginalVmxonRPA);
     if (!Cpu->Vmx.OriginaVmxonR) 
     {
-		DbgPrint("Helloworld:VmxInitialize(): Failed to allocate memory for original VMCS\n");
+		Print(("Helloworld:VmxInitialize(): Failed to allocate memory for original VMCS\n"));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
-    DbgPrint("Helloworld:VmxInitialize(): OriginaVmxonR VA: 0x%x\n", Cpu->Vmx.OriginaVmxonR);
-    DbgPrint("Helloworld:VmxInitialize(): OriginaVmxonR PA: 0x%llx\n", Cpu->Vmx.OriginalVmxonRPA.QuadPart);
+    Print(("Helloworld:VmxInitialize(): OriginaVmxonR VA: 0x%x\n", Cpu->Vmx.OriginaVmxonR));
+    Print(("Helloworld:VmxInitialize(): OriginaVmxonR PA: 0x%llx\n", Cpu->Vmx.OriginalVmxonRPA.QuadPart));
     //Allocate VMCS	
     Cpu->Vmx.OriginalVmcs = MmAllocateContiguousPages(
         VMX_VMCS_SIZE_IN_PAGES, 
         &Cpu->Vmx.OriginalVmcsPA);
     if (!Cpu->Vmx.OriginalVmcs) 
     {
-		DbgPrint("Helloworld:VmxInitialize(): Failed to allocate memory for original VMCS\n");
+		Print(("Helloworld:VmxInitialize(): Failed to allocate memory for original VMCS\n"));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
-    DbgPrint("Helloworld:VmxInitialize(): Vmcs VA: 0x%x\n", Cpu->Vmx.OriginalVmcs);
-    DbgPrint("Helloworld:VmxInitialize(): Vmcs PA: 0x%llx\n", Cpu->Vmx.OriginalVmcsPA.QuadPart);
+    Print(("Helloworld:VmxInitialize(): Vmcs VA: 0x%x\n", Cpu->Vmx.OriginalVmcs));
+    Print(("Helloworld:VmxInitialize(): Vmcs PA: 0x%llx\n", Cpu->Vmx.OriginalVmcsPA.QuadPart));
 
     // these two PAs are equal if there're no nested VMs
     Cpu->Vmx.VmcsToContinuePA = Cpu->Vmx.OriginalVmcsPA;
@@ -132,18 +132,18 @@ static NTSTATUS NTAPI VmxInitialize (
         &Cpu->Vmx.MSRBitmapPA);
     if (!Cpu->Vmx.MSRBitmap) 
     {
-        DbgPrint("VmxInitialize(): Failed to allocate memory for  MSRBitmap\n");
+        Print(("VmxInitialize(): Failed to allocate memory for  MSRBitmap\n"));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
     RtlZeroMemory (Cpu->Vmx.MSRBitmap, PAGE_SIZE);
 
-    DbgPrint("VmxInitialize(): MSRBitmap VA: 0x%x\n", Cpu->Vmx.MSRBitmap);
-    DbgPrint("VmxInitialize(): MSRBitmap PA: 0x%llx\n", Cpu->Vmx.MSRBitmapPA.QuadPart);
+    Print(("VmxInitialize(): MSRBitmap VA: 0x%x\n", Cpu->Vmx.MSRBitmap));
+    Print(("VmxInitialize(): MSRBitmap PA: 0x%llx\n", Cpu->Vmx.MSRBitmapPA.QuadPart));
 
     // call VMXON, should fill the version first
     if (!NT_SUCCESS (VmxEnable (Cpu->Vmx.OriginaVmxonR))) //<----------------4.1 Finished
     {
-        DbgPrint ("Helloworld:VmxInitialize(): Failed to enable Vmx\n");
+        Print( ("Helloworld:VmxInitialize(): Failed to enable Vmx\n"));
         return STATUS_UNSUCCESSFUL;
     }
 
@@ -155,15 +155,15 @@ static NTSTATUS NTAPI VmxInitialize (
     Status = VmxSetupVMCS (Cpu, GuestEip, GuestEsp);//<----------------4.2 Finished
     if (!NT_SUCCESS (Status)) 
     {
-        DbgPrint("Helloworld:Vmx(): VmxSetupVMCS() failed with status 0x%08hX\n", Status);
+        Print(("Helloworld:Vmx(): VmxSetupVMCS() failed with status 0x%08hX\n", Status));
         VmxDisable();
         return Status;
     }
 
-    DbgPrint("Helloworld:VmxInitialize(): Vmx enabled\n");
+    Print(("Helloworld:VmxInitialize(): Vmx enabled\n"));
 
     Cpu->Vmx.GuestEFER = MsrRead (MSR_EFER);
-    DbgPrint("Helloworld:Guest MSR_EFER Read 0x%llx \n", Cpu->Vmx.GuestEFER);
+    Print(("Helloworld:Guest MSR_EFER Read 0x%llx \n", Cpu->Vmx.GuestEFER));
 
     Cpu->Vmx.GuestCR0 = RegGetCr0 ();
     Cpu->Vmx.GuestCR3 = RegGetCr3 ();
@@ -183,11 +183,11 @@ static NTSTATUS NTAPI VmxVirtualize (
     if (!Cpu)
         return STATUS_INVALID_PARAMETER;
 
-    DbgPrint("VmxVirtualize(): VmxRead: 0x%X \n", VmxRead (VM_INSTRUCTION_ERROR));
-    DbgPrint("VmxVirtualize(): EFlags before vmxLaunch: 0x%x \n", RegGetRflags ());
-    DbgPrint("VmxVirtualize(): PCPU: 0x%x \n", Cpu);
+    Print(("VmxVirtualize(): VmxRead: 0x%X \n", VmxRead (VM_INSTRUCTION_ERROR)));
+    Print(("VmxVirtualize(): EFlags before vmxLaunch: 0x%x \n", RegGetRflags ()));
+    Print(("VmxVirtualize(): PCPU: 0x%x \n", Cpu));
     esp = RegGetEsp ();
-    DbgPrint("VmxVirtualize(): Rsp: 0x%x \n", esp);
+    Print(("VmxVirtualize(): Rsp: 0x%x \n", esp));
 
 //#ifndef _X86_
     *((PULONG) (g_HostStackBaseAddress + 0x0C00)) = (ULONG) Cpu;
@@ -232,7 +232,7 @@ NTSTATUS NTAPI VmxEnable (
 	// 设置cr4位，为启用VM模式做准备
     set_in_cr4 (X86_CR4_VMXE);
     cr4 = get_cr4 ();
-    DbgPrint("Helloworld:VmxEnable(): CR4 after VmxEnable: 0x%llx\n", cr4);
+    Print(("Helloworld:VmxEnable(): CR4 after VmxEnable: 0x%llx\n", cr4));
     if (!(cr4 & X86_CR4_VMXE))
         return STATUS_NOT_SUPPORTED;
 
@@ -240,18 +240,18 @@ NTSTATUS NTAPI VmxEnable (
     vmxmsr = MsrRead (MSR_IA32_FEATURE_CONTROL);
     if (!(vmxmsr & 4)) 
     {
-        DbgPrint("Helloworld:VmxEnable(): VMX is not supported: IA32_FEATURE_CONTROL is 0x%llx\n", vmxmsr);
+        Print(("Helloworld:VmxEnable(): VMX is not supported: IA32_FEATURE_CONTROL is 0x%llx\n", vmxmsr));
         return STATUS_NOT_SUPPORTED;
     }
 
     vmxmsr = MsrRead (MSR_IA32_VMX_BASIC);
     *((ULONG64 *) VmxonVA) = (vmxmsr & 0xffffffff);       //set up vmcs_revision_id
     VmxonPA = MmGetPhysicalAddress (VmxonVA);
-    DbgPrint("Helloworld:VmxEnable(): VmxonPA:  0x%llx\n", VmxonPA.QuadPart);
+    Print(("Helloworld:VmxEnable(): VmxonPA:  0x%llx\n", VmxonPA.QuadPart));
     //VmxTurnOn (MmGetPhysicalAddress (VmxonVA));
 	VmxTurnOn(VmxonPA);
     flags = RegGetRflags ();
-    DbgPrint("Helloworld:VmxEnable(): vmcs_revision_id: 0x%x  Eflags: 0x%x \n", vmxmsr, flags);
+    Print(("Helloworld:VmxEnable(): vmcs_revision_id: 0x%x  Eflags: 0x%x \n", vmxmsr, flags));
     return STATUS_SUCCESS;
 }
 
@@ -263,7 +263,7 @@ NTSTATUS NTAPI VmxDisable (
     cr4 = get_cr4 ();
     clear_in_cr4 (X86_CR4_VMXE);
     cr4 = get_cr4 ();
-    DbgPrint("VmxDisable(): CR4 after VmxDisable: 0x%llx\n", cr4);
+    Print(("VmxDisable(): CR4 after VmxDisable: 0x%llx\n", cr4));
     return STATUS_SUCCESS;
 }
 
@@ -487,7 +487,7 @@ static NTSTATUS VmxSetupVMCS (
     // setup host ip:CmSlipIntoMatrix
     VmxWrite (HOST_RIP, (ULONG) VmxVmexitHandler); //setup host ip:CmSlipIntoMatrix
 
-	DbgPrint("Helloworld:VmxSetupVMCS(): Exit\n");
+	Print(("Helloworld:VmxSetupVMCS(): Exit\n"));
 
     return STATUS_SUCCESS;
 }
@@ -546,7 +546,7 @@ static VOID NTAPI VmxDispatchEvent (
 )
 {//Finished
 #if DEBUG_LEVEL>2
-  DbgPrint (("VmxDispatchEvent(): exitcode = %x\n", VmxRead (VM_EXIT_REASON)));
+  Print(("VmxDispatchEvent(): exitcode = %x\n", VmxRead (VM_EXIT_REASON)));
 #endif
 
   VmxHandleInterception(
@@ -658,7 +658,7 @@ static NTSTATUS NTAPI VmxShutdown (
 {	//Finished
 	UCHAR Trampoline[0x600];
 
-	DbgPrint("VmxShutdown(): CPU#%d\n", Cpu->ProcessorNumber);
+	Print(("VmxShutdown(): CPU#%d\n", Cpu->ProcessorNumber));
 
 	#if DEBUG_LEVEL>2
 		VmxDumpVmcs ();
@@ -668,7 +668,7 @@ static NTSTATUS NTAPI VmxShutdown (
 	// The code should be updated to build an approproate trampoline to exit to any guest mode.
 	VmxGenerateTrampolineToGuest (Cpu, GuestRegs, Trampoline, bSetupTimeBomb);
 
-	DbgPrint("VmxShutdown(): Trampoline generated\n", Cpu->ProcessorNumber);
+	Print(("VmxShutdown(): Trampoline generated\n", Cpu->ProcessorNumber));
 	VmxDisable ();
 	((VOID (*)()) & Trampoline) ();
 
@@ -695,7 +695,7 @@ static VOID VmxHandleInterception (
     Exitcode = VmxRead (VM_EXIT_REASON);
 
 #if DEBUG_LEVEL>2
-    DbgPrint (("VmxHandleInterception(): Exitcode %x\n", Exitcode));
+    Print(("VmxHandleInterception(): Exitcode %x\n", Exitcode));
 #endif
 
     if (Exitcode == EXIT_REASON_CR_ACCESS
@@ -709,7 +709,7 @@ static VOID VmxHandleInterception (
     Status = TrFindRegisteredTrap (Cpu, GuestRegs, Exitcode, &Trap);//<----------------------1.1 Finished!
     if (!NT_SUCCESS (Status)) 
     {
-        DbgPrint("VmxHandleInterception(): TrFindRegisteredTrap() failed for exitcode 0x%llX\n", Exitcode);
+        Print(("VmxHandleInterception(): TrFindRegisteredTrap() failed for exitcode 0x%llX\n", Exitcode));
         VmxCrash (Cpu, GuestRegs);//<-------------1.2 Finished
         return;
     }
@@ -722,7 +722,7 @@ static VOID VmxHandleInterception (
         WillBeAlsoHandledByGuestHv);
     if (!NT_SUCCESS (Status)) 
     {
-        DbgPrint("VmxHandleInterception(): HvmExecuteGeneralTrapHandler() failed with status 0x%08hX\n", Status);
+        Print(("VmxHandleInterception(): HvmExecuteGeneralTrapHandler() failed with status 0x%08hX\n", Status));
     }
 }
 

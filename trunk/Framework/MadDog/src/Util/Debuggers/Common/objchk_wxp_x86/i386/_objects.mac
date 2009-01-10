@@ -3,6 +3,7 @@
 386_OBJECTS=\
  $(OBJ_PATH)\$O\debugger-asm.obj \
  $(OBJ_PATH)\$O\printinfos.obj \
+ $(OBJ_PATH)\$O\snprintf.obj \
 
 
 
