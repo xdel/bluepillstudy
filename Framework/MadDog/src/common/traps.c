@@ -14,7 +14,7 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
 )
 {//Finish
     PNBP_TRAP Trap;
-	DbgPrint("HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x%x\n", TrappedVmExit);
+	Print(("HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x%x\n", TrappedVmExit));
 
     if (!Cpu || 
         !TrapCallback || 
@@ -27,7 +27,7 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
     Trap = MmAllocatePages (BYTES_TO_PAGES (sizeof (NBP_TRAP)), NULL);
     if (!Trap) 
     {
-        DbgPrint("HelloWorld:TrInitializeGeneralTrap(): Failed to allocate NBP_TRAP structure (%d bytes)\n", sizeof (NBP_TRAP));
+        Print(("HelloWorld:TrInitializeGeneralTrap(): Failed to allocate NBP_TRAP structure (%d bytes)\n", sizeof (NBP_TRAP)));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
@@ -67,7 +67,7 @@ NTSTATUS NTAPI TrRegisterTrap (
   //  TrapList = &Cpu->IoTrapsList;
   //  break;
   default:
-	  DbgPrint("Helloworld:TrRegisterTrap(): Unknown TRAP_TYPE code: %d\n", (char) Trap->TrapType);
+	  Print(("Helloworld:TrRegisterTrap(): Unknown TRAP_TYPE code: %d\n", (char) Trap->TrapType));
     return STATUS_UNSUCCESSFUL;
   }
 

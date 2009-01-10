@@ -34,27 +34,27 @@ NTSTATUS NTAPI HvmSpitOutBluepill (
 
 	//g_bDisableComOutput = TRUE;
 
-	DbgPrint("HelloWorld:HvmSpitOutBluepill(): Going to liberate %d processor%s\n",
-		 KeNumberProcessors, KeNumberProcessors == 1 ? "" : "s");
+	Print(("HelloWorld:HvmSpitOutBluepill(): Going to liberate %d processor%s\n",
+		 KeNumberProcessors, KeNumberProcessors == 1 ? "" : "s"));
 
 	KeWaitForSingleObject (&g_HvmMutex, Executive, KernelMode, FALSE, NULL);
 
 	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) {
 
-		DbgPrint("HelloWorld:HvmSpitOutBluepill(): Liberating processor #%d\n", cProcessorNumber);
+		Print(("HelloWorld:HvmSpitOutBluepill(): Liberating processor #%d\n", cProcessorNumber));
 
 		Status = CmDeliverToProcessor (cProcessorNumber, HvmLiberateCpu, NULL, &CallbackStatus);//<-------------3.1  Finish
 
 		if (!NT_SUCCESS (Status)) {
-			DbgPrint("HelloWorld:HvmSpitOutBluepill(): CmDeliverToProcessor() failed with status 0x%08hX\n", Status);
+			KdPrint(("HelloWorld:HvmSpitOutBluepill(): CmDeliverToProcessor() failed with status 0x%08hX\n", Status));
 		}
 
 		if (!NT_SUCCESS (CallbackStatus)) {
-			DbgPrint("HelloWorld:HvmSpitOutBluepill(): HvmLiberateCpu() failed with status 0x%08hX\n", CallbackStatus);
+			Print(("HelloWorld:HvmSpitOutBluepill(): HvmLiberateCpu() failed with status 0x%08hX\n", CallbackStatus));
 		}
 	}
 
-	DbgPrint("HelloWorld:HvmSpitOutBluepill(): Finished at irql %d\n", KeGetCurrentIrql ());
+	Print(("HelloWorld:HvmSpitOutBluepill(): Finished at irql %d\n", KeGetCurrentIrql ()));
 
 	KeReleaseMutex (&g_HvmMutex, FALSE);
 	return STATUS_SUCCESS;
@@ -71,19 +71,19 @@ NTSTATUS NTAPI HvmSwallowBluepill()
 	CCHAR cProcessorNumber;
 	NTSTATUS Status, CallbackStatus;
 
-	DbgPrint("HelloWorld:HvmSwallowBluepill(): Going to subvert %d processor%s\n",
-			 KeNumberProcessors, KeNumberProcessors == 1 ? "" : "s");
+	Print(("HelloWorld:HvmSwallowBluepill(): Going to subvert %d processor%s\n",
+			 KeNumberProcessors, KeNumberProcessors == 1 ? "" : "s"));
 
 	KeWaitForSingleObject (&g_HvmMutex, Executive, KernelMode, FALSE, NULL);
 
 	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
 	{
-		DbgPrint("HelloWorld:HvmSwallowBluepill():Installing HelloWorld VT Root Manager on processor #%d\n", cProcessorNumber);
+		Print(("HelloWorld:HvmSwallowBluepill():Installing HelloWorld VT Root Manager on processor #%d\n", cProcessorNumber));
 
 		Status = CmDeliverToProcessor(cProcessorNumber, CmSubvert, NULL, &CallbackStatus);//<----------------2.1 Finish
 
 		if (!NT_SUCCESS (Status)) {
-			DbgPrint("HelloWorld:HvmSwallowBluepill(): CmDeliverToProcessor() failed with status 0x%08hX\n", Status);
+			Print(("HelloWorld:HvmSwallowBluepill(): CmDeliverToProcessor() failed with status 0x%08hX\n", Status));
 			KeReleaseMutex (&g_HvmMutex, FALSE);
 
 			HvmSpitOutBluepill ();//<----------------2.2
@@ -92,7 +92,7 @@ NTSTATUS NTAPI HvmSwallowBluepill()
 		}
 
 		if (!NT_SUCCESS (CallbackStatus)) {
-			DbgPrint("HelloWorld:HvmSwallowBluepill(): HvmSubvertCpu() failed with status 0x%08hX\n", CallbackStatus);
+			Print(("HelloWorld:HvmSwallowBluepill(): HvmSubvertCpu() failed with status 0x%08hX\n", CallbackStatus));
 			KeReleaseMutex (&g_HvmMutex, FALSE);
 
 			HvmSpitOutBluepill ();
@@ -123,10 +123,10 @@ NTSTATUS NTAPI HvmInit()//Finished
     ArchIsOK = Hvm->ArchIsHvmImplemented ();
 
 	if (!ArchIsOK) {
-		DbgPrint("HvmInit(): Your Intel CPU doesn't either support VT Technology or isn't an Intel CPU at all.\n");
+		Print(("HvmInit(): Your Intel CPU doesn't either support VT Technology or isn't an Intel CPU at all.\n"));
 		return STATUS_NOT_SUPPORTED;
 	} else {
-		DbgPrint("HvmInit(): Your Intel CPU supports VT Technology.\n");
+		KdPrint(("HvmInit(): Your Intel CPU supports VT Technology.\n"));
 	}
 
 	KeInitializeMutex (&g_HvmMutex, 0);
@@ -147,12 +147,12 @@ NTSTATUS NTAPI HvmSubvertCpu (
     NTSTATUS Status;
     PHYSICAL_ADDRESS HostStackPA;
 
-    DbgPrint("HvmSubvertCpu(): Running on processor #%d\n", KeGetCurrentProcessorNumber());
+    Print(("HvmSubvertCpu(): Running on processor #%d\n", KeGetCurrentProcessorNumber()));
 	
 	//区别1:删除了对VT技术再次确认，因为认为这个是多余的。
     //if (!Hvm->ArchIsHvmImplemented()) 
     //{
-    //    DbgPrint (("HvmSubvertCpu(): HVM extensions not implemented on this processor\n"));
+    //    Print (("HvmSubvertCpu(): HVM extensions not implemented on this processor\n"));
     //    return STATUS_NOT_SUPPORTED;
     //}
 
@@ -160,7 +160,7 @@ NTSTATUS NTAPI HvmSubvertCpu (
     HostKernelStackBase = MmAllocatePages(HOST_STACK_SIZE_IN_PAGES, &HostStackPA);
     if (!HostKernelStackBase) 
     {
-        DbgPrint("HvmSubvertCpu(): Failed to allocate %d pages for the host stack\n", HOST_STACK_SIZE_IN_PAGES);
+        Print(("HvmSubvertCpu(): Failed to allocate %d pages for the host stack\n", HOST_STACK_SIZE_IN_PAGES));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
@@ -182,14 +182,14 @@ NTSTATUS NTAPI HvmSubvertCpu (
     Cpu->GdtArea = MmAllocatePages (BYTES_TO_PAGES (BP_GDT_LIMIT), NULL);//Currently we create our own GDT and IDT area
     if (!Cpu->GdtArea) 
     {
-        DbgPrint("HvmSubvertCpu(): Failed to allocate memory for GDT\n");
+        Print(("HvmSubvertCpu(): Failed to allocate memory for GDT\n"));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
     Cpu->IdtArea = MmAllocatePages (BYTES_TO_PAGES (BP_IDT_LIMIT), NULL);
     if (!Cpu->IdtArea) 
     {
-        DbgPrint("HvmSubvertCpu(): Failed to allocate memory for IDT\n");
+        Print(("HvmSubvertCpu(): Failed to allocate memory for IDT\n"));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 	
@@ -201,7 +201,7 @@ NTSTATUS NTAPI HvmSubvertCpu (
 //    Cpu->SparePage = MmAllocateContiguousPagesSpecifyCache (1, &Cpu->SparePagePA, MmCached);
 //    if (!Cpu->SparePage)
 //    {
-//        DbgPrint (("HvmSubvertCpu(): Failed to allocate 1 page for the dummy page (DPA_CONTIGUOUS)\n"));
+//        Print (("HvmSubvertCpu(): Failed to allocate 1 page for the dummy page (DPA_CONTIGUOUS)\n"));
 //        return STATUS_UNSUCCESSFUL;
 //    }
 //    // this is valid only for host page tables, as this VA may point into 2mb page in the guest.
@@ -214,14 +214,14 @@ NTSTATUS NTAPI HvmSubvertCpu (
     Status = Hvm->ArchRegisterTraps(Cpu);//<----------------3.1 Finish
     if (!NT_SUCCESS (Status)) 
     {
-		DbgPrint("Helloworld:HvmSubvertCpu(): Failed to register NewBluePill traps, status 0x%08hX\n", Status);
+		Print(("Helloworld:HvmSubvertCpu(): Failed to register NewBluePill traps, status 0x%08hX\n", Status));
         return STATUS_UNSUCCESSFUL;
     }
 
     Status = Hvm->ArchInitialize (Cpu, CmSlipIntoMatrix, GuestRsp);//<----------------3.2 Finish
     if (!NT_SUCCESS (Status)) 
     {
-        DbgPrint("Helloworld:HvmSubvertCpu(): ArchInitialize() failed with status 0x%08hX\n", Status);
+        Print(("Helloworld:HvmSubvertCpu(): ArchInitialize() failed with status 0x%08hX\n", Status));
         return Status;
     }
 
@@ -238,7 +238,7 @@ NTSTATUS NTAPI HvmSubvertCpu (
 //#endif
 
 #if DEBUG_LEVEL > 1
-    DbgPrint("HvmSubvertCpu(): RFLAGS = %#x\n", RegGetRflags ());
+    Print(("HvmSubvertCpu(): RFLAGS = %#x\n", RegGetRflags ()));
 #endif
 
     Status = Hvm->ArchVirtualize(Cpu);//<----------------3.5 Finish
@@ -251,9 +251,9 @@ NTSTATUS NTAPI HvmSubvertCpu (
 NTSTATUS NTAPI HvmResumeGuest (
 )
 {
-    DbgPrint("HvmResumeGuest(): Processor #%d, irql %d in GUEST\n",
+    Print(("HvmResumeGuest(): Processor #%d, irql %d in GUEST\n",
         KeGetCurrentProcessorNumber (), 
-        KeGetCurrentIrql ());
+        KeGetCurrentIrql ()));
 
     // irql will be lowered in the CmDeliverToProcessor()
     //CmSti();
@@ -405,7 +405,7 @@ static NTSTATUS NTAPI HvmLiberateCpu (
 
   Efer = MsrRead (MSR_EFER);
 
-  DbgPrint("HelloWorld:HvmLiberateCpu(): Reading MSR_EFER on entry: 0x%X\n", Efer);
+  Print(("HelloWorld:HvmLiberateCpu(): Reading MSR_EFER on entry: 0x%X\n", Efer));
 
   //if (!NT_SUCCESS (Status = HcMakeHypercall (NBP_HYPERCALL_UNLOAD, 0, NULL))) {
   //  _KdPrint (("HvmLiberateCpu(): HcMakeHypercall() failed on processor #%d, status 0x%08hX\n",
@@ -419,7 +419,7 @@ static NTSTATUS NTAPI HvmLiberateCpu (
   RegSetCr3(BP_EXIT_EAX);//<------------------!!!!!!!!卸载用!!!!!!!!!!
 
   Efer = MsrRead (MSR_EFER);
-  DbgPrint("HelloWorld:HvmLiberateCpu(): Reading MSR_EFER on exit: 0x%X\n", Efer);
+  Print(("HelloWorld:HvmLiberateCpu(): Reading MSR_EFER on exit: 0x%X\n", Efer));
 
   return STATUS_SUCCESS;
 }

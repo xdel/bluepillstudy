@@ -1,8 +1,8 @@
 TARGETNAME=vmx
-TARGETPATH=..\lib
+TARGETPATH=$(PROJ_ROOT)\lib
 TARGETTYPE=DRIVER_LIBRARY
 INCLUDES= .; \
-          ..\common; 
+          $(PROJ_ROOT)\common; $(PROJ_ROOT)\Util\Headers;
 SOURCES=\
     vmx.c \
     vmxtraps.c \

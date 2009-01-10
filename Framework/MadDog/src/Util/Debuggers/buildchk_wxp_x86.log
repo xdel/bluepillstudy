@@ -1,10 +1,10 @@
 BUILD: Examining d:\helloworld\util\debuggers directory tree for files to compile.
 skipping post pass 0 command
 Compiling d:\helloworld\util\debuggers\common *************
-'nmake.exe /nologo BUILDMSG=Stop. -i /nologo /f c:\winddk\6001.18001\bin\makefile.def BUILD_PASS=PASS1 NOLINK=1 MAKEDIR_RELATIVE_TO_BASEDIR='
-d:\helloworld\util\debuggers\common: TARGETPATH is ..\..\..\lib
+'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS1 NOLINK=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+d:\helloworld\util\debuggers\common: TARGETPATH is D:\Helloworld\lib
 BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
-ml.exe /safeseh /c /coff /Cx /nologo /Ii386\ /I. /I. /Ic:\winddk\6001.18001\inc /I..\..\..\Util\Headers /Id:\helloworld\util\debuggers\common\objchk_wxp_x86\i386 /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\crt /Zm /Zi /D_X86_=1 /Di386=1 /DSTD_CALL /DCONDITION_HANDLING=1 /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0501 /DWINVER=0x0501 /D_WIN32_IE=0x0603 /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /DDBG=1 /D__BUILDMACHINE__=WinDDK /DFPO=0 /Fod:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\debugger-asm.obj ..\i386\debugger-asm.asm
+ml.exe /safeseh /c /coff /Cx /nologo /Ii386\ /I. /I. /Ic:\winddk\6001.18001\inc /ID:\Helloworld\Util\Headers /Id:\helloworld\util\debuggers\common\objchk_wxp_x86\i386 /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\crt /Zm /Zi /D_X86_=1 /Di386=1 /DSTD_CALL /DCONDITION_HANDLING=1 /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0501 /DWINVER=0x0501 /D_WIN32_IE=0x0603 /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /DDBG=1 /D__BUILDMACHINE__=WinDDK /DFPO=0 /Fod:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\debugger-asm.obj ..\i386\debugger-asm.asm
  Assembling: ..\i386\debugger-asm.asm
  cl.exe @d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\cl.rsp
 Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
@@ -17,7 +17,7 @@ cl /Fo"d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386/"
  /I.
  /I.
  /Ic:\winddk\6001.18001\inc
- /I..\..\..\Util\Headers
+ /ID:\Helloworld\Util\Headers
  /Id:\helloworld\util\debuggers\common\objchk_wxp_x86\i386
  /IC:\WinDDK\6001.18001\inc\api
  /IC:\WinDDK\6001.18001\inc\api
@@ -65,13 +65,13 @@ cl /Fo"d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386/"
  /DKMDF_MAJOR_VERSION=01
  /DKMDF_MINOR_VERSION=007
  /FIC:\WinDDK\6001.18001\inc\api\warning.h
- .\printinfos.c 
+ .\printinfos.c .\snprintf.c 
 printinfos.c
-d:\helloworld\util\debuggers\common\printinfos.c(76) : warning C4022: 'memcpy' : pointer mismatch for actual parameter 1
-warnings in directory d:\helloworld\util\debuggers\common
-d:\helloworld\util\debuggers\common\printinfos.c(76) : warning C4022: 'memcpy' : pointer mismatch for actual parameter 1
- link.exe /lib /out:..\..\..\lib\i386\Util.lib /IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221  /WX /nodefaultlib /machine:ix86 @d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\lib.rsp
+snprintf.c
+Generating Code...
+ link.exe /lib /out:D:\Helloworld\lib\i386\Util.lib /IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221  /WX /nodefaultlib /machine:ix86 @d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\lib.rsp
 Microsoft (R) Library Manager Version 8.00.50727.278
 Copyright (C) Microsoft Corporation.  All rights reserved.
 d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\debugger-asm.obj 
 d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\printinfos.obj 
+d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\snprintf.obj 
