@@ -79,7 +79,7 @@ static NTSTATUS _CreateDebugWindow(ULONG32 numContinuousPages)
 static VOID _AppendStringToAddress(PUCHAR str,ULONG32 strLength)
 {
 	//Step 1.Overflow Check
-	if(appendIndex+strLength+2>bufferLength)
+	if(appendIndex+strLength+2>=bufferLength)
 	{
 		return;
 	}

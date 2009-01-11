@@ -3,7 +3,7 @@
 #include <ntddk.h>
 #include "snprintf.h"
 
-#define NUM_DEBUG_PAGES 512
+#define NUM_DEBUG_PAGES 1024*5
 
 extern PVOID g_debugWindowAddrVA;
 typedef ULONG PRINTSPIN_LOCK, *PPRINTSPIN_LOCK;
