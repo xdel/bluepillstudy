@@ -1,0 +1,5 @@
+1>errors in directory d:\helloworld\common
+1>d:\helloworld\common\util.lib(printinfos.obj) : error LNK2019: unresolved external symbol _CmInitSpinLock@4 referenced in function _WriteInfoInit@0
+1>d:\helloworld\common\util.lib(printinfos.obj) : error LNK2019: unresolved external symbol _CmReleaseSpinLock@4 referenced in function __WriteInfo@8
+1>d:\helloworld\common\util.lib(printinfos.obj) : error LNK2019: unresolved external symbol _CmAcquireSpinLock@4 referenced in function __WriteInfo@8
+1>d:\helloworld\bin\i386\newbp.sys : error LNK1120: 3 unresolved externals
