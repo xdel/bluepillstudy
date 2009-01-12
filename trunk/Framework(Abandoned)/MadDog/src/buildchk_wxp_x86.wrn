@@ -1,2 +1,0 @@
-2>warnings in directory d:\helloworld\util\debuggers\common
-2>d:\helloworld\util\debuggers\common\printinfos.c(76) : warning C4022: 'memcpy' : pointer mismatch for actual parameter 1
