@@ -1,0 +1,10 @@
+TARGETNAME=Util
+TARGETPATH=$(FRAMEWORK_BIN_ROOT)\lib
+TARGETTYPE=DRIVER_LIBRARY
+INCLUDES= . ; $(BASEDIR)\inc; $(FRAMEWORK_SRC_ROOT)\Util\Headers;
+SOURCES=\
+	PrintInfos.c \
+	snprintf.c
+
+I386_SOURCES=\
+	debugger-asm.asm

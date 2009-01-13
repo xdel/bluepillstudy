@@ -1,0 +1,275 @@
+BUILD: Examining d:\helloworld directory tree for files to compile.
+skipping post pass 0 command
+Compiling d:\helloworld\util\debuggers\common *************
+'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS1 NOLINK=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+d:\helloworld\util\debuggers\common: TARGETPATH is D:\Helloworld\lib
+BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
+ml.exe /safeseh /c /coff /Cx /nologo /Ii386\ /I. /I. /Ic:\winddk\6001.18001\inc /ID:\Helloworld\Util\Headers /Id:\helloworld\util\debuggers\common\objchk_wxp_x86\i386 /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\crt /Zm /Zi /D_X86_=1 /Di386=1 /DSTD_CALL /DCONDITION_HANDLING=1 /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0501 /DWINVER=0x0501 /D_WIN32_IE=0x0603 /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /DDBG=1 /D__BUILDMACHINE__=WinDDK /DFPO=0 /Fod:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\debugger-asm.obj ..\i386\debugger-asm.asm
+ Assembling: ..\i386\debugger-asm.asm
+ cl.exe @d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\cl.rsp
+Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+cl /Fo"d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386/"
+ /FC
+ /MT
+ /U_MT
+ /Ii386
+ /I.
+ /I.
+ /Ic:\winddk\6001.18001\inc
+ /ID:\Helloworld\Util\Headers
+ /Id:\helloworld\util\debuggers\common\objchk_wxp_x86\i386
+ /IC:\WinDDK\6001.18001\inc\api
+ /IC:\WinDDK\6001.18001\inc\api
+ /IC:\WinDDK\6001.18001\inc\ddk
+ /IC:\WinDDK\6001.18001\inc\ddk
+ /IC:\WinDDK\6001.18001\inc\crt
+ /D_X86_=1
+ /Di386=1
+ /DSTD_CALL
+ /DCONDITION_HANDLING=1
+ /DNT_INST=0
+ /DWIN32=100
+ /D_NT1X_=100
+ /DWINNT=1
+ /D_WIN32_WINNT=0x0501
+ /DWINVER=0x0501
+ /D_WIN32_IE=0x0603
+ /DWIN32_LEAN_AND_MEAN=1
+ /DDEVL=1
+ /DDBG=1
+ /D__BUILDMACHINE__=WinDDK
+ /DFPO=0
+ /DDEPRECATE_DDK_FUNCTIONS=1
+ /DMSC_NOOPT
+ /DNTDDI_VERSION=0x05010200
+ /c
+ /Zc:wchar_t-
+ /Zl
+ /Zp8
+ /Gy
+ /Gm-
+ -cbstring
+ /W3
+ /Gz
+ /hotpatch
+ /EHs-c-
+ /GR-
+ /GF
+ /GS
+ /Z7
+ /Od
+ /Oi
+ /Oy-
+ /Z7
+ /DKMDF_MAJOR_VERSION=01
+ /DKMDF_MINOR_VERSION=007
+ /FIC:\WinDDK\6001.18001\inc\api\warning.h
+ .\printinfos.c .\snprintf.c 
+printinfos.c
+snprintf.c
+Generating Code...
+ link.exe /lib /out:D:\Helloworld\lib\i386\Util.lib /IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221  /WX /nodefaultlib /machine:ix86 @d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\lib.rsp
+Microsoft (R) Library Manager Version 8.00.50727.278
+Copyright (C) Microsoft Corporation.  All rights reserved.
+d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\debugger-asm.obj 
+d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\printinfos.obj 
+d:\helloworld\util\debuggers\common\objchk_wxp_x86\i386\snprintf.obj 
+Compiling d:\helloworld\vmx *************
+'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS1 NOLINK=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+d:\helloworld\vmx: TARGETPATH is D:\Helloworld\lib
+BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
+ cl.exe @d:\helloworld\vmx\objchk_wxp_x86\i386\cl.rsp
+Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+cl /Fo"d:\helloworld\vmx\objchk_wxp_x86\i386/"
+ /FC
+ /MT
+ /U_MT
+ /Ii386
+ /I.
+ /I.
+ /ID:\Helloworld\common
+ /ID:\Helloworld\Util\Headers
+ /Id:\helloworld\vmx\objchk_wxp_x86\i386
+ /IC:\WinDDK\6001.18001\inc\api
+ /IC:\WinDDK\6001.18001\inc\api
+ /IC:\WinDDK\6001.18001\inc\ddk
+ /IC:\WinDDK\6001.18001\inc\ddk
+ /IC:\WinDDK\6001.18001\inc\crt
+ /D_X86_=1
+ /Di386=1
+ /DSTD_CALL
+ /DCONDITION_HANDLING=1
+ /DNT_INST=0
+ /DWIN32=100
+ /D_NT1X_=100
+ /DWINNT=1
+ /D_WIN32_WINNT=0x0501
+ /DWINVER=0x0501
+ /D_WIN32_IE=0x0603
+ /DWIN32_LEAN_AND_MEAN=1
+ /DDEVL=1
+ /DDBG=1
+ /D__BUILDMACHINE__=WinDDK
+ /DFPO=0
+ /DDEPRECATE_DDK_FUNCTIONS=1
+ /DMSC_NOOPT
+ /DNTDDI_VERSION=0x05010200
+ /c
+ /Zc:wchar_t-
+ /Zl
+ /Zp8
+ /Gy
+ /Gm-
+ -cbstring
+ /W3
+ /Gz
+ /hotpatch
+ /EHs-c-
+ /GR-
+ /GF
+ /GS
+ /Z7
+ /Od
+ /Oi
+ /Oy-
+ /Z7
+ /DKMDF_MAJOR_VERSION=01
+ /DKMDF_MINOR_VERSION=007
+ /FIC:\WinDDK\6001.18001\inc\api\warning.h
+ .\vmx.c .\vmxtraps.c .\vmxdebug.c 
+vmx.c
+vmxtraps.c
+vmxdebug.c
+Generating Code...
+ link.exe /lib /out:D:\Helloworld\lib\i386\vmx.lib /IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221  /WX /nodefaultlib /machine:ix86 @d:\helloworld\vmx\objchk_wxp_x86\i386\lib.rsp
+Microsoft (R) Library Manager Version 8.00.50727.278
+Copyright (C) Microsoft Corporation.  All rights reserved.
+d:\helloworld\vmx\objchk_wxp_x86\i386\vmx.obj 
+d:\helloworld\vmx\objchk_wxp_x86\i386\vmxtraps.obj 
+d:\helloworld\vmx\objchk_wxp_x86\i386\vmxdebug.obj 
+Compiling and Linking d:\helloworld\common *************
+'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS2 LINKONLY=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+d:\helloworld\common: TARGETPATH is ..\bin
+BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
+ml.exe /safeseh /c /coff /Cx /nologo /Ii386\ /I. /I. /ID:\Helloworld\Util\Headers /ID:\Helloworld\vmx /Id:\helloworld\common\objchk_wxp_x86\i386 /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\crt /Zm /Zi /D_X86_=1 /Di386=1 /DSTD_CALL /DCONDITION_HANDLING=1 /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0501 /DWINVER=0x0501 /D_WIN32_IE=0x0603 /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /DDBG=1 /D__BUILDMACHINE__=WinDDK /DFPO=0 /Fod:\helloworld\common\objchk_wxp_x86\i386\cpuid.obj ..\i386\cpuid.asm
+ Assembling: ..\i386\cpuid.asm
+ml.exe /safeseh /c /coff /Cx /nologo /Ii386\ /I. /I. /ID:\Helloworld\Util\Headers /ID:\Helloworld\vmx /Id:\helloworld\common\objchk_wxp_x86\i386 /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\crt /Zm /Zi /D_X86_=1 /Di386=1 /DSTD_CALL /DCONDITION_HANDLING=1 /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0501 /DWINVER=0x0501 /D_WIN32_IE=0x0603 /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /DDBG=1 /D__BUILDMACHINE__=WinDDK /DFPO=0 /Fod:\helloworld\common\objchk_wxp_x86\i386\common-asm.obj ..\i386\common-asm.asm
+ Assembling: ..\i386\common-asm.asm
+ml.exe /safeseh /c /coff /Cx /nologo /Ii386\ /I. /I. /ID:\Helloworld\Util\Headers /ID:\Helloworld\vmx /Id:\helloworld\common\objchk_wxp_x86\i386 /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\crt /Zm /Zi /D_X86_=1 /Di386=1 /DSTD_CALL /DCONDITION_HANDLING=1 /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0501 /DWINVER=0x0501 /D_WIN32_IE=0x0603 /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /DDBG=1 /D__BUILDMACHINE__=WinDDK /DFPO=0 /Fod:\helloworld\common\objchk_wxp_x86\i386\regs.obj ..\i386\regs.asm
+ Assembling: ..\i386\regs.asm
+ml.exe /safeseh /c /coff /Cx /nologo /Ii386\ /I. /I. /ID:\Helloworld\Util\Headers /ID:\Helloworld\vmx /Id:\helloworld\common\objchk_wxp_x86\i386 /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\crt /Zm /Zi /D_X86_=1 /Di386=1 /DSTD_CALL /DCONDITION_HANDLING=1 /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0501 /DWINVER=0x0501 /D_WIN32_IE=0x0603 /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /DDBG=1 /D__BUILDMACHINE__=WinDDK /DFPO=0 /Fod:\helloworld\common\objchk_wxp_x86\i386\vmx-asm.obj ..\i386\vmx-asm.asm
+ Assembling: ..\i386\vmx-asm.asm
+ml.exe /safeseh /c /coff /Cx /nologo /Ii386\ /I. /I. /ID:\Helloworld\Util\Headers /ID:\Helloworld\vmx /Id:\helloworld\common\objchk_wxp_x86\i386 /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\api /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\ddk /IC:\WinDDK\6001.18001\inc\crt /Zm /Zi /D_X86_=1 /Di386=1 /DSTD_CALL /DCONDITION_HANDLING=1 /DNT_INST=0 /DWIN32=100 /D_NT1X_=100 /DWINNT=1 /D_WIN32_WINNT=0x0501 /DWINVER=0x0501 /D_WIN32_IE=0x0603 /DWIN32_LEAN_AND_MEAN=1 /DDEVL=1 /DDBG=1 /D__BUILDMACHINE__=WinDDK /DFPO=0 /Fod:\helloworld\common\objchk_wxp_x86\i386\msr.obj ..\i386\msr.asm
+ Assembling: ..\i386\msr.asm
+ cl.exe @d:\helloworld\common\objchk_wxp_x86\i386\cl.rsp
+Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+cl /Fo"d:\helloworld\common\objchk_wxp_x86\i386/"
+ /FC
+ /Ii386
+ /I.
+ /I.
+ /ID:\Helloworld\Util\Headers
+ /ID:\Helloworld\vmx
+ /Id:\helloworld\common\objchk_wxp_x86\i386
+ /IC:\WinDDK\6001.18001\inc\api
+ /IC:\WinDDK\6001.18001\inc\api
+ /IC:\WinDDK\6001.18001\inc\ddk
+ /IC:\WinDDK\6001.18001\inc\ddk
+ /IC:\WinDDK\6001.18001\inc\crt
+ /D_X86_=1
+ /Di386=1
+ /DSTD_CALL
+ /DCONDITION_HANDLING=1
+ /DNT_INST=0
+ /DWIN32=100
+ /D_NT1X_=100
+ /DWINNT=1
+ /D_WIN32_WINNT=0x0501
+ /DWINVER=0x0501
+ /D_WIN32_IE=0x0603
+ /DWIN32_LEAN_AND_MEAN=1
+ /DDEVL=1
+ /DDBG=1
+ /D__BUILDMACHINE__=WinDDK
+ /DFPO=0
+ /D_DLL=1
+ /DNDEBUG
+ /DDEPRECATE_DDK_FUNCTIONS=1
+ /DMSC_NOOPT
+ /DNTDDI_VERSION=0x05010200
+ /c
+ /Zc:wchar_t-
+ /Zl
+ /Zp8
+ /Gy
+ /Gm-
+ -cbstring
+ /W3
+ /Gz
+ /hotpatch
+ /EHs-c-
+ /GR-
+ /GF
+ /GS
+ /Z7
+ /Od
+ /Oi
+ /Oy-
+ /Z7
+ /DKMDF_MAJOR_VERSION=01
+ /DKMDF_MINOR_VERSION=007
+ /FIC:\WinDDK\6001.18001\inc\api\warning.h
+ .\newbp.c .\hvm.c .\common.c .\traps.c .\memory.c 
+newbp.c
+hvm.c
+common.c
+traps.c
+memory.c
+Generating Code...
+ link.exe /out:..\bin\i386\newbp.sys /machine:ix86 @d:\helloworld\common\objchk_wxp_x86\i386\lnk.rsp
+Microsoft (R) Incremental Linker Version 8.00.50727.278
+Copyright (C) Microsoft Corporation.  All rights reserved.
+/MERGE:_PAGE=PAGE 
+/MERGE:_TEXT=.text 
+/SECTION:INIT,d 
+/OPT:REF 
+/OPT:ICF 
+/IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221 
+/INCREMENTAL:NO 
+/release 
+/NODEFAULTLIB 
+/WX 
+/debug 
+/debugtype:cv,fixup,pdata 
+/version:6.0 
+/osversion:6.0 
+/functionpadmin:5 
+/safeseh 
+/pdbcompress 
+/STACK:0x40000,0x1000 
+/driver 
+/base:0x10000 
+/align:0x80 /stub:c:\winddk\6001.18001\lib\wxp\stub512.com 
+/subsystem:native,5.01 
+/entry:GsDriverEntry@8 
+/out:..\bin\i386\newbp.sys 
+d:\helloworld\common\objchk_wxp_x86\i386\cpuid.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\common-asm.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\regs.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\vmx-asm.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\msr.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\newbp.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\hvm.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\common.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\traps.obj 
+d:\helloworld\common\objchk_wxp_x86\i386\memory.obj 
+c:\winddk\6001.18001\lib\wxp\i386\BufferOverflowK.lib 
+c:\winddk\6001.18001\lib\wxp\i386\ntoskrnl.lib 
+c:\winddk\6001.18001\lib\wxp\i386\hal.lib 
+c:\winddk\6001.18001\lib\wxp\i386\wmilib.lib 
+D:\Helloworld\lib\i386\vmx.lib 
+D:\Helloworld\lib\i386\Util.lib 
+c:\winddk\6001.18001\lib\wxp\i386\sehupd.lib 
