@@ -1,0 +1,1048 @@
+Hello world!
+HELLOWORLD: Successful in execute HvmInit()
+HelloWorld:HvmSwallowBluepill(): Going to subvert 2 processors
+
+HelloWorld:HvmSwallowBluepill():Installing HelloWorld VT Root Manager on processor #0
+
+HvmSubvertCpu(): Running on processor #0
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0xa
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1f
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x20
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1c
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0xd
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x0
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x12
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x13
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x14
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x18
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x15
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x16
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x17
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x19
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1b
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1a
+
+Helloworld:VmxInitialize(): OriginaVmxonR VA: 0xffffffff873c7000
+
+Helloworld:VmxInitialize(): OriginaVmxonR PA: 0x73c7000
+
+Helloworld:VmxInitialize(): Vmcs VA: 0xffffffff873c6000
+
+Helloworld:VmxInitialize(): Vmcs PA: 0x73c6000
+
+VmxInitialize(): MSRBitmap VA: 0xffffffff873c5000
+
+VmxInitialize(): MSRBitmap PA: 0x73c5000
+
+Helloworld:VmxEnable(): CR4 after VmxEnable: 0x26d9
+
+Helloworld:VmxEnable(): VmxonPA:  0x73c7000
+
+Helloworld:VmxEnable(): vmcs_revision_id: 0x7  Eflags: 0x1a0400 
+
+Helloworld:VmxSetupVMCS(): Exit
+
+Helloworld:VmxInitialize(): Vmx enabled
+
+Helloworld:Guest MSR_EFER Read 0x0 
+
+HvmSubvertCpu(): RFLAGS = 46
+
+VmxVirtualize(): VmxRead: 0x0 
+
+VmxVirtualize(): EFlags before vmxLaunch: 0x82 
+
+VmxVirtualize(): PCPU: 0xffffffff873e6384 
+
+VmxVirtualize(): Rsp: 0xfffffffff78d2bec 
+
+HvmResumeGuest(): Processor #0, irql 2 in GUEST
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+HelloWorld:HvmSwallowBluepill():Installing HelloWorld VT Root Manager on processor #1
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+HvmSubvertCpu(): Running on processor #1
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0xa
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1f
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x20
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1c
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0xd
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x0
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x12
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x13
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x14
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x18
+
+VmxHandleInterception(): Exitcode 1c
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x15
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x16
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x17
+
+VmxHandleInterception(): Exitcode 1c
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x19
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1b
+
+HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x1a
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+Helloworld:VmxInitialize(): OriginaVmxonR VA: 0xffffffff873a0000
+
+Helloworld:VmxInitialize(): OriginaVmxonR PA: 0x73a0000
+
+Helloworld:VmxInitialize(): Vmcs VA: 0xffffffff8739f000
+
+Helloworld:VmxInitialize(): Vmcs PA: 0x739f000
+
+VmxInitialize(): MSRBitmap VA: 0xffffffff8739e000
+
+VmxInitialize(): MSRBitmap PA: 0x739e000
+
+Helloworld:VmxEnable(): CR4 after VmxEnable: 0x26d9
+
+Helloworld:VmxEnable(): VmxonPA:  0x73a0000
+
+Helloworld:VmxEnable(): vmcs_revision_id: 0x7  Eflags: 0x1a0400 
+
+Helloworld:VmxSetupVMCS(): Exit
+
+Helloworld:VmxInitialize(): Vmx enabled
+
+Helloworld:Guest MSR_EFER Read 0x0 
+
+HvmSubvertCpu(): RFLAGS = 46
+
+VmxVirtualize(): VmxRead: 0x0 
+
+VmxVirtualize(): EFlags before vmxLaunch: 0x82 
+
+VmxVirtualize(): PCPU: 0xffffffff873c4384 
+
+VmxVirtualize(): Rsp: 0xfffffffff78d2bec 
+
+HvmResumeGuest(): Processor #1, irql 2 in GUEST
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxHandleInterception(): Exitcode a
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxHandleInterception(): Exitcode a
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+HELLOWORLD: Initialization finished
+
+HELLOWORLD: EFLAGS = 292
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x2805524D5
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x280000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x2E1285000
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x200000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x3805524DA
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x380000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x3E1285004
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x300000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x2805524E6
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x280000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x2E1285408
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x200000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x3805524EB
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x380000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x3E128540C
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x300000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x480552502
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x480000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x4E128540A
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x400000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x28055251C
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x280000B0E
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x2E1285410
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x200000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x38055251E
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x380000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x3E1285414
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x300000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x38055254E
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x380000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x3E1285004
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x300000000
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x280575893
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x280000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x2E1285008
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x200000000
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x38057589B
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x380000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x3E1285009
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x300000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x48057589E
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x480000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x4E128500A
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x400000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x4805758A2
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x480000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x4E128500C
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x400000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x4805758A6
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x480000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x4E128500E
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x400000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x28058632F
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x280000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x2E1285008
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x200000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x4805862E0
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x480000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x4E128500C
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x400000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x4805862EB
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x480000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x4E128500A
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x400000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x480552211
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x480000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x4E1285002
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x400000000
+
+VmxHandleInterception(): Exitcode 0
+
+VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!
+
+VmxDispatchVminstructionDummy(): GUEST_RIP 0x681E: 0x280552FAC
+
+VmxDispatchVminstructionDummy(): EXIT_INTR 0x4404: 0x280000B0E
+
+VmxDispatchVminstructionDummy(): QUALIFICATION 0x6400: 0x2E1285000
+
+VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x4004: 0x200000000
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+VmxHandleInterception(): Exitcode a
+
+VmxHandleInterception(): Exitcode 1c
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x3
+
+VmxHandleInterception(): Exitcode a
+
+Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x0
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
+Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x0 0xa 0x756e6547 0x6c65746e 0x49656e69 
+
+VmxHandleInterception(): Exitcode 1c
+
+VmxDispatchCrAccess(): gp: 0x0 cr: 0x3 exit_qualification: 0x13
+
