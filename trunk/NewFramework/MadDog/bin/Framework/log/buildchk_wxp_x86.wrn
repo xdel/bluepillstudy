@@ -1,0 +1,3 @@
+warnings in directory d:\workspace\maddog\src\framework\common
+d:\workspace\maddog\src\framework\common\hvm.c(46) : warning C4047: 'function' : 'PCALLBACK_PROC' differs in levels of indirection from 'int'
+d:\workspace\maddog\src\framework\common\hvm.c(46) : warning C4024: 'CmDeliverToProcessor' : different types for formal and actual parameter 2
