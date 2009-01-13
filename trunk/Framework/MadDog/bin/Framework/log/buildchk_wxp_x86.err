@@ -1,4 +1,0 @@
-errors in directory d:\workspace\maddog\src\framework\common
-d:\workspace\maddog\src\framework\common\hvm.c(46) : error C2065: 'HvmLiberateCpu' : undeclared identifier
-d:\workspace\maddog\src\framework\common\hvm.c(396) : error C2365: 'HvmLiberateCpu' : redefinition; previous definition was 'data variable'
-link : error LNK1181: cannot open input file 'd:\workspace\maddog\src\framework\common\objchk_wxp_x86\i386\hvm.obj'
