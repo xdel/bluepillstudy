@@ -43,13 +43,12 @@ namespace Tools.EnlistmentWizard.Core
                 
                 return razzleCount;
             }
-            set
-            {
-                RegistryKey myEnv = GetGlobalEnv();
-                myEnv.SetValue(GlobalEnvironment.NAME_RAZZLE_COUNT, (++razzleCount).ToString());
-            }
         }
-
+        public static void IncreaseRazzleCount()
+        {
+            RegistryKey myEnv = GetGlobalEnv();
+            myEnv.SetValue(GlobalEnvironment.NAME_RAZZLE_COUNT, (++razzleCount).ToString());
+        }
         private static RegistryKey GetGlobalEnv()
         {
             RegistryKey rk = Registry.LocalMachine;
