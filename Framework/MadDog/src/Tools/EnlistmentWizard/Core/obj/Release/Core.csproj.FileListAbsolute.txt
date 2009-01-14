@@ -1,0 +1,8 @@
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\Core\bin\Release\Tools.EnlistmentWizard.Core.dll
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\Core\bin\Release\Tools.EnlistmentWizard.Core.pdb
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\Core\bin\Release\Interop.IWshRuntimeLibrary.dll
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\Core\obj\Release\ResolveAssemblyReference.cache
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\Core\obj\Release\Interop.IWshRuntimeLibrary.dll
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\Core\obj\Release\Core.csproj.ResolveComReference.cache
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\Core\obj\Release\Tools.EnlistmentWizard.Core.dll
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\Core\obj\Release\Tools.EnlistmentWizard.Core.pdb

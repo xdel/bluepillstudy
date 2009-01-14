@@ -1,0 +1,12 @@
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Release\svn.exe
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Release\Tools.EnlistmentWizard.UI.exe
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Release\Tools.EnlistmentWizard.UI.pdb
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Release\Tools.EnlistmentWizard.Core.dll
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Release\Interop.IWshRuntimeLibrary.dll
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Release\Tools.EnlistmentWizard.Core.pdb
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Release\ResolveAssemblyReference.cache
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Release\Tools.EnlistmentWizard.UI.FrmEnlistSetting.resources
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Release\Tools.EnlistmentWizard.UI.Properties.Resources.resources
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Release\UI.csproj.GenerateResource.Cache
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Release\Tools.EnlistmentWizard.UI.exe
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Release\Tools.EnlistmentWizard.UI.pdb

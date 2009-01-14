@@ -66,11 +66,18 @@ namespace Tools.EnlistmentWizard.UI
                     return;
                 }
             }
-            SvnService.SvnCheckoutWorkspace(enlistLocalPath);
+            //Check if it exits normally
+            Boolean runSuccessfully = SvnService.SvnCheckoutWorkspace(enlistLocalPath);
+            if (!runSuccessfully)
+            {
+                MessageBox.Show("Svn Checkout Failed");
+                return;
+            }
 
             //Step 3.Modify Razzle.bat
             String razzleFile = enlistLocalPath + RazzleFilePath.RAZZLETEMPLATE_BAT_FILEPATH;
-            String destRazzleBatName = String.Format(@"\Razzle_{0}.bat", GlobalEnvironment.RazzleCount);
+            int razzleIndex = GlobalEnvironment.RazzleCount + 1;
+            String destRazzleBatName = String.Format(@"\Razzle_{0}.bat",razzleIndex);
             String destRazzleBatPathName = Environment.GetFolderPath(Environment.SpecialFolder.System) +
                 destRazzleBatName;
             StreamReader sr = new StreamReader(razzleFile);
@@ -80,15 +87,15 @@ namespace Tools.EnlistmentWizard.UI
             //Step 3.1 Replace %%ENLISTMENT_PROJ_ROOT%% in Razzle.bat
             content = content.Replace(TemplateStrings.LOCAL_ENLISTMENT_PROJ_ROOT_STRING, enlistLocalPath +@"\MadDog");
             //Step 3.2 Replace %%ENLISTMENT_PROJ_ROOT%% in Razzle.bat
-            content=content.Replace(TemplateStrings.LOCAL_RAZZLE_INDEX,GlobalEnvironment.RazzleCount.ToString());
+            content = content.Replace(TemplateStrings.LOCAL_RAZZLE_INDEX, razzleIndex.ToString());
 
             StreamWriter sw = new StreamWriter(destRazzleBatPathName);
             sw.Write(content);
             sw.Close();
 
             //Step 4.Create Shortcut on the desktop.
-            String shortCutFileName = Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop) + 
-                String.Format(@"\Razzle_{0}.lnk", GlobalEnvironment.RazzleCount);
+            String shortCutFileName = Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop) +
+                String.Format(@"\Razzle_{0}.lnk", razzleIndex);
             //Step 4.1 Set Razzle Build Env x86 Checked in Default.
             ShortcutHelper.CreateShortcut(shortCutFileName,
                 destRazzleBatPathName, 
@@ -97,6 +104,8 @@ namespace Tools.EnlistmentWizard.UI
 
             //Step 5. Increment Razzle_Count Value
             GlobalEnvironment.IncreaseRazzleCount();
+
+            MessageBox.Show("Enlist successfully");
         }
 
         private void btnSelectEnlistPath_Click(object sender, EventArgs e)
