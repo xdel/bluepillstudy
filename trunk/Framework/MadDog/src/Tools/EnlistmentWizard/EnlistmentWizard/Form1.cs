@@ -46,6 +46,7 @@ namespace Tools.EnlistmentWizard.UI
         private void btnEnlist_Click(object sender, EventArgs e)
         {
             Enlist();
+            this.Dispose();
         }
 
         private void Enlist()
