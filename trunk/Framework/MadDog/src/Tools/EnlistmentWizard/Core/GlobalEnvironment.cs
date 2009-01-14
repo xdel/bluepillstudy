@@ -9,7 +9,7 @@ namespace Tools.EnlistmentWizard.Core
 {
     public class GlobalEnvironment
     {
-        private static int razzleCount = 1;
+        private static int razzleCount = 0;
         /// <summary>
         /// The WINDDK_HOME which will be append in System variables 
         /// </summary>

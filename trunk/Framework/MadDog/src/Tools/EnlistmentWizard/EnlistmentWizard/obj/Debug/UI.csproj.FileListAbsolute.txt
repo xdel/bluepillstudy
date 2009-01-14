@@ -9,3 +9,4 @@ D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\Intero
 D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\Tools.EnlistmentWizard.Core.pdb
 D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.exe
 D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.pdb
+D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\svn.exe
