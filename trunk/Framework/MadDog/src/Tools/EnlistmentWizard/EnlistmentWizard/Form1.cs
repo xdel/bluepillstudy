@@ -64,6 +64,7 @@ namespace Tools.EnlistmentWizard.UI
                 }
                 catch
                 {
+                    MessageBox.Show("Invalid Path!");
                     return;
                 }
             }
