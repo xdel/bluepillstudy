@@ -1,7 +1,7 @@
 
 
 386_OBJECTS=\
- $(OBJ_PATH)\$O\newbp.obj \
+ $(OBJ_PATH)\$O\bpknock.obj \
 
 
 
@@ -10,7 +10,7 @@
 # lowercased
 BASEDIR=e:\winddk\6001.18001
 OBJECT_ROOT=e:\winddk\6001.18001
-MAKEDIR_LOWERCASE=d:\workspace\maddog\src\sample\helloworld
-OBJ_PATH=d:\workspace\maddog\src\sample\helloworld
+MAKEDIR_LOWERCASE=f:\workspace\prp
+OBJ_PATH=f:\workspace\prp
 CONCURRENT_MIDL=0
 CONCURRENT_MANIFEST_BUILD=0
