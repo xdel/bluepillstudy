@@ -41,9 +41,9 @@
 #define BP_KNOCK
 #ifdef BP_KNOCK
 	#define BP_KNOCK_EAX	100
-	#define BP_KNOCK_EAX_ANSWER 0x48656c6c	//Hell
-	#define BP_KNOCK_EBX_ANSWER 0x6f20576f  //o Wo
-	#define BP_KNOCK_EDX_ANSWER 0x726c6421	//rld!
+	#define BP_KNOCK_EAX_ANSWER 0x6c6c6548	//Hell
+	#define BP_KNOCK_EBX_ANSWER 0x6f57206f  //o Wo
+	#define BP_KNOCK_EDX_ANSWER 0x21646c72	//rld!
 
 	#define BP_EXIT_EAX		200
 #endif // BP_KNOCK
