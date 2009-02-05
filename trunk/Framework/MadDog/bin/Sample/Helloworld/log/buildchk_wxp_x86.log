@@ -1,19 +1,19 @@
-BUILD: Examining d:\workspace\maddog\src\sample\helloworld directory for files to compile.
+BUILD: Examining d:\workspace2\maddog\src\sample\helloworld directory for files to compile.
 skipping post pass 0 command
-Compiling and Linking d:\workspace\maddog\src\sample\helloworld *************
+Compiling and Linking d:\workspace2\maddog\src\sample\helloworld *************
 'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS2 LINKONLY=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR='
-d:\workspace\maddog\src\sample\helloworld: TARGETPATH is d:\Workspace\MadDog\bin\Sample\Helloworld\bin
+d:\workspace2\maddog\src\sample\helloworld: TARGETPATH is d:\Workspace2\MadDog\bin\Sample\Helloworld\bin
 BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
- cl.exe @d:\workspace\maddog\src\sample\helloworld\objchk_wxp_x86\i386\cl.rsp
+ cl.exe @d:\workspace2\maddog\src\sample\helloworld\objchk_wxp_x86\i386\cl.rsp
 Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
 Copyright (C) Microsoft Corporation.  All rights reserved.
-cl /Fo"d:\workspace\maddog\src\sample\helloworld\objchk_wxp_x86\i386/"
+cl /Fo"d:\workspace2\maddog\src\sample\helloworld\objchk_wxp_x86\i386/"
  /FC
  /Ii386
  /I.
  /I.
- /Id:\Workspace\MadDog\bin\Framework\headers
- /Id:\workspace\maddog\src\sample\helloworld\objchk_wxp_x86\i386
+ /Id:\Workspace2\MadDog\bin\Framework\inc
+ /Id:\workspace2\maddog\src\sample\helloworld\objchk_wxp_x86\i386
  /IE:\WinDDK\6001.18001\inc\api
  /IE:\WinDDK\6001.18001\inc\api
  /IE:\WinDDK\6001.18001\inc\ddk
@@ -64,7 +64,7 @@ cl /Fo"d:\workspace\maddog\src\sample\helloworld\objchk_wxp_x86\i386/"
  /FIE:\WinDDK\6001.18001\inc\api\warning.h
  .\newbp.c 
 newbp.c
- link.exe /out:d:\Workspace\MadDog\bin\Sample\Helloworld\bin\i386\newbp.sys /machine:ix86 @d:\workspace\maddog\src\sample\helloworld\objchk_wxp_x86\i386\lnk.rsp
+ link.exe /out:d:\Workspace2\MadDog\bin\Sample\Helloworld\bin\i386\newbp.sys /machine:ix86 @d:\workspace2\maddog\src\sample\helloworld\objchk_wxp_x86\i386\lnk.rsp
 Microsoft (R) Incremental Linker Version 8.00.50727.278
 Copyright (C) Microsoft Corporation.  All rights reserved.
 /MERGE:_PAGE=PAGE 
@@ -90,13 +90,13 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 /align:0x80 /stub:e:\winddk\6001.18001\lib\wxp\stub512.com 
 /subsystem:native,5.01 
 /entry:GsDriverEntry@8 
-/out:d:\Workspace\MadDog\bin\Sample\Helloworld\bin\i386\newbp.sys 
-d:\workspace\maddog\src\sample\helloworld\objchk_wxp_x86\i386\newbp.obj 
+/out:d:\Workspace2\MadDog\bin\Sample\Helloworld\bin\i386\newbp.sys 
+d:\workspace2\maddog\src\sample\helloworld\objchk_wxp_x86\i386\newbp.obj 
 e:\winddk\6001.18001\lib\wxp\i386\BufferOverflowK.lib 
 e:\winddk\6001.18001\lib\wxp\i386\ntoskrnl.lib 
 e:\winddk\6001.18001\lib\wxp\i386\hal.lib 
 e:\winddk\6001.18001\lib\wxp\i386\wmilib.lib 
-d:\Workspace\MadDog\bin\Framework\lib\i386\VTCore.lib 
-d:\Workspace\MadDog\bin\Framework\lib\i386\Util.lib 
-d:\Workspace\MadDog\bin\Framework\lib\i386\vmx.lib 
+d:\Workspace2\MadDog\bin\Framework\lib\i386\VTCore.lib 
+d:\Workspace2\MadDog\bin\Framework\lib\i386\Util.lib 
+d:\Workspace2\MadDog\bin\Framework\lib\i386\vmx.lib 
 e:\winddk\6001.18001\lib\wxp\i386\sehupd.lib 

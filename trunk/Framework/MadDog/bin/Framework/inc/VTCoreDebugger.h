@@ -1,8 +1,16 @@
 #pragma once
 
 #include <ntddk.h>
-#define Print(x) PrintDbgInfo x
-/*************************Public Functions*****************/
+
+//+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
+
+#ifdef USE_DEBUG_LIBRUARY
+#define Print(x) WriteDbgInfo x
+#else
+#define Print(x) {}
+#endif
+
+//+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
 /**
  * Effects: Write info with format.
