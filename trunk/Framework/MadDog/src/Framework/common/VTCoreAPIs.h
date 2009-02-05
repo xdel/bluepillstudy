@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ntddk.h>
+#include "VTCoreTypes.h"
 
 #define DEBUG_VTCORE
 

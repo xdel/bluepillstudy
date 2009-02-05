@@ -162,33 +162,33 @@ typedef enum SEGREGS
 
 //+++++++++++++++++++++Structs++++++++++++++++++++++++++++++++
 
-typedef struct _VMX
-{
-  PHYSICAL_ADDRESS VmcsToContinuePA;    // MUST go first in the structure; refer to SvmVmrun() for details
-  PVOID _2mbVmcbMap;
-
-  PHYSICAL_ADDRESS OriginalVmcsPA;
-  PVOID OriginalVmcs;           // VMCS which was originally built by the BP for the guest OS
-  PHYSICAL_ADDRESS OriginalVmxonRPA;    // Vmxon Region which was originally built by the BP for the guest OS
-  PVOID OriginaVmxonR;
-
-  //PHYSICAL_ADDRESS IOBitmapAPA; // points to IOBitMapA.
-  //PVOID IOBitmapA;
-
-  //PHYSICAL_ADDRESS IOBitmapBPA; // points to IOBitMapB
-  //PVOID IOBitmapB;
-
-  PHYSICAL_ADDRESS MSRBitmapPA; // points to MsrBitMap
-  PVOID MSRBitmap;
-
-  ULONG GuestCR0;             //Guest's CR0. 
-  ULONG GuestCR3;             //Guest's CR3. for storing guest cr3 when guest diasble paging.
-  ULONG GuestCR4;             //Guest's CR4. 
-  ULONG64 GuestEFER;
-  UCHAR GuestStateBeforeInterrupt[0xc00];
-
-} VMX,
- *PVMX;
+//typedef struct _VMX
+//{
+//  PHYSICAL_ADDRESS VmcsToContinuePA;    // MUST go first in the structure; refer to SvmVmrun() for details
+//  PVOID _2mbVmcbMap;
+//
+//  PHYSICAL_ADDRESS OriginalVmcsPA;
+//  PVOID OriginalVmcs;           // VMCS which was originally built by the BP for the guest OS
+//  PHYSICAL_ADDRESS OriginalVmxonRPA;    // Vmxon Region which was originally built by the BP for the guest OS
+//  PVOID OriginaVmxonR;
+//
+//  //PHYSICAL_ADDRESS IOBitmapAPA; // points to IOBitMapA.
+//  //PVOID IOBitmapA;
+//
+//  //PHYSICAL_ADDRESS IOBitmapBPA; // points to IOBitMapB
+//  //PVOID IOBitmapB;
+//
+//  PHYSICAL_ADDRESS MSRBitmapPA; // points to MsrBitMap
+//  PVOID MSRBitmap;
+//
+//  ULONG GuestCR0;             //Guest's CR0. 
+//  ULONG GuestCR3;             //Guest's CR3. for storing guest cr3 when guest diasble paging.
+//  ULONG GuestCR4;             //Guest's CR4. 
+//  ULONG64 GuestEFER;
+//  UCHAR GuestStateBeforeInterrupt[0xc00];
+//
+//} VMX,
+// *PVMX;
 
 //Implemented in vmx-asm.asm
 ULONG NTAPI get_cr4 (

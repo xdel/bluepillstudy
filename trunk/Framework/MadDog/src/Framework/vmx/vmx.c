@@ -152,7 +152,8 @@ static NTSTATUS NTAPI VmxInitialize (
         (MsrRead (MSR_IA32_VMX_BASIC) & 0xffffffff); //set up vmcs_revision_id      
 
     // fill the VMCS struct
-    Status = VmxSetupVMCS (Cpu, GuestEip, GuestEsp);//<----------------4.2 Finished
+    //Status = VmxSetupVMCS (Cpu, GuestEip, GuestEsp);//<----------------4.2 Finished
+	Status = VmxSetupVMCS (Cpu, GuestEip, GuestEsp);//<----------------4.2 Finished
     if (!NT_SUCCESS (Status)) 
     {
         Print(("Helloworld:Vmx(): VmxSetupVMCS() failed with status 0x%08hX\n", Status));
