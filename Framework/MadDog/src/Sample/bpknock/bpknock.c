@@ -1,11 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-//typedef unsigned int ULONG32;
-
-//char *str= "%#x, %#x, %#x";
-//char *str = "%c%c%c%c%c%c%c%c%c%c%c%c";
-char *str = "%c%c%c%c";
 
 void print(char *s) {
 int i;
@@ -24,7 +19,6 @@ push	ebx;
 push	eax;
 mov ecx, esp;
 push	ecx;
-//push	str;
 call print;
 add	esp, 16;
 	mov	esp, ebp

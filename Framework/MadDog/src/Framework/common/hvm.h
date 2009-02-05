@@ -66,8 +66,13 @@ NTSTATUS NTAPI HvmSwallowBluepill();
 NTSTATUS NTAPI HvmSpitOutBluepill();
 
 /**
- * Check if this cpu supports Intel VT Technology.
+ * Initialize Hvm Core.e.g. global lock
  */
 NTSTATUS NTAPI HvmInit();
+
+/**
+ * Check if this cpu supports Intel VT Technology.
+ */
+BOOLEAN NTAPI HvmSupport();
 
 //+++++++++++++++++++++Static Functions++++++++++++++++++++++++

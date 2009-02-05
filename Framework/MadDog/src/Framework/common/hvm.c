@@ -121,23 +121,37 @@ NTSTATUS NTAPI HvmSwallowBluepill()
  */
 NTSTATUS NTAPI HvmInit()//Finished
 {
+	//BOOLEAN ArchIsOK = FALSE;
+	//
+	//Hvm = &Vmx;
+
+ //   ArchIsOK = Hvm->ArchIsHvmImplemented ();
+
+	//if (!ArchIsOK) {
+	//	Print(("HvmInit(): Your Intel CPU doesn't either support VT Technology or isn't an Intel CPU at all.\n"));
+	//	return STATUS_NOT_SUPPORTED;
+	//} else {
+	//	Print(("HvmInit(): Your Intel CPU supports VT Technology.\n"));
+	//}
+
+	KeInitializeMutex (&g_HvmMutex, 0);
+
+	return STATUS_SUCCESS;
+}
+/**
+ * Check if this cpu supports Intel VT Technology.
+ */
+BOOLEAN NTAPI HvmSupport()
+{
 	BOOLEAN ArchIsOK = FALSE;
 	
 	Hvm = &Vmx;
 
     ArchIsOK = Hvm->ArchIsHvmImplemented ();
 
-	if (!ArchIsOK) {
-		Print(("HvmInit(): Your Intel CPU doesn't either support VT Technology or isn't an Intel CPU at all.\n"));
-		return STATUS_NOT_SUPPORTED;
-	} else {
-		KdPrint(("HvmInit(): Your Intel CPU supports VT Technology.\n"));
-	}
-
-	KeInitializeMutex (&g_HvmMutex, 0);
-
-	return STATUS_SUCCESS;
+	return ArchIsOK;
 }
+
 /**
  * Intialize the CPU struct and start VM by invoking VmxVirtualize()
  * requires: a valid <GuestRsp>
