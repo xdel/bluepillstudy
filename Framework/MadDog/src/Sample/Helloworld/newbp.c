@@ -27,9 +27,9 @@ NTSTATUS DriverUnload (
     Print(("\r\n"));
     Print(("NEWBLUEPILL: Unloading started\n"));
 
-    if (!NT_SUCCESS (Status = UninstallVMM())) 
+    if (!NT_SUCCESS (Status = UninstallHypervisor())) 
     {
-        Print(("NEWBLUEPILL: UninstallVMM() failed with status 0x%08hX\n",Status));
+        Print(("NEWBLUEPILL: UninstallHypervisor() failed with status 0x%08hX\n",Status));
 		PrintInfoDispose();
         return Status;
     }
@@ -62,18 +62,18 @@ NTSTATUS DriverEntry (
     //}
 
 
-    if (!NT_SUCCESS (Status = VMMInit())) 
+    if (!NT_SUCCESS (Status = HypervisorInit())) 
     {
-        Print(("HELLOWORLD: VMMInit() failed with status 0x%08hX\n", Status));
+        Print(("HELLOWORLD: HypervisorInit() failed with status 0x%08hX\n", Status));
 		PrintInfoDispose();
 		return Status;
     }
 	Print(("HELLOWORLD: Successful in execute HvmInit()"));
 
 
-    if (!NT_SUCCESS (Status = InstallVMM())) //<------------------1 Finish
+    if (!NT_SUCCESS (Status = InstallHypervisor())) //<------------------1 Finish
     {
-        Print(("HELLOWORLD: InstallVMM() failed with status 0x%08hX\n", Status));
+        Print(("HELLOWORLD: InstallHypervisor() failed with status 0x%08hX\n", Status));
 		PrintInfoDispose();
 		return Status;
     }

@@ -14,6 +14,9 @@ build -czgw -jpath %FRAMEWORK_LOG_ROOT%
 @echo =======Copy header files=======
 copy /Y .\common\VTCore.h %FRAMEWORK_HEADERS_ROOT%
 copy /Y .\common\VTCoreDebugger.h %FRAMEWORK_HEADERS_ROOT%
+copy /Y .\common\VTCoreAPIs.h %FRAMEWORK_HEADERS_ROOT%
+copy /Y .\common\VTCoreDefs.h %FRAMEWORK_HEADERS_ROOT%
+copy /Y .\common\VTCoreTypes.h %FRAMEWORK_HEADERS_ROOT%
 
 @rem Step 4. Return to the origin directory.
 cd /d %_fromDir%

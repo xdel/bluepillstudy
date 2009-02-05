@@ -1,12 +1,76 @@
-BUILD: Computing Include file dependencies:
-BUILD: Examining d:\helloworld\vmx directory for files to compile.
+BUILD: Examining d:\workspace2\maddog\src\framework\vmx directory for files to compile.
 skipping post pass 0 command
-Compiling d:\helloworld\vmx *************
-'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS1 NOLINK=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR='
-.\sources(8) : fatal error U1033: syntax error : 'vmxtraps.c' unexpected
-errors in directory d:\helloworld\vmx
-d:\helloworld\vmx\sources(8) : error U1033: syntax error : 'vmxtraps.c' unexpected
-Stop.
-errors in directory d:\helloworld\vmx
-nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS1 NOLINK=1 NOPASS0=1 MAKEDIR_RELATIVE_TO_BASEDIR= failed - rc = 2
-
+Compiling d:\workspace2\maddog\src\framework\vmx *************
+'nmake.exe /nologo BUILDMSG=Stop. -i BUILD_PASS=PASS1 NOLINK=1 MAKEDIR_RELATIVE_TO_BASEDIR='
+d:\workspace2\maddog\src\framework\vmx: TARGETPATH is d:\Workspace2\MadDog\bin\Framework\lib
+BUILDMSG: _NT_TARGET_VERSION SET TO WINXP
+ cl.exe @d:\workspace2\maddog\src\framework\vmx\objchk_wxp_x86\i386\cl.rsp
+Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 14.00.50727.278 for 80x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+cl /Fo"d:\workspace2\maddog\src\framework\vmx\objchk_wxp_x86\i386/"
+ /FC
+ /MT
+ /U_MT
+ /Ii386
+ /I.
+ /I.
+ /Id:\Workspace2\MadDog\src\Framework\common
+ /Id:\Workspace2\MadDog\src\Framework\Util\Headers
+ /Id:\workspace2\maddog\src\framework\vmx\objchk_wxp_x86\i386
+ /IE:\WinDDK\6001.18001\inc\api
+ /IE:\WinDDK\6001.18001\inc\api
+ /IE:\WinDDK\6001.18001\inc\ddk
+ /IE:\WinDDK\6001.18001\inc\ddk
+ /IE:\WinDDK\6001.18001\inc\crt
+ /D_X86_=1
+ /Di386=1
+ /DSTD_CALL
+ /DCONDITION_HANDLING=1
+ /DNT_INST=0
+ /DWIN32=100
+ /D_NT1X_=100
+ /DWINNT=1
+ /D_WIN32_WINNT=0x0501
+ /DWINVER=0x0501
+ /D_WIN32_IE=0x0603
+ /DWIN32_LEAN_AND_MEAN=1
+ /DDEVL=1
+ /DDBG=1
+ /D__BUILDMACHINE__=WinDDK
+ /DFPO=0
+ /DDEPRECATE_DDK_FUNCTIONS=1
+ /DMSC_NOOPT
+ /DNTDDI_VERSION=0x05010200
+ /c
+ /Zc:wchar_t-
+ /Zl
+ /Zp8
+ /Gy
+ /Gm-
+ -cbstring
+ /W3
+ /Gz
+ /hotpatch
+ /EHs-c-
+ /GR-
+ /GF
+ /GS
+ /Z7
+ /Od
+ /Oi
+ /Oy-
+ /Z7
+ /DKMDF_MAJOR_VERSION=01
+ /DKMDF_MINOR_VERSION=007
+ /FIE:\WinDDK\6001.18001\inc\api\warning.h
+ .\vmx.c .\vmxtraps.c .\vmxdebug.c 
+vmx.c
+vmxtraps.c
+vmxdebug.c
+Generating Code...
+ link.exe /lib /out:d:\Workspace2\MadDog\bin\Framework\lib\i386\vmx.lib /IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221  /WX /nodefaultlib /machine:ix86 @d:\workspace2\maddog\src\framework\vmx\objchk_wxp_x86\i386\lib.rsp
+Microsoft (R) Library Manager Version 8.00.50727.278
+Copyright (C) Microsoft Corporation.  All rights reserved.
+d:\workspace2\maddog\src\framework\vmx\objchk_wxp_x86\i386\vmx.obj 
+d:\workspace2\maddog\src\framework\vmx\objchk_wxp_x86\i386\vmxtraps.obj 
+d:\workspace2\maddog\src\framework\vmx\objchk_wxp_x86\i386\vmxdebug.obj 

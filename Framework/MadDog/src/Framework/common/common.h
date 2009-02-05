@@ -2,6 +2,7 @@
 
 #include <ntddk.h>
 #include "PrintInfos.h"
+#include "VTCore.h"
 //#include "hvm.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
@@ -14,7 +15,7 @@
 
 #define	DEBUG_LEVEL	2
 
-#define USE_DEBUG_LIBRUARY
+//#define USE_DEBUG_LIBRUARY
 
 //#define USE_LOCAL_DBGPRINTS
 //#define USE_COM_PRINTS
@@ -48,11 +49,11 @@
 	#define BP_EXIT_EAX		200
 #endif // BP_KNOCK
 
-#ifdef USE_DEBUG_LIBRUARY
-#define Print(x) WriteDbgInfo x
-#else
-#define Print(x) {}
-#endif
+//#ifdef USE_DEBUG_LIBRUARY
+//#define Print(x) WriteDbgInfo x
+//#else
+//#define Print(x) {}
+//#endif
 
 #define REG_MASK			0x07
 
@@ -82,7 +83,7 @@ typedef NTSTATUS (
   PVOID Param
 );
 
-typedef struct _CPU *PCPU;
+//typedef struct _CPU *PCPU;
 
 typedef struct _GUEST_REGS
 {
@@ -197,16 +198,16 @@ typedef struct
   ULONG64 base;
 } SEGMENT_SELECTOR;
 
-typedef struct
-{
-  USHORT limit0;
-  USHORT base0;
-  UCHAR base1;
-  UCHAR attr0;
-  UCHAR limit1attr1;
-  UCHAR base2;
-} SEGMENT_DESCRIPTOR,
- *PSEGMENT_DESCRIPTOR;
+//typedef struct
+//{
+//  USHORT limit0;
+//  USHORT base0;
+//  UCHAR base1;
+//  UCHAR attr0;
+// UCHAR limit1attr1;
+//  UCHAR base2;
+//} SEGMENT_DESCRIPTOR,
+//*PSEGMENT_DESCRIPTOR;
 
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
