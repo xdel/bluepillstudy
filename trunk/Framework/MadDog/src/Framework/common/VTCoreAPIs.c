@@ -1,18 +1,18 @@
-#include "VTCore.h"
+#include "VTCoreAPIs.h"
 #include "hvm.h"
 
 /**
- * effects: Install our VM  hypervisor on the fly.
+ * effects: Install HelloWorld VMM hypervisor.
  */
-NTSTATUS NTAPI InstallVMM()
+NTSTATUS NTAPI InstallHypervisor()
 {
 	return HvmSwallowBluepill();
 }
 
 /**
- * effects: Uninstall HelloWorld VMM
+ * effects: Uninstall HelloWorld VMM Hypervisor
  */
-NTSTATUS NTAPI UninstallVMM()
+NTSTATUS NTAPI UninstallHypervisor()
 {
 	return HvmSpitOutBluepill();
 }
@@ -20,7 +20,7 @@ NTSTATUS NTAPI UninstallVMM()
 /**
  * effects: Check if this cpu supports Intel VT Technology. Initialize
  */
-NTSTATUS NTAPI VMMInit()
+NTSTATUS NTAPI HypervisorInit()
 {
 	BOOLEAN ArchIsOK = FALSE;
 	ArchIsOK = HvmSupport();
