@@ -8,6 +8,8 @@ INCLUDES=.; $(FRAMEWORK_HEADERS_ROOT);
 SOURCES=\
     newbp.c \
     handlers.c \
+    Vmxtraps.c \
+
 
 
 

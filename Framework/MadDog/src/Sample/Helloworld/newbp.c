@@ -19,7 +19,8 @@
 
 static MadDog_Control md_Control = 
 {
-	&HvmSetupVMControlBlock
+	&HvmSetupVMControlBlock,
+	&VmxRegisterTraps
 };
 
 NTSTATUS DriverUnload (

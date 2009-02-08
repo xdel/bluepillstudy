@@ -17,7 +17,7 @@
 #include <ntddk.h>
 #include "VTCore.h"
 #include "Handlers.h"
-
+#include "Vmxtraps.h"
 //#include "version.h"
 //#include "hvm.h"
 //#include "paging.h"

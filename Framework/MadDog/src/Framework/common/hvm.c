@@ -3,6 +3,7 @@
 //#include "vmxtraps.h"
 
 static KMUTEX g_HvmMutex;
+extern PMadDog_Control g_HvmControl;
 
 ULONG g_uSubvertedCPUs = 0;
 PHVM_DEPENDENT Hvm;
@@ -230,7 +231,8 @@ NTSTATUS NTAPI HvmSubvertCpu (
 //    *Cpu->SparePagePTE |= (1 << 4);       // set PCD (Cache Disable);
 //#endif
 
-    Status = Hvm->ArchRegisterTraps(Cpu);//<----------------3.1 Finish
+    //Status = Hvm->ArchRegisterTraps(Cpu);//<----------------3.1 Finish
+	Status =  g_HvmControl->ApplyTraps(Cpu);
     if (!NT_SUCCESS (Status)) 
     {
 		Print(("Helloworld:HvmSubvertCpu(): Failed to register NewBluePill traps, status 0x%08hX\n", Status));
@@ -435,7 +437,7 @@ static NTSTATUS NTAPI HvmLiberateCpu (
   // for vmx
   //VmxVmCall(0x1);
   // cause vmexit
-  RegSetCr3(BP_EXIT_EAX);//<------------------!!!!!!!!Ð¶ÔØÓÃ!!!!!!!!!!
+  RegSetCr3(MADDOG_EXIT_EAX);//<------------------!!!!!!!!Ð¶ÔØÓÃ!!!!!!!!!!
 
   Efer = MsrRead (MSR_EFER);
   Print(("HelloWorld:HvmLiberateCpu(): Reading MSR_EFER on exit: 0x%X\n", Efer));

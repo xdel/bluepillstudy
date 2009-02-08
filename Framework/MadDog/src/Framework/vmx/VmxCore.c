@@ -2,7 +2,7 @@
 //#include "common.h"
 //#include "vmcs.h"
 #include "VmxCore.h"
-#include "vmxtraps.h"
+//#include "vmxtraps.h"
 
 ULONG g_HostStackBaseAddress; //4     // FIXME: this is ugly -- we should move it somewhere else
 extern ULONG g_uSubvertedCPUs;
@@ -18,7 +18,7 @@ HVM_DEPENDENT Vmx = {
   //VmxDispatchNestedEvent,
   VmxDispatchEvent,
   VmxAdjustRip,
-  VmxRegisterTraps,
+  //VmxRegisterTraps,
   VmxIsTrapVaild
 };
 
@@ -468,7 +468,7 @@ static VOID VmxHandleInterception (
 #endif
 
     if (Exitcode == EXIT_REASON_CR_ACCESS
-        && GuestRegs->eax == BP_EXIT_EAX)
+        && GuestRegs->eax == MADDOG_EXIT_EAX)
     {
         // to uninstall
         VmxShutdown(Cpu, GuestRegs, FALSE);

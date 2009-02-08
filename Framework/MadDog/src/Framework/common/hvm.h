@@ -13,7 +13,7 @@
 #define BP_GDT_LIMIT	0x6f
 #define BP_IDT_LIMIT	0xfff
 
-#define	ARCH_VMX	2
+//#define	ARCH_VMX	2
 
 PHVM_DEPENDENT Hvm;
 extern HVM_DEPENDENT Vmx;

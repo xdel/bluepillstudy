@@ -1,7 +1,7 @@
 #pragma once
 #include <ntddk.h>
-//+++++++++++++++++++++Structs++++++++++++++++++++++++++++++++
 
+//+++++++++++++++++++++Segment Structs++++++++++++++++++++++++++++++++
 /* 
 * Attribute for segment selector. This is a copy of bit 40:47 & 52:55 of the
 * segment descriptor. 
@@ -43,6 +43,8 @@ typedef struct
 } SEGMENT_DESCRIPTOR,
  *PSEGMENT_DESCRIPTOR;
 
+//+++++++++++++++++++++VMX Structs++++++++++++++++++++++++++++++++
+
 typedef struct _VMX
 {
   PHYSICAL_ADDRESS VmcsToContinuePA;    // MUST go first in the structure; refer to SvmVmrun() for details
@@ -71,7 +73,8 @@ typedef struct _VMX
 } VMX,
  *PVMX;
 
-typedef struct _CPU *PCPU;
+//++++++++++++++Cpu Related Structs(Common Structs)++++++++++++++++
+
 typedef struct _CPU
 {
 
@@ -102,3 +105,71 @@ typedef struct _CPU
 
  // ULONG64 ComPrintLastTsc;
 } CPU;
+
+typedef struct _GUEST_REGS
+{
+  ULONG32 eax;                  // 0x00         // NOT VALID FOR SVM
+  ULONG32 ecx;
+  ULONG32 edx;                  // 0x08
+  ULONG32 ebx;
+  ULONG32 esp;                  // esp is not stored here on SVM
+  ULONG32 ebp;
+  ULONG32 esi;
+  ULONG32 edi;
+} GUEST_REGS;
+
+//+++++++++++++++++++++Traps Structs++++++++++++++++++++++++++++++++
+
+typedef enum
+{
+  TRAP_DISABLED = 0,
+  TRAP_GENERAL = 1,
+  TRAP_MSR = 2,
+  TRAP_IO = 3
+} TRAP_TYPE;
+
+// The following three will be used as trap's data structure.
+// 下面的这三个是_NBP_TRAP_中的存放关键数据的数据结构
+typedef struct _NBP_TRAP_DATA_GENERAL
+{
+  ULONG TrappedVmExit;
+  ULONG RipDelta;             // this value will be added to rip to skip the trapped instruction
+} NBP_TRAP_DATA_GENERAL,
+ *PNBP_TRAP_DATA_GENERAL;
+
+typedef struct _NBP_TRAP_DATA_MSR
+{
+  ULONG32 TrappedMsr;
+  UCHAR TrappedMsrAccess;
+  UCHAR GuestTrappedMsrAccess;
+} NBP_TRAP_DATA_MSR,
+ *PNBP_TRAP_DATA_MSR;
+
+typedef struct _NBP_TRAP_DATA_IO
+{
+  ULONG TrappedPort;
+} NBP_TRAP_DATA_IO,
+ *PNBP_TRAP_DATA_IO;
+
+
+typedef struct _NBP_TRAP
+{
+  LIST_ENTRY le;
+
+  TRAP_TYPE TrapType;
+  TRAP_TYPE SavedTrapType;
+
+  union
+  {
+    NBP_TRAP_DATA_GENERAL General;
+    NBP_TRAP_DATA_MSR Msr;
+    NBP_TRAP_DATA_IO Io;
+  };
+
+  NBP_TRAP_CALLBACK TrapCallback;
+  BOOLEAN bForwardTrapToGuest;  // FALSE if guest hypervisor doesn't want to intercept this in its own guest.
+  // This will be TRUE for TRAP_MSR record when we're going to intercept MSR "rw"
+  // but the guest wants to intercept only "r" or "w". 
+  // Check Msr.GuestTrappedMsrAccess for correct event forwarding.
+} NBP_TRAP,
+ *PNBP_TRAP;

@@ -5,7 +5,6 @@ INCLUDES= .; \
           $(FRAMEWORK_SRC_ROOT)\common; $(FRAMEWORK_SRC_ROOT)\Util\Headers;
 SOURCES=\
     VmxCore.c \
-    vmxtraps.c \
     vmxdebug.c
 
 
