@@ -43,10 +43,29 @@ namespace Tools.EnlistmentWizard.UI
             }
         }
 
+        private String accountName;
+        private String password;
         private void btnEnlist_Click(object sender, EventArgs e)
         {
-            Enlist();
-            this.Dispose();
+            //Step 1.Show the authentication window
+            FrmAuthentication authWnd = new FrmAuthentication();
+            authWnd.OnFinish += new FrmAuthentication.EventHandler(authWnd_OnFinish);
+            authWnd.Show(this);
+            
+        }
+
+        private void authWnd_OnFinish(object sender, EventArgs e)
+        {
+            FrmAuthentication authWnd = (FrmAuthentication)sender;
+            if (authWnd.IsOK)
+            {
+                //Step 2. Start to enlist.
+                this.password = authWnd.Password;
+                this.accountName = authWnd.AccountName;
+                Enlist();
+                //Step 3. Finialize
+                this.Dispose();
+            }
         }
 
         private void Enlist()
@@ -69,7 +88,7 @@ namespace Tools.EnlistmentWizard.UI
                 }
             }
             //Check if it exits normally
-            Boolean runSuccessfully = SvnService.SvnCheckoutWorkspace(enlistLocalPath);
+            Boolean runSuccessfully = SvnService.SvnCheckoutWorkspace(this.accountName,this.password,enlistLocalPath);
             if (!runSuccessfully)
             {
                 MessageBox.Show("Svn Checkout Failed");

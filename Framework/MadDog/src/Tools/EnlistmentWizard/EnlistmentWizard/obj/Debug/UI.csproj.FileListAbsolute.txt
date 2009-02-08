@@ -10,3 +10,16 @@ D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\Tools.
 D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.exe
 D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.pdb
 D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\svn.exe
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.exe
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.pdb
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\svn.exe
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\Tools.EnlistmentWizard.UI.exe
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\Tools.EnlistmentWizard.UI.pdb
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\Tools.EnlistmentWizard.Core.dll
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\Interop.IWshRuntimeLibrary.dll
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\Tools.EnlistmentWizard.Core.pdb
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\ResolveAssemblyReference.cache
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.FrmEnlistSetting.resources
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.FrmAuthentication.resources
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\Tools.EnlistmentWizard.UI.Properties.Resources.resources
+D:\Workspace2\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\UI.csproj.GenerateResource.Cache
