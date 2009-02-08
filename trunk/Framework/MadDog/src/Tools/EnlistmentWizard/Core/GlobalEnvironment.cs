@@ -44,6 +44,7 @@ namespace Tools.EnlistmentWizard.Core
                 return razzleCount;
             }
         }
+
         public static void IncreaseRazzleCount()
         {
             RegistryKey myEnv = GetGlobalEnv();
