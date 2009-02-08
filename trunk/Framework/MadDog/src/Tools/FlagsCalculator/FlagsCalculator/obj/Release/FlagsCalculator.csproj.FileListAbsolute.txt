@@ -1,0 +1,8 @@
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\bin\Release\FlagsCalculator.exe
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\bin\Release\FlagsCalculator.pdb
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Release\ResolveAssemblyReference.cache
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Release\FlagsCalculator.Form1.resources
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Release\FlagsCalculator.Properties.Resources.resources
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Release\FlagsCalculator.csproj.GenerateResource.Cache
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Release\FlagsCalculator.exe
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Release\FlagsCalculator.pdb

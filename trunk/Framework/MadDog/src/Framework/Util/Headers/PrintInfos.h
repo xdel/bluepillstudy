@@ -23,16 +23,3 @@ NTSTATUS NTAPI WriteDbgInfo (PUCHAR fmt,...);
 void NTAPI WriteInfoInit();
 
 void NTAPI WriteInfoDispose();
-
-/**************Private Functions**************/
-
-static NTSTATUS _CreateDebugWindow(ULONG32 numContinuousPages);
-
-static VOID _AppendStringToAddress(PUCHAR str,ULONG32 strLength);
-
-/**
- * Effects: Append the string <str> into the end of the debug window
- * If the debug window not exists, then it will be created at first.
- * 把<str>续写到调试窗口末尾，如果调试窗口不存在，则创建调试窗口
- **/
-static NTSTATUS NTAPI _WriteInfo(PUCHAR str,ULONG32 strLength);

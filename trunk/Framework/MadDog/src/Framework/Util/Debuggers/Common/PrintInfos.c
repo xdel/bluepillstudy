@@ -3,15 +3,18 @@
 #include <stdarg.h>
 #include "PrintInfos.h"
 
-#define snprintf _snprintf
+/**************Inner Functions**************/
 
-PVOID g_debugWindowAddrVA = 0;
+static NTSTATUS _CreateDebugWindow(ULONG32 numContinuousPages);
 
-ULONG32 appendIndex = 0;// The index the next string should append.
+static VOID _AppendStringToAddress(PUCHAR str,ULONG32 strLength);
 
-ULONG32 bufferLength = 0;//Total Buffer Length, used in buffer overflow check.
-
-static PRINTSPIN_LOCK g_PrintSpinLock;
+/**
+ * Effects: Append the string <str> into the end of the debug window
+ * If the debug window not exists, then it will be created at first.
+ * 把<str>续写到调试窗口末尾，如果调试窗口不存在，则创建调试窗口
+ **/
+static NTSTATUS NTAPI _WriteInfo(PUCHAR str,ULONG32 strLength);
 
 //Forward Function Lookup
 extern VOID NTAPI CmInitSpinLock (
@@ -26,6 +29,18 @@ extern VOID NTAPI CmReleaseSpinLock (
   PPRINTSPIN_LOCK BpSpinLock
 );
 
+/**************Definitions**************/
+#define snprintf _snprintf
+
+PVOID g_debugWindowAddrVA = 0;
+
+ULONG32 appendIndex = 0;// The index the next string should append.
+
+ULONG32 bufferLength = 0;//Total Buffer Length, used in buffer overflow check.
+
+static PRINTSPIN_LOCK g_PrintSpinLock;
+
+/**************Implementations***********/
 /**
  * Effects: Write info with format.
  * 带格式写String

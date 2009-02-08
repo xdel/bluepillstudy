@@ -40,5 +40,3 @@ NTSTATUS NTAPI HvmInit();
  * Check if this cpu supports Intel VT Technology.
  */
 BOOLEAN NTAPI HvmSupport();
-
-//+++++++++++++++++++++Static Functions++++++++++++++++++++++++
