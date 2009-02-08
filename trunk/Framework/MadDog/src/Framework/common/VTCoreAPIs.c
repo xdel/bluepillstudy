@@ -1,5 +1,6 @@
 #include "VTCoreAPIs.h"
 #include "hvm.h"
+#include "traps.h"
 
 //Global handlers, include how to setep VMCB etc.
 PMadDog_Control g_HvmControl;
@@ -35,4 +36,29 @@ NTSTATUS NTAPI MadDog_HypervisorInit()
 		Print(("HvmInit(): Your Intel CPU supports VT Technology.\n"));
 	}
 	return HvmInit();
+}
+
+/**
+ * effects:Build and Initialize General Trap struct (which is also a Trap struct).
+ */
+NTSTATUS NTAPI MadDog_InitializeGeneralTrap (
+  PCPU Cpu,
+  ULONG TrappedVmExit,
+  UCHAR RipDelta,
+  NBP_TRAP_CALLBACK TrapCallback,
+  PNBP_TRAP *pInitializedTrap
+)
+{
+	return TrInitializeGeneralTrap(Cpu,TrappedVmExit,RipDelta,TrapCallback,pInitializedTrap);
+}
+
+/**
+ * effects: Register trap struct.
+ */
+NTSTATUS NTAPI MadDog_RegisterTrap (
+  PCPU Cpu,
+  PNBP_TRAP Trap
+)
+{
+	return TrRegisterTrap(Cpu, Trap);
 }

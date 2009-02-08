@@ -38,16 +38,17 @@
 #define	ENABLE_HYPERCALLS
 //#define       SET_PCD_BIT     // Set PCD for BP's pages (Non Cached)
 
-// BPKNOCK backdoor -------
-#define BP_KNOCK
-#ifdef BP_KNOCK
-	#define BP_KNOCK_EAX	100
-	#define BP_KNOCK_EAX_ANSWER 0x6c6c6548	//Hell
-	#define BP_KNOCK_EBX_ANSWER 0x6f57206f  //o Wo
-	#define BP_KNOCK_EDX_ANSWER 0x21646c72	//rld!
-
-	#define BP_EXIT_EAX		200
-#endif // BP_KNOCK
+//// BPKNOCK backdoor 
+//#define BP_KNOCK
+//#ifdef BP_KNOCK
+//	#define BP_KNOCK_EAX	100
+//	#define BP_KNOCK_EAX_ANSWER 0x6c6c6548	//Hell
+//	#define BP_KNOCK_EBX_ANSWER 0x6f57206f  //o Wo
+//	#define BP_KNOCK_EDX_ANSWER 0x21646c72	//rld!
+//
+//#define BP_EXIT_EAX		200
+//#endif // BP_KNOCK
+#define MADDOG_EXIT_EAX		200
 
 //#ifdef USE_DEBUG_LIBRUARY
 //#define Print(x) WriteDbgInfo x
@@ -85,18 +86,18 @@ typedef NTSTATUS (
 
 //typedef struct _CPU *PCPU;
 
-typedef struct _GUEST_REGS
-{
-  ULONG32 eax;                  // 0x00         // NOT VALID FOR SVM
-  ULONG32 ecx;
-  ULONG32 edx;                  // 0x08
-  ULONG32 ebx;
-  ULONG32 esp;                  // esp is not stored here on SVM
-  ULONG32 ebp;
-  ULONG32 esi;
-  ULONG32 edi;
-} GUEST_REGS,
- *PGUEST_REGS;
+//typedef struct _GUEST_REGS
+//{
+//  ULONG32 eax;                  // 0x00         // NOT VALID FOR SVM
+//  ULONG32 ecx;
+//  ULONG32 edx;                  // 0x08
+//  ULONG32 ebx;
+//  ULONG32 esp;                  // esp is not stored here on SVM
+//  ULONG32 ebp;
+//  ULONG32 esi;
+//  ULONG32 edi;
+//} GUEST_REGS,
+// *PGUEST_REGS;
 
 typedef BOOLEAN (NTAPI * ARCH_IS_HVM_IMPLEMENTED) (
 );
@@ -163,7 +164,7 @@ typedef struct
   //ARCH_DISPATCH_NESTED_EVENT ArchDispatchNestedEvent;
   ARCH_DISPATCH_EVENT ArchDispatchEvent;
   ARCH_ADJUST_RIP ArchAdjustRip;
-  ARCH_REGISTER_TRAPS ArchRegisterTraps;
+  //ARCH_REGISTER_TRAPS ArchRegisterTraps;
   ARCH_IS_TRAP_VALID ArchIsTrapValid;
 } HVM_DEPENDENT,
  *PHVM_DEPENDENT;

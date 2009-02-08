@@ -1,4 +1,5 @@
 #include "VTUtilAPIs.h"
+#include "cpuid.h"
 /**
  * effects:A Default Implementation of Initialize Segment Selector.
  */
@@ -41,4 +42,23 @@ NTSTATUS NTAPI MadDog_InitializeSegmentSelector (
     }
 
     return STATUS_SUCCESS;
+}
+
+VOID NTAPI MadDog_GetCpuIdInfo (
+  ULONG32 fn,
+  OUT PULONG32 ret_eax,
+  OUT PULONG32 ret_ebx,
+  OUT PULONG32 ret_ecx,
+  OUT PULONG32 ret_edx
+)
+{
+	GetCpuIdInfo(fn,ret_eax,ret_ebx,ret_ecx,ret_edx);
+}
+
+VOID NTAPI MadDog_CpuidWithEcxEdx (
+  IN OUT PULONG32 ret_ecx,
+  IN OUT PULONG32 ret_edx
+)
+{
+	CpuidWithEcxEdx(ret_ecx,ret_edx);
 }
