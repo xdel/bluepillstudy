@@ -8,6 +8,7 @@
 #pragma once
 #include <ntddk.h>
 #include "common.h"
+#include "Vmx.h"
 #include "vmcs.h"
 #include "cpuid.h"
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
@@ -19,24 +20,6 @@
 #define MSR_LSTAR		0xC0000082
 #define	MSR_SHADOW_GS_BASE	0xc0000102
 #define	MSR_VM_HSAVE_PA		0xC0010117
-
-/*
- * Intel CPU  MSR
- */
-        /* MSRs & bits used for VMX enabling */
-
-#define MSR_IA32_VMX_BASIC   		0x480
-#define MSR_IA32_FEATURE_CONTROL 		0x03a
-#define MSR_IA32_VMX_PINBASED_CTLS		0x481
-#define MSR_IA32_VMX_PROCBASED_CTLS		0x482
-#define MSR_IA32_VMX_EXIT_CTLS		0x483
-#define MSR_IA32_VMX_ENTRY_CTLS		0x484
-
-#define MSR_IA32_SYSENTER_CS		0x174
-#define MSR_IA32_SYSENTER_ESP		0x175
-#define MSR_IA32_SYSENTER_EIP		0x176
-#define MSR_IA32_DEBUGCTL			0x1d9
-
 
 #define EFER_LME     (1<<8)
 
@@ -131,18 +114,6 @@
 #define	VMX_MSRBitmap_SIZE_IN_PAGES	1
 #define	VMX_VMXONR_SIZE_IN_PAGES	2
 
-typedef enum SEGREGS
-{
-  ES = 0,
-  CS,
-  SS,
-  DS,
-  FS,
-  GS,
-  LDTR,
-  TR
-};
-
 /*
  * Exit Qualifications for MOV for Control Register Access
  */
@@ -190,6 +161,7 @@ typedef enum SEGREGS
 //} VMX,
 // *PVMX;
 
+//+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 //Implemented in vmx-asm.asm
 ULONG NTAPI get_cr4 (
 );
@@ -216,15 +188,6 @@ VOID NTAPI VmxPtrst (
 
 VOID NTAPI VmxClear (
   PHYSICAL_ADDRESS VmcsPA
-);
-
-ULONG32 NTAPI VmxRead (//Here should 
-  ULONG64 field
-);
-
-VOID NTAPI VmxWrite (
-  ULONG64 field,
-  ULONG64 value
 );
 
 VOID NTAPI VmxTurnOff (
@@ -308,20 +271,7 @@ static NTSTATUS VmxSetupVMCS (
     PVOID GuestEsp
 );
 
-// make the ctl code legal
-static ULONG32 NTAPI VmxAdjustControls (
-    ULONG32 Ctl,
-    ULONG32 Msr
-);
 
-/**
- * effects: 用于填充VMCB中Guest状态描述中的段选择器部分
- */
-static NTSTATUS NTAPI VmxFillGuestSelectorData (
-    PVOID GdtBase,
-    ULONG Segreg,//SEGREGS枚举中的段选择符号，用于描述要Fill哪个段选择器
-    USHORT Selector
-);
 
 /**
  * VM Exit Event Dispatcher

@@ -17,6 +17,11 @@
 //extern PHYSICAL_ADDRESS g_PageMapBasePhysicalAddress;
 //extern BOOLEAN g_bDisableComOutput;
 
+static MadDog_Control md_Control = 
+{
+	&HvmSetupVMControlBlock
+};
+
 NTSTATUS DriverUnload (
     PDRIVER_OBJECT DriverObject
 )
@@ -27,7 +32,7 @@ NTSTATUS DriverUnload (
     Print(("\r\n"));
     Print(("NEWBLUEPILL: Unloading started\n"));
 
-    if (!NT_SUCCESS (Status = UninstallHypervisor())) 
+    if (!NT_SUCCESS (Status = MadDog_UninstallHypervisor())) 
     {
         Print(("NEWBLUEPILL: UninstallHypervisor() failed with status 0x%08hX\n",Status));
 		PrintInfoDispose();
@@ -48,6 +53,7 @@ NTSTATUS DriverEntry (
     NTSTATUS Status;
     //CmDebugBreak();
    // ULONG ulOldCR3;
+
     PrintInfoInit();
 	Print(("Hello world!"));
     //__asm { int 3 }
@@ -62,7 +68,7 @@ NTSTATUS DriverEntry (
     //}
 
 
-    if (!NT_SUCCESS (Status = HypervisorInit())) 
+    if (!NT_SUCCESS (Status = MadDog_HypervisorInit())) 
     {
         Print(("HELLOWORLD: HypervisorInit() failed with status 0x%08hX\n", Status));
 		PrintInfoDispose();
@@ -71,7 +77,7 @@ NTSTATUS DriverEntry (
 	Print(("HELLOWORLD: Successful in execute HvmInit()"));
 
 
-    if (!NT_SUCCESS (Status = InstallHypervisor())) //<------------------1 Finish
+    if (!NT_SUCCESS (Status = MadDog_InstallHypervisor(&md_Control))) //<------------------1 Finish
     {
         Print(("HELLOWORLD: InstallHypervisor() failed with status 0x%08hX\n", Status));
 		PrintInfoDispose();

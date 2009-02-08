@@ -15,8 +15,12 @@ copy /Y .\common\VTCoreDebugger.h %FRAMEWORK_HEADERS_ROOT%
 copy /Y .\common\VTCoreAPIs.h %FRAMEWORK_HEADERS_ROOT%
 copy /Y .\common\VTCoreDefs.h %FRAMEWORK_HEADERS_ROOT%
 copy /Y .\common\VTCoreTypes.h %FRAMEWORK_HEADERS_ROOT%
+copy /Y .\common\VTUtilAPIs.h %FRAMEWORK_HEADERS_ROOT%
+copy /Y .\common\Regs.h %FRAMEWORK_HEADERS_ROOT%
+copy /Y .\common\Msr.h %FRAMEWORK_HEADERS_ROOT%
 if not exist %FRAMEWORK_HEADERS_ROOT%\Vmx md %FRAMEWORK_HEADERS_ROOT%\Vmx
 copy /Y .\vmx\vmcs.h %FRAMEWORK_HEADERS_ROOT%\Vmx
+copy /Y .\vmx\Vmx.h %FRAMEWORK_HEADERS_ROOT%\Vmx
 
 @rem Step 4. Return to the origin directory.
 cd /d %_fromDir%

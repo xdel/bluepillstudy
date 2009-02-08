@@ -278,69 +278,33 @@ static NTSTATUS VmxSetupVMCS (
     PVOID GuestEsp
 )
 { //Finished
-    SEGMENT_SELECTOR SegmentSelector;
+    //SEGMENT_SELECTOR SegmentSelector;
     PHYSICAL_ADDRESS VmcsToContinuePA;
     NTSTATUS Status;
-    PVOID GdtBase;
-    ULONG32 Interceptions;
+    //PVOID GdtBase;
+    //ULONG32 Interceptions;
 
     if (!Cpu || !Cpu->Vmx.OriginalVmcs)
         return STATUS_INVALID_PARAMETER;
 
     VmcsToContinuePA = Cpu->Vmx.VmcsToContinuePA;
-    // load the vmcs
+    //Step 1. Load the vmcs
     VmxClear (VmcsToContinuePA);
     VmxPtrld (VmcsToContinuePA);
-
+	
+	//Step 2. Call user method to fill the VMCB.
 	Status = g_HvmControl->SetupVMCB(Cpu,GuestEip,GuestEsp);
+	
+	//Step 3. Set Key Host Environment Info in the VMCB
+    VmxWrite (HOST_RSP, g_HostStackBaseAddress + 0x0C00); //setup host sp at vmxLaunch(...)
+    // setup host ip:CmSlipIntoMatrix
+    VmxWrite (HOST_RIP, (ULONG) VmxVmexitHandler); //setup host ip:CmSlipIntoMatrix
+
+	Print(("MadDog Framework:VmxSetupVMCS(): Exit\n"));
 
     return Status;
 }
-/**
- * effects: 用于填充VMCB中Guest状态描述中的段选择器部分
- */
-static NTSTATUS NTAPI VmxFillGuestSelectorData (
-    PVOID GdtBase,
-    ULONG Segreg,//SEGREGS枚举中的段选择符号，用于描述要Fill哪个段选择器
-    USHORT Selector
-)
-{//Finished
-    SEGMENT_SELECTOR SegmentSelector = {0};
-    ULONG uAccessRights;
-    CmInitializeSegmentSelector (&SegmentSelector, Selector, GdtBase);//<--------------------6.1 Finished
-    uAccessRights = 
-        ((PUCHAR)&SegmentSelector.attributes)[0] + (((PUCHAR)&SegmentSelector.attributes)[1] << 12);
 
-    if (!Selector)
-        uAccessRights |= 0x10000;
-
-    VmxWrite (GUEST_ES_SELECTOR + Segreg * 2, Selector);
-    VmxWrite (GUEST_ES_LIMIT + Segreg * 2, SegmentSelector.limit);
-    VmxWrite (GUEST_ES_AR_BYTES + Segreg * 2, uAccessRights);
-
-    //if ((Segreg == LDTR) || (Segreg == TR))
-    {
-        // don't setup for FS/GS - their bases are stored in MSR values
-        // for x64?
-        VmxWrite (GUEST_ES_BASE + Segreg * 2, SegmentSelector.base);
-    }
-
-    return STATUS_SUCCESS;
-}
-
-// make the ctl code legal
-static ULONG32 NTAPI VmxAdjustControls (
-    ULONG32 Ctl,
-    ULONG32 Msr
-)
-{//Finished
-    LARGE_INTEGER MsrValue;
-
-    MsrValue.QuadPart = MsrRead (Msr);
-    Ctl &= MsrValue.HighPart;     /* bit == 0 in high word ==> must be zero */
-    Ctl |= MsrValue.LowPart;      /* bit == 1 in low word  ==> must be one  */
-    return Ctl;
-}
 /**
  * VM Exit Event Dispatcher
  * VMExit事件分发逻辑

@@ -2,6 +2,8 @@
 
 #include <ntddk.h>
 #include "VTCoreTypes.h"
+#include "Regs.h"
+#include "Msr.h"
 
 #define DEBUG_VTCORE
 
