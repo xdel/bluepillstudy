@@ -12,7 +12,7 @@
  *
  */
 
-#include "vmx.h"
+#include "VmxCore.h"
 
 VOID NTAPI VmxDumpVmcs (
 )

@@ -15,7 +15,7 @@
 #pragma once
 
 #include <ntddk.h>
-#include "common.h"
+//#include "common.h"
 
 // shamelessly stolen from XEN-3.1 (with minor fixes for VS) :)
 
