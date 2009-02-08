@@ -4,6 +4,81 @@
 #include "VmxCore.h"
 //#include "vmxtraps.h"
 
+//+++++++++++++++++++++Inner Functions++++++++++++++++++++++++
+
+static VOID VmxHandleInterception (
+    PCPU Cpu,
+    PGUEST_REGS GuestRegs,
+    BOOLEAN WillBeAlsoHandledByGuestHv
+);
+
+/**
+ * effects: Check if the VM Exit trap is valid by <TrappedVmExit> value
+ * If <TrappedVmExit> >VMX_MAX_GUEST_VMEXIT(43),return false, otherwise true.
+ * requires: a valid <TrappedVmExit>
+ */
+static BOOLEAN NTAPI VmxIsTrapVaild (
+  ULONG TrappedVmExit
+);
+
+/**
+ * effects:	Check if Intel VT Technology is implemented in this CPU
+ *			return false if not, otherwise true.
+ **/
+static BOOLEAN NTAPI VmxIsImplemented();
+
+/**
+ * effects: Initialize the guest VM with the callback eip and the esp
+ */
+static NTSTATUS NTAPI VmxInitialize (
+  PCPU Cpu,
+  PVOID GuestEip,//points to the next instruction in the guest os.
+  PVOID GuestEsp //points to the guest environment-protection register file.
+);
+/**
+ * effects:启动VMCB块对应的Guest Machine
+ */
+static NTSTATUS NTAPI VmxVirtualize (
+  PCPU Cpu
+);
+
+/**
+ * effects: Build the VMCS struct.
+ */
+static NTSTATUS VmxSetupVMCS (
+    PCPU Cpu,
+    PVOID GuestEip,
+    PVOID GuestEsp
+);
+
+/**
+ * VM Exit Event Dispatcher
+ * VMExit事件分发逻辑
+ */
+static VOID NTAPI VmxDispatchEvent (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs
+);
+/**
+ * Adjust Rip
+ */
+static VOID NTAPI VmxAdjustRip (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  ULONG Delta
+);
+
+/**
+ * Shutdown VM
+ * 关闭虚拟机
+ */
+static NTSTATUS NTAPI VmxShutdown (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  BOOLEAN bSetupTimeBomb
+);
+
+//+++++++++++++++++++++Definitions++++++++++++++++++++++++
 ULONG g_HostStackBaseAddress; //4     // FIXME: this is ugly -- we should move it somewhere else
 extern ULONG g_uSubvertedCPUs;
 extern PMadDog_Control g_HvmControl;
@@ -22,11 +97,8 @@ HVM_DEPENDENT Vmx = {
   VmxIsTrapVaild
 };
 
-extern VOID VmxHandleInterception (
-    PCPU Cpu,
-    PGUEST_REGS GuestRegs,
-    BOOLEAN WillBeAlsoHandledByGuestHv
-);
+
+//+++++++++++++++++++++Implementations++++++++++++++++++++++++
 /**
  * effects:	Check if Intel VT Technology is implemented in this CPU
  *			return false if not, otherwise true.

@@ -6,3 +6,11 @@ F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debu
 F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.csproj.GenerateResource.Cache
 F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.exe
 F:\Workspace\PRP项目3\Workspace\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.pdb
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.exe
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.pdb
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\bin\Debug\FlagsCalculator.exe
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\bin\Debug\FlagsCalculator.pdb
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\ResolveAssemblyReference.cache
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.Form1.resources
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.Properties.Resources.resources
+D:\Workspace2\MadDog\src\Tools\FlagsCalculator\FlagsCalculator\obj\Debug\FlagsCalculator.csproj.GenerateResource.Cache

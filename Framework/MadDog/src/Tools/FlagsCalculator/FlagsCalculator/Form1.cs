@@ -22,17 +22,25 @@ namespace FlagsCalculator
         
         private void button1_Click(Object sender, EventArgs e)
         {
-            String result = Convert16To2(textBox1.Text);
-            for (int i = 0; i < result.Length; i++)
+            try
             {
-                if (bitBoxList[i]!=null && result[i] == '0')
+                String result = Convert16To2(textBox1.Text);
+                for (int i = 0; i < result.Length; i++)
                 {
-                    bitBoxList[i].Checked = false;
+                    if (bitBoxList[i] != null && result[i] == '0')
+                    {
+                        bitBoxList[i].Checked = false;
+                    }
+                    else if (bitBoxList[i] != null && result[i] == '1')
+                    {
+                        bitBoxList[i].Checked = true;
+                    }
                 }
-                else if (bitBoxList[i] != null && result[i] == '1')
-                {
-                    bitBoxList[i].Checked = true;
-                }
+            }
+            catch
+            {
+                ClearAll();
+                MessageBox.Show("Error Happened. Please input a valid number");
             }
         }
         private void SubscribeBit(Byte bit, CheckBox bitBox)
@@ -143,6 +151,28 @@ namespace FlagsCalculator
             checkBox12.Visible = false;//VIP
             checkBox18.Visible = false;//VIP
         }
-        
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "")
+            {
+                button1.Enabled = false;
+            }
+            else
+            {
+                button1.Enabled = true;
+            }
+        }
+
+        private void ClearAll()
+        {
+            for (int i = 0; i < EFLAG_LENGTH; i++)
+            {
+                if (bitBoxList[i] != null)
+                {
+                    bitBoxList[i].Checked = false;
+                }
+            }
+        }
     }
 }
