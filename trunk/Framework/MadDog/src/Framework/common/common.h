@@ -172,31 +172,31 @@ typedef struct
 * Attribute for segment selector. This is a copy of bit 40:47 & 52:55 of the
 * segment descriptor. 
 */
-typedef union
-{
-  USHORT UCHARs;
-  struct
-  {
-    USHORT type:4;              /* 0;  Bit 40-43 */
-    USHORT s:1;                 /* 4;  Bit 44 */
-    USHORT dpl:2;               /* 5;  Bit 45-46 */
-    USHORT p:1;                 /* 7;  Bit 47 */
-    // gap!       
-    USHORT avl:1;               /* 8;  Bit 52 */
-    USHORT l:1;                 /* 9;  Bit 53 */
-    USHORT db:1;                /* 10; Bit 54 */
-    USHORT g:1;                 /* 11; Bit 55 */
-    USHORT Gap:4;
-  } fields;
-} SEGMENT_ATTRIBUTES;
+//typedef union
+//{
+//  USHORT UCHARs;
+//  struct
+//  {
+//    USHORT type:4;              /* 0;  Bit 40-43 */
+//    USHORT s:1;                 /* 4;  Bit 44 */
+//    USHORT dpl:2;               /* 5;  Bit 45-46 */
+//    USHORT p:1;                 /* 7;  Bit 47 */
+//    // gap!       
+//    USHORT avl:1;               /* 8;  Bit 52 */
+//    USHORT l:1;                 /* 9;  Bit 53 */
+//    USHORT db:1;                /* 10; Bit 54 */
+//    USHORT g:1;                 /* 11; Bit 55 */
+//    USHORT Gap:4;
+//  } fields;
+//} SEGMENT_ATTRIBUTES;
 
-typedef struct
-{
-  USHORT sel;
-  SEGMENT_ATTRIBUTES attributes;
-  ULONG32 limit;
-  ULONG64 base;
-} SEGMENT_SELECTOR;
+//typedef struct
+//{
+//  USHORT sel;
+//  SEGMENT_ATTRIBUTES attributes;
+//  ULONG32 limit;
+//  ULONG64 base;
+//} SEGMENT_SELECTOR;
 
 //typedef struct
 //{
@@ -312,14 +312,7 @@ NTSTATUS NTAPI CmDeliverToProcessor (
 NTSTATUS NTAPI CmSubvert (
   PVOID
 );
-/**
- * effects:这个方法不知道做什么。。。
- */
-NTSTATUS NTAPI CmInitializeSegmentSelector (
-    SEGMENT_SELECTOR *pSegmentSelector,
-    USHORT Selector,
-    PUCHAR GdtBase
-);
+
 /**
  * effects:这个方法不知道做什么。。。
  */

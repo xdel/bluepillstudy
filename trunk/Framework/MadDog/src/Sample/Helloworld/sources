@@ -7,6 +7,7 @@ TARGETLIBS=$(FRAMEWORK_LIBRARY_ROOT)\VTCore.lib \
 INCLUDES=.; $(FRAMEWORK_HEADERS_ROOT);
 SOURCES=\
     newbp.c \
+    handlers.c \
 
 
 

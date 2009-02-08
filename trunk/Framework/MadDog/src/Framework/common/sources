@@ -7,6 +7,7 @@ INCLUDES=.; $(FRAMEWORK_SRC_ROOT)\Util\Headers; $(FRAMEWORK_SRC_ROOT)\vmx;
 SOURCES=\
 	VTCoreDebugger.c \
 	VTCoreAPIs.c \
+	VTUtilAPIs.c \
 	hvm.c \
 	common.c \
 	traps.c \
