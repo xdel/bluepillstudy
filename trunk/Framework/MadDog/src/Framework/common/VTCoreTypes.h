@@ -74,4 +74,3 @@ typedef struct _CPU
 
  // ULONG64 ComPrintLastTsc;
 } CPU, *PCPU;
-

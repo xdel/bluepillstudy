@@ -4,7 +4,7 @@ TARGETTYPE=DRIVER_LIBRARY
 INCLUDES= .; \
           $(FRAMEWORK_SRC_ROOT)\common; $(FRAMEWORK_SRC_ROOT)\Util\Headers;
 SOURCES=\
-    vmx.c \
+    VmxCore.c \
     vmxtraps.c \
     vmxdebug.c
 

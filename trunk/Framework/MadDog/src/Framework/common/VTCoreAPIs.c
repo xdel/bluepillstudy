@@ -1,18 +1,22 @@
 #include "VTCoreAPIs.h"
 #include "hvm.h"
 
+//Global handlers, include how to setep VMCB etc.
+PMadDog_Control g_HvmControl;
+
 /**
  * effects: Install HelloWorld VMM hypervisor.
  */
-NTSTATUS NTAPI InstallHypervisor()
+NTSTATUS NTAPI MadDog_InstallHypervisor(PMadDog_Control mdCtl)
 {
+	g_HvmControl = mdCtl;
 	return HvmSwallowBluepill();
 }
 
 /**
  * effects: Uninstall HelloWorld VMM Hypervisor
  */
-NTSTATUS NTAPI UninstallHypervisor()
+NTSTATUS NTAPI MadDog_UninstallHypervisor()
 {
 	return HvmSpitOutBluepill();
 }
@@ -20,7 +24,7 @@ NTSTATUS NTAPI UninstallHypervisor()
 /**
  * effects: Check if this cpu supports Intel VT Technology. Initialize
  */
-NTSTATUS NTAPI HypervisorInit()
+NTSTATUS NTAPI MadDog_HypervisorInit()
 {
 	BOOLEAN ArchIsOK = FALSE;
 	ArchIsOK = HvmSupport();

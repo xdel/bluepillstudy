@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ntddk.h>
-#include "vmx.h" 
+#include "VmxCore.h" 
 #include "common.h"
 #include "regs.h"
 #include "memory.h"
