@@ -1,8 +1,0 @@
-D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\EnlistmentWizard.exe
-D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\bin\Debug\EnlistmentWizard.pdb
-D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\ResolveAssemblyReference.cache
-D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\EnlistmentWizard.Properties.Resources.resources
-D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\EnlistmentWizard.csproj.GenerateResource.Cache
-D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\EnlistmentWizard.exe
-D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\EnlistmentWizard.pdb
-D:\Workspace\MadDog\src\Tools\EnlistmentWizard\EnlistmentWizard\obj\Debug\EnlistmentWizard.frmEnlistSetting.resources
