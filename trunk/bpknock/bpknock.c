@@ -3,17 +3,30 @@
 #include <windows.h>
 //typedef unsigned int ULONG32;
 
+//char *str= "%#x, %#x, %#x";
+//char *str = "%c%c%c%c%c%c%c%c%c%c%c%c";
+char *str = "%c%c%c%c";
+
+void print(char *s) {
+int i;
+for (i = 0; i < 12; i++)
+  printf("%c", s[i]);
+}
+
 ULONG32 __declspec(naked) NBPCall (ULONG32 knock) {
 	__asm { 
 	push 	ebp
 	mov	ebp, esp
-	push	ebx
-	push	ecx
-	push	edx
-	cpuid
-	pop	edx
-	pop	ecx
-	pop	ebx
+		cpuid
+
+push    edx;
+push	ebx;
+push	eax;
+mov ecx, esp;
+push	ecx;
+//push	str;
+call print;
+add	esp, 16;
 	mov	esp, ebp
 	pop	ebp
 	ret
@@ -28,7 +41,9 @@ int __cdecl main(int argc, char **argv) {
 	knock = strtoul (argv[1], 0, 0);
 
 	__try {
-		printf ("knock answer: %#x\n", NBPCall (knock));
+  NBPCall(knock); 
+//printf("%d, %d, %d, %d\n", eax, ebx, ecx, edx);
+		//printf ("knock answer: %#x\n", NBPCall (knock));
 	} __except (EXCEPTION_EXECUTE_HANDLER) {
 		printf ("CPUDID caused exception");
 		return 0;
