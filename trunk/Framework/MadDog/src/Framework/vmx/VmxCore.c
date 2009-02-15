@@ -469,7 +469,7 @@ static VOID VmxGenerateTrampolineToGuest (
   CmGenerateIretd (&Trampoline[uTrampolineSize], &uTrampolineSize);
 
   // restore old GDTR
-  //CmReloadGdtr ((PVOID) VmxRead (GUEST_GDTR_BASE), (ULONG) VmxRead (GUEST_GDTR_LIMIT));
+  CmReloadGdtr ((PVOID) VmxRead (GUEST_GDTR_BASE), (ULONG) VmxRead (GUEST_GDTR_LIMIT));
 
   //MsrWrite (MSR_GS_BASE, VmxRead (GUEST_GS_BASE));
   //MsrWrite (MSR_FS_BASE, VmxRead (GUEST_FS_BASE));
@@ -482,7 +482,7 @@ static VOID VmxGenerateTrampolineToGuest (
   // cs and ss must be the same with the guest OS in this implementation
 
   // restore old IDTR
-  //CmReloadIdtr ((PVOID) VmxRead (GUEST_IDTR_BASE), (ULONG) VmxRead (GUEST_IDTR_LIMIT));
+  CmReloadIdtr ((PVOID) VmxRead (GUEST_IDTR_BASE), (ULONG) VmxRead (GUEST_IDTR_LIMIT));
 
   return;
 }
