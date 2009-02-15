@@ -2,5 +2,9 @@ Revision 94:
 	The best Study material. Keep the origin structure.
 
 Revision 101:
-	- Release on 2009-2-8 (build 0.2009.2.8)
+	- Release Build 0.2009.2.8
 	- Add ReleaseTool
+
+Revision 106:
+	- Fix the "GDTR limit and IDTR limit DO NOT Restore after unloading the driver" issue. Tthe driver can re-entrant now.
+	- Release Build 0.2009.2.15
