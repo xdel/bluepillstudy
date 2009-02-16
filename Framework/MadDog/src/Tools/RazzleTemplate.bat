@@ -3,7 +3,7 @@
 :TODO - This part should be moved to the environment later
 set ENLISTMENT_PROJ_ROOT=%%ENLISTMENT_PROJ_ROOT%%
 set RAZZLE_INDEX=%%RAZZLE_INDEX%%
-set DDKHome=E:\WinDDK\6001.18001
+set DDKHome=%%WINDDK_HOME%%
 set _NT_SYMBOL_PATH=%_NT_SYMBOL_PATH%;%ENLISTMENT_PROJ_ROOT%\bin\Framework\bin\i386
 set path=%path%;%ENLISTMENT_PROJ_ROOT%\bin\Tools\
 
