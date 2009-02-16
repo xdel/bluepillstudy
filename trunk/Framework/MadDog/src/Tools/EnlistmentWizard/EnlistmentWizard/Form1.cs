@@ -75,6 +75,7 @@ namespace Tools.EnlistmentWizard.UI
 
             //Step 2.Enlist From Server
             String enlistLocalPath = txtEnlistmentPath.Text.TrimEnd('\\');
+            String winDDKHomePath = txtDDKPath.Text.TrimEnd('\\');
             if (!Directory.Exists(enlistLocalPath))
             {
                 try
@@ -109,6 +110,8 @@ namespace Tools.EnlistmentWizard.UI
             content = content.Replace(TemplateStrings.LOCAL_ENLISTMENT_PROJ_ROOT_STRING, enlistLocalPath +@"\MadDog");
             //Step 3.2 Replace %%ENLISTMENT_PROJ_ROOT%% in Razzle.bat
             content = content.Replace(TemplateStrings.LOCAL_RAZZLE_INDEX, razzleIndex.ToString());
+            //Step 3.3 Replace %%WINDDK_HOME%% in Razzle.bat
+            content = content.Replace(TemplateStrings.LOCAL_WINDDKHOME_STRING, winDDKHomePath+"\\");
 
             StreamWriter sw = new StreamWriter(destRazzleBatPathName);
             sw.Write(content);

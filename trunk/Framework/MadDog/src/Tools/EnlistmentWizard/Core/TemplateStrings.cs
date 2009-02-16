@@ -18,5 +18,10 @@ namespace Tools.EnlistmentWizard.Core
         /// set RAZZLE_INDEX=%%RAZZLE_INDEX%%
         /// </summary>
         public const String LOCAL_RAZZLE_INDEX = "%%RAZZLE_INDEX%%";
+        /// <summary>
+        /// This String is in Razzle.bat
+        /// set DDKHome=%%WINDDK_HOME%%
+        /// </summary>
+        public const String LOCAL_WINDDKHOME_STRING = "%%WINDDK_HOME%%";
     }
 }
