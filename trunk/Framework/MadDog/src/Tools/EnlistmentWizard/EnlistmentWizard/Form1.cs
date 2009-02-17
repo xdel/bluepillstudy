@@ -111,7 +111,8 @@ namespace Tools.EnlistmentWizard.UI
             //Step 3.2 Replace %%ENLISTMENT_PROJ_ROOT%% in Razzle.bat
             content = content.Replace(TemplateStrings.LOCAL_RAZZLE_INDEX, razzleIndex.ToString());
             //Step 3.3 Replace %%WINDDK_HOME%% in Razzle.bat
-            content = content.Replace(TemplateStrings.LOCAL_WINDDKHOME_STRING, winDDKHomePath+"\\");
+            //BUG FIX - Can't set WinDDKHome in Razzle.bat 
+            content = content.Replace(TemplateStrings.LOCAL_WINDDKHOME_STRING, winDDKHomePath);
 
             StreamWriter sw = new StreamWriter(destRazzleBatPathName);
             sw.Write(content);
