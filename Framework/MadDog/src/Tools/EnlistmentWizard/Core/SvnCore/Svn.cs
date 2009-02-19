@@ -20,8 +20,7 @@ namespace Core.Svn
         /// <returns>Run successfully or not</returns>
         public static Boolean SvnCheckoutWorkspace(String account,String password,String destDir)
         {
-            String svnCmdPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            Process p = System.Diagnostics.Process.Start(new ProcessStartInfo(svnCmdPath + @"\svn.exe",
+            Process p = System.Diagnostics.Process.Start(new ProcessStartInfo( @"svn.exe",
                 String.Format("checkout {0} {1} --username {2} --password {3}", SERVER_PROJ_ROOT, destDir,account,password)));       
             p.WaitForExit();   
             //Wait for exit
