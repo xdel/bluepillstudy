@@ -3,7 +3,7 @@ doskey up=cd /d ..
 doskey up2=cd /d ..\..
 doskey n=notepad $*
 doskey buildAll=%ENLISTMENT_PROJ_ROOT%\src\buildAll.cmd
-doskey cleanfw=%ENLISTMENT_PROJ_ROOT%\src\Framework\clean.cmd
+doskey cleanAll=%ENLISTMENT_PROJ_ROOT%\src\Framework\clean.cmd
 doskey start =explorer $*
 
 @rem Step 2. Set MadDog Framework environments
