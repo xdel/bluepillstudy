@@ -41,6 +41,7 @@
             this.btnShowDetails = new System.Windows.Forms.Button();
             this.lstFile = new System.Windows.Forms.ListBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblDDKPath
@@ -77,7 +78,7 @@
             // 
             // btnEnlist
             // 
-            this.btnEnlist.Location = new System.Drawing.Point(239, 121);
+            this.btnEnlist.Location = new System.Drawing.Point(239, 141);
             this.btnEnlist.Name = "btnEnlist";
             this.btnEnlist.Size = new System.Drawing.Size(100, 23);
             this.btnEnlist.TabIndex = 5;
@@ -88,7 +89,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(345, 121);
+            this.btnCancel.Location = new System.Drawing.Point(345, 141);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(100, 23);
             this.btnCancel.TabIndex = 6;
@@ -98,7 +99,7 @@
             // 
             // progressEnlistment
             // 
-            this.progressEnlistment.Location = new System.Drawing.Point(81, 181);
+            this.progressEnlistment.Location = new System.Drawing.Point(81, 201);
             this.progressEnlistment.Name = "progressEnlistment";
             this.progressEnlistment.Size = new System.Drawing.Size(357, 23);
             this.progressEnlistment.TabIndex = 6;
@@ -126,7 +127,7 @@
             // lblProgress
             // 
             this.lblProgress.AutoSize = true;
-            this.lblProgress.Location = new System.Drawing.Point(15, 181);
+            this.lblProgress.Location = new System.Drawing.Point(15, 201);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(51, 13);
             this.lblProgress.TabIndex = 8;
@@ -135,7 +136,7 @@
             // btnShowDetails
             // 
             this.btnShowDetails.Enabled = false;
-            this.btnShowDetails.Location = new System.Drawing.Point(133, 121);
+            this.btnShowDetails.Location = new System.Drawing.Point(133, 141);
             this.btnShowDetails.Name = "btnShowDetails";
             this.btnShowDetails.Size = new System.Drawing.Size(100, 23);
             this.btnShowDetails.TabIndex = 9;
@@ -146,10 +147,19 @@
             // lstFile
             // 
             this.lstFile.FormattingEnabled = true;
-            this.lstFile.Location = new System.Drawing.Point(81, 218);
+            this.lstFile.Location = new System.Drawing.Point(81, 238);
             this.lstFile.Name = "lstFile";
             this.lstFile.Size = new System.Drawing.Size(357, 134);
             this.lstFile.TabIndex = 10;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(130, 114);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(147, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "e.g. E:\\WinDDK\\6001.18001";
             // 
             // FrmEnlistSetting
             // 
@@ -157,7 +167,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(457, 154);
+            this.ClientSize = new System.Drawing.Size(457, 178);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.lstFile);
             this.Controls.Add(this.btnShowDetails);
             this.Controls.Add(this.lblProgress);
@@ -194,6 +205,7 @@
         private System.Windows.Forms.Button btnShowDetails;
         private System.Windows.Forms.ListBox lstFile;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.Label label1;
     }
 }
 
