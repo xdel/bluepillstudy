@@ -124,12 +124,13 @@ namespace Tools.EnlistmentWizard.UI
 
             //Step 4.Create User specified environment
             String fullUserEnvFolder = enlistLocalPath + RazzleFilePath.RAZZLE_USER_ENVBAT_FOLDERPATH + this.accountName;
+            String defaultEnvFolder = enlistLocalPath + RazzleFilePath.RAZZLETEMPLATE_USER_ENV_FILEPATH;
             if (!Directory.Exists(fullUserEnvFolder))
             {
                 try
                 {
                     Directory.CreateDirectory(fullUserEnvFolder);
-                    foreach(String filePath in Directory.GetFiles(RazzleFilePath.RAZZLETEMPLATE_USER_ENV_FILEPATH))
+                    foreach (String filePath in Directory.GetFiles(defaultEnvFolder))
                     {
                         String fileName = Path.GetFileName(filePath);
                         File.Copy(filePath, fullUserEnvFolder+@"\"+fileName);
