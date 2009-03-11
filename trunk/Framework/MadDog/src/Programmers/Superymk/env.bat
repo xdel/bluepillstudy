@@ -1,3 +1,6 @@
+@rem Step 1. Set command alias 
+doskey bos=%ENLISTMENT_PROJ_ROOT%\src\Sample\Overshadow\build_code.bat
+
 @rem Step 1. Set Sample - Overshadow environments
 set SAMPLE_OVERSHADOW_NAME=Overshadow
 set SAMPLE_OVERSHADOW_SRC_ROOT=%ENLISTMENT_PROJ_ROOT%\src\Sample\%SAMPLE_OVERSHADOW_NAME%
