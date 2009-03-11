@@ -84,7 +84,8 @@ namespace Tools.EnlistmentWizard.UI
                 }
                 catch
                 {
-                    MessageBox.Show("Invalid Path!");
+                    MessageBox.Show("Invalid Path!", "Enlist Wizard",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
@@ -92,7 +93,8 @@ namespace Tools.EnlistmentWizard.UI
             Boolean runSuccessfully = SvnService.SvnCheckoutWorkspace(this.accountName,this.password,enlistLocalPath);
             if (!runSuccessfully)
             {
-                MessageBox.Show("Svn Checkout Failed");
+                MessageBox.Show("Svn Checkout Failed","Enlist Wizard",
+                        MessageBoxButtons.OK,MessageBoxIcon.Error);
                 return;
             }
 
@@ -113,21 +115,44 @@ namespace Tools.EnlistmentWizard.UI
             //Step 3.3 Replace %%WINDDK_HOME%% in Razzle.bat
             //BUG FIX - Can't set WinDDKHome in Razzle.bat 
             content = content.Replace(TemplateStrings.LOCAL_WINDDKHOME_STRING, winDDKHomePath);
+            //Step 3.4 Replace %%ENLISTMENT_PROJ_ROOT%% in Razzle.bat
+            content = content.Replace(TemplateStrings.LOCAL_CURRENT_USER_STRING, this.accountName);
 
             StreamWriter sw = new StreamWriter(destRazzleBatPathName);
             sw.Write(content);
             sw.Close();
 
-            //Step 4.Create Shortcut on the desktop.
+            //Step 4.Create User specified environment
+            String fullUserEnvFolder = enlistLocalPath + RazzleFilePath.RAZZLE_USER_ENVBAT_FOLDERPATH + this.accountName;
+            if (!Directory.Exists(fullUserEnvFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(fullUserEnvFolder);
+                    foreach(String filePath in Directory.GetFiles(RazzleFilePath.RAZZLETEMPLATE_USER_ENV_FILEPATH))
+                    {
+                        String fileName = Path.GetFileName(filePath);
+                        File.Copy(filePath, fullUserEnvFolder+@"\"+fileName);
+                    }
+                    SvnService.SvnAddFolder(this.accountName,this.password,fullUserEnvFolder);
+                }
+                catch
+                {
+                    MessageBox.Show("Invalid User Enviroment Path,Try a different Account Name","Enlist Wizard",
+                        MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            //Step 5.Create Shortcut on the desktop.
             String shortCutFileName = Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop) +
                 String.Format(@"\Razzle_{0}.lnk", razzleIndex);
-            //Step 4.1 Set Razzle Build Env x86 Checked in Default.
+            //Step 5.1 Set Razzle Build Env x86 Checked in Default.
             ShortcutHelper.CreateShortcut(shortCutFileName,
                 destRazzleBatPathName, 
                 RazzleFilePath.RAZZLE_BAT_DEFAULT_PARAMETER,
                 enlistLocalPath);
 
-            //Step 5. Increment Razzle_Count Value
+            //Step 6. Increment Razzle_Count Value
             GlobalEnvironment.IncreaseRazzleCount();
 
             MessageBox.Show("Enlist successfully");
