@@ -23,5 +23,7 @@ namespace Tools.EnlistmentWizard.Core
         /// set DDKHome=%%WINDDK_HOME%%
         /// </summary>
         public const String LOCAL_WINDDKHOME_STRING = "%%WINDDK_HOME%%";
+
+        public const String LOCAL_CURRENT_USER_STRING = "%%CURRENTUSER%%";
     }
 }

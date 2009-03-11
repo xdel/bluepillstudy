@@ -26,5 +26,14 @@ namespace Core.Svn
             //Wait for exit
             return (p.ExitCode == 0);
         }
+
+        public static Boolean SvnAddFolder(String account, String password, String folderName)
+        {
+            Process p = System.Diagnostics.Process.Start(new ProcessStartInfo(@"svn.exe",
+                String.Format("add {0} --username {1} --password {2}", folderName, account, password)));
+            p.WaitForExit();
+            //Wait for exit
+            return (p.ExitCode == 0);
+        }
     }
 }
