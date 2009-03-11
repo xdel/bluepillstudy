@@ -30,14 +30,14 @@ namespace Tools.EnlistmentWizard.UI
         {
             if (!isShowDetail)
             {
-                this.Height = 415;
+                this.Height = 437;
                 btnShowDetails.Text = "Show Details <<";
                 isShowDetail = true;
                 
             }
             else
             {
-                this.Height = 186;
+                this.Height = 210;
                 btnShowDetails.Text = "Show Details >>";
                 isShowDetail = false;
             }
