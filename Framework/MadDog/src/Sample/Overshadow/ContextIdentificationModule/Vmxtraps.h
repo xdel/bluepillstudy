@@ -6,16 +6,11 @@
 #include "vmx/Vmcs.h"
 #include "VTUtilAPIs.h"
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
-// BPKNOCK backdoor
-#define BP_KNOCK
-#ifdef BP_KNOCK
-	#define BP_KNOCK_EAX	100
-	#define BP_KNOCK_EAX_ANSWER 0x6c6c6548	//Hell
-	#define BP_KNOCK_EBX_ANSWER 0x6f57206f  //o Wo
-	#define BP_KNOCK_EDX_ANSWER 0x21646c72	//rld!
+#define START_RECORDING_EAX		1000 //Used to tell the hypervisor to start run the target program
+#define PING_EAX				1500 //Used to retrieve data while the target program is still running
+#define END_RECORDING_EAX		2000 //Used to tell the hypervisor the target program should be killed
 
-	//#define BP_EXIT_EAX		200
-#endif // BP_KNOCK
+#define SysenterCounter_USEFAKETRAP //use fake sysenter trap to count sysenter happenning times.
 
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
