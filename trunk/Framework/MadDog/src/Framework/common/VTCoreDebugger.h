@@ -9,6 +9,7 @@
 #else
 #define Print(x) {}
 #endif
+#define HvmPrint(x) DbgPrint x
 
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 

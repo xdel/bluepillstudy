@@ -66,6 +66,8 @@ NTSTATUS HvmSetupVMControlBlock (
       CPU_BASED_VM_EXEC_CONTROL, 
       VmxAdjustControls (Interceptions, MSR_IA32_VMX_PROCBASED_CTLS) );
 
+	HvmPrint(("Interception: %x",Interceptions));
+
     VmxWrite (EXCEPTION_BITMAP, (ULONG)1 << 14);
 
     //VmxWrite (PAGE_FAULT_ERROR_CODE_MASK, 2);   // W/R

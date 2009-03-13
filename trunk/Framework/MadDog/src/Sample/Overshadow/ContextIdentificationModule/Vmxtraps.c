@@ -1,5 +1,16 @@
 #include "vmxtraps.h"
 
+BOOLEAN StartRecording;
+ULONG32 SyscallTimes;
+
+ULONG64 OriginSysenterAddr;
+
+#ifdef SysenterCounter_USEFAKETRAP
+static void NTAPI CcSetupSysenterTrap();
+static void NTAPI CcDestroySysenterTrap();
+static void NTAPI CcFakeSysenterTrap();
+#endif
+
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
@@ -74,12 +85,12 @@ NTSTATUS NTAPI VmxRegisterTraps (
         &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchCpuid with status 0x%08hX\n", Status));
+    HvmPrint(("VmxRegisterTraps(): Failed to register VmxDispatchCpuid with status 0x%08hX\n", Status));
     return Status;
   }
   MadDog_RegisterTrap (Cpu, Trap);//<----------------4.3//Finish
 
-    Status = MadDog_InitializeGeneralTrap (
+  Status = MadDog_InitializeGeneralTrap (
         Cpu, 
         EXIT_REASON_MSR_READ, 
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -88,7 +99,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
         &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status));
+    HvmPrint(("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status));
     return Status;
   }
   MadDog_RegisterTrap (Cpu, Trap);
@@ -102,7 +113,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status));
+    HvmPrint(("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status));
     return Status;
   }
   MadDog_RegisterTrap (Cpu, Trap);
@@ -115,7 +126,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status));
+    HvmPrint(("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status));
     return Status;
   }
   MadDog_RegisterTrap (Cpu, Trap);
@@ -128,7 +139,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchINVD with status 0x%08hX\n", Status));
+    HvmPrint(("VmxRegisterTraps(): Failed to register VmxDispatchINVD with status 0x%08hX\n", Status));
     return Status;
   }
   MadDog_RegisterTrap (Cpu, Trap);
@@ -141,7 +152,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       &Trap);
   if (!NT_SUCCESS (Status)) 
   {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchPageFault with status 0x%08hX\n", Status));
+    HvmPrint(("VmxRegisterTraps(): Failed to register VmxDispatchPageFault with status 0x%08hX\n", Status));
     return Status;
   }
   MadDog_RegisterTrap (Cpu, Trap);
@@ -157,7 +168,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
           &Trap);
     if (!NT_SUCCESS (Status)) 
     {
-      Print(("VmxRegisterTraps(): Failed to register VmxDispatchVmon with status 0x%08hX\n", Status));
+      HvmPrint(("VmxRegisterTraps(): Failed to register VmxDispatchVmon with status 0x%08hX\n", Status));
       return Status;
     }
     MadDog_RegisterTrap (Cpu, Trap);
@@ -180,40 +191,56 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   BOOLEAN WillBeAlsoHandledByGuestHv
 )//Finished//same
 {
-  ULONG32 fn, eax, ebx, ecx, edx;
-  ULONG inst_len;
+	ULONG32 fn, eax, ebx, ecx, edx;
+	ULONG inst_len;
+	
+	if (!Cpu || !GuestRegs)
+	return TRUE;
+	fn = GuestRegs->eax;
 
-  if (!Cpu || !GuestRegs)
-    return TRUE;
-  fn = GuestRegs->eax;
+	#if DEBUG_LEVEL>1
+	Print(("Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x%x\n", fn));
+	#endif
 
-#if DEBUG_LEVEL>1
-  Print(("Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x%x\n", fn));
-#endif
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	if (Trap->General.RipDelta == 0)
+	Trap->General.RipDelta = inst_len;
 
-  inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-  if (Trap->General.RipDelta == 0)
-    Trap->General.RipDelta = inst_len;
+	if (fn == START_RECORDING_EAX) 
+	{
+		HvmPrint(("Hypervisor: Start Recording"));
 
-  if (fn == BP_KNOCK_EAX) 
-  {
-    Print(("Helloworld:Magic knock received: %p\n", BP_KNOCK_EAX));
-    GuestRegs->eax = BP_KNOCK_EAX_ANSWER;
-	GuestRegs->ebx = BP_KNOCK_EBX_ANSWER;
-	GuestRegs->edx = BP_KNOCK_EDX_ANSWER;
-    return TRUE;
-  }
+		#ifdef SysenterCounter_USEFAKETRAP
+		CcSetupSysenterTrap();//Setup Sysenter trap
+		#else
+		StartRecording = TRUE;
+		#endif
+		
+	}
+	else if(fn == END_RECORDING_EAX)
+	{
+		HvmPrint(("Hypervisor: End Recording"));
 
-  ecx = (ULONG) GuestRegs->ecx;
-  MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
-  GuestRegs->eax = eax;
-  GuestRegs->ebx = ebx;
-  GuestRegs->ecx = ecx;
-  GuestRegs->edx = edx;
-  
-  //VmxDumpVmcs()();
-  Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
-  return TRUE;
+		#ifdef SysenterCounter_USEFAKETRAP
+		CcDestroySysenterTrap();
+		#else
+		StartRecording = FALSE;
+		#endif
+
+		GuestRegs->eax = SyscallTimes;
+		return TRUE;
+	}
+
+	ecx = (ULONG) GuestRegs->ecx;
+	MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
+	GuestRegs->eax = eax;
+	GuestRegs->ebx = ebx;
+	GuestRegs->ecx = ecx;
+	GuestRegs->edx = edx;
+
+	//VmxDumpVmcs()();
+	Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
+	return TRUE;
 }
 
 static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
@@ -228,7 +255,7 @@ static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
   
   if (!Cpu || !GuestRegs)
     return TRUE;
-  Print(("VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!\n"));
+  HvmPrint(("VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!\n"));
 
   inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
   Trap->General.RipDelta = inst_len;
@@ -276,6 +303,7 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
   ULONG32 ecx;
   ULONG inst_len;
 
+  HvmPrint(("In VmxDispatchMsrRead(),ECX: %x",GuestRegs->ecx));
   if (!Cpu || !GuestRegs)
     return TRUE;
 
@@ -298,6 +326,15 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
     Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
         VmxRead(GUEST_RIP), 
         MsrValue.QuadPart));
+
+	#ifndef SysenterCounter_USEFAKETRAP
+	if (StartRecording) 
+	{
+		HvmPrint(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", VmxRead(GUEST_RIP), MsrValue.QuadPart));
+		SyscallTimes++;
+	}
+	#endif
+
     break;
   case MSR_GS_BASE:
     MsrValue.QuadPart = VmxRead (GUEST_GS_BASE);
@@ -531,4 +568,25 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
     return TRUE;
 }
 
-
+#ifdef SysenterCounter_USEFAKETRAP
+static void NTAPI CcSetupSysenterTrap()
+{
+	OriginSysenterAddr = MsrRead (MSR_IA32_SYSENTER_EIP);
+	DbgPrint("In CcSetupSysenterTrap(): OriginSysenterAddr:%x",OriginSysenterAddr);
+	DbgPrint("In CcSetupSysenterTrap(): CcFakeSysenterTrap:%x",&CcFakeSysenterTrap);
+	MsrWrite (MSR_IA32_SYSENTER_EIP,&CcFakeSysenterTrap);
+	DbgPrint("In CcSetupSysenterTrap(): NewSysenterEntry:%x",MsrRead (MSR_IA32_SYSENTER_EIP));
+}
+static void NTAPI CcDestroySysenterTrap()
+{
+	MsrWrite (MSR_IA32_SYSENTER_EIP,OriginSysenterAddr);
+}
+static void NTAPI CcFakeSysenterTrap()
+{
+	SyscallTimes++;
+	DbgPrint("In CcFakeSysenterTrap()");
+	__asm{
+		call OriginSysenterAddr;
+	}
+}
+#endif
