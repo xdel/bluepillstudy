@@ -5,7 +5,7 @@ ULONG32 SyscallTimes;
 
 ULONG64 OriginSysenterAddr;
 
-#ifdef SysenterCounter_USEFAKETRAP
+#ifdef SysenterCounter_USE_FAKE_TRAP
 static void NTAPI CcSetupSysenterTrap();
 static void NTAPI CcDestroySysenterTrap();
 static void NTAPI CcFakeSysenterTrap();
@@ -210,7 +210,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	{
 		HvmPrint(("Hypervisor: Start Recording"));
 
-		#ifdef SysenterCounter_USEFAKETRAP
+		#ifdef SysenterCounter_USE_FAKE_TRAP
 		CcSetupSysenterTrap();//Setup Sysenter trap
 		#else
 		StartRecording = TRUE;
@@ -221,7 +221,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	{
 		HvmPrint(("Hypervisor: End Recording"));
 
-		#ifdef SysenterCounter_USEFAKETRAP
+		#ifdef SysenterCounter_USE_FAKE_TRAP
 		CcDestroySysenterTrap();
 		#else
 		StartRecording = FALSE;
@@ -327,7 +327,7 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
         VmxRead(GUEST_RIP), 
         MsrValue.QuadPart));
 
-	#ifndef SysenterCounter_USEFAKETRAP
+	#ifndef SysenterCounter_USE_FAKE_TRAP
 	if (StartRecording) 
 	{
 		HvmPrint(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", VmxRead(GUEST_RIP), MsrValue.QuadPart));
@@ -568,7 +568,7 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
     return TRUE;
 }
 
-#ifdef SysenterCounter_USEFAKETRAP
+#ifdef SysenterCounter_USE_FAKE_TRAP
 static void NTAPI CcSetupSysenterTrap()
 {
 	OriginSysenterAddr = MsrRead (MSR_IA32_SYSENTER_EIP);
