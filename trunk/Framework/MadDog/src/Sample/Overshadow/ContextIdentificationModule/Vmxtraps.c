@@ -3,7 +3,8 @@
 BOOLEAN StartRecording;
 ULONG32 SyscallTimes;
 
-ULONG64 OriginSysenterAddr;
+ULONG64 OriginSysenterEIP;
+ULONG64 OriginSysenterCS;
 
 #ifdef SysenterCounter_USE_FAKE_TRAP
 static void NTAPI CcSetupSysenterTrap();
@@ -208,7 +209,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 
 	if (fn == START_RECORDING_EAX) 
 	{
-		HvmPrint(("Hypervisor: Start Recording"));
+		HvmPrint(("Hypervisor: Start Recording\n"));
 
 		#ifdef SysenterCounter_USE_FAKE_TRAP
 		CcSetupSysenterTrap();//Setup Sysenter trap
@@ -219,7 +220,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	}
 	else if(fn == END_RECORDING_EAX)
 	{
-		HvmPrint(("Hypervisor: End Recording"));
+		HvmPrint(("Hypervisor: End Recording\n"));
 
 		#ifdef SysenterCounter_USE_FAKE_TRAP
 		CcDestroySysenterTrap();
@@ -303,7 +304,7 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
   ULONG32 ecx;
   ULONG inst_len;
 
-  HvmPrint(("In VmxDispatchMsrRead(),ECX: %x",GuestRegs->ecx));
+  HvmPrint(("In VmxDispatchMsrRead(),ECX: %x\n",GuestRegs->ecx));
   if (!Cpu || !GuestRegs)
     return TRUE;
 
@@ -571,22 +572,36 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 #ifdef SysenterCounter_USE_FAKE_TRAP
 static void NTAPI CcSetupSysenterTrap()
 {
-	OriginSysenterAddr = MsrRead (MSR_IA32_SYSENTER_EIP);
-	DbgPrint("In CcSetupSysenterTrap(): OriginSysenterAddr:%x",OriginSysenterAddr);
-	DbgPrint("In CcSetupSysenterTrap(): CcFakeSysenterTrap:%x",&CcFakeSysenterTrap);
-	MsrWrite (MSR_IA32_SYSENTER_EIP,&CcFakeSysenterTrap);
-	DbgPrint("In CcSetupSysenterTrap(): NewSysenterEntry:%x",MsrRead (MSR_IA32_SYSENTER_EIP));
+	OriginSysenterEIP = VmxRead(GUEST_SYSENTER_EIP);
+	OriginSysenterCS = VmxRead(GUEST_SYSENTER_CS);
+	HvmPrint(("In CcSetupSysenterTrap(): OriginSysenterAddr:%x\n",OriginSysenterEIP));
+	HvmPrint(("In CcSetupSysenterTrap(): FakeSysenterTrap:%x\n",&CcFakeSysenterTrap));
+	VmxWrite (GUEST_SYSENTER_EIP,&CcFakeSysenterTrap);
+	HvmPrint(("In CcSetupSysenterTrap(): NewSysenterEntry:%x\n",VmxRead(GUEST_SYSENTER_EIP)));
 }
 static void NTAPI CcDestroySysenterTrap()
 {
-	MsrWrite (MSR_IA32_SYSENTER_EIP,OriginSysenterAddr);
+	VmxWrite (GUEST_SYSENTER_EIP,OriginSysenterEIP);
 }
 static void NTAPI CcFakeSysenterTrap()
 {
-	SyscallTimes++;
-	DbgPrint("In CcFakeSysenterTrap()");
+	ULONG32 eaxMem;
+	ULONG32 ebxMem;
+	ULONG32 ecxMem;
+	ULONG32 edxMem;
 	__asm{
-		call OriginSysenterAddr;
+		mov eaxMem,eax;
+		mov ebxMem,ebx;
+		mov ecxMem,ecx;
+		mov edxMem,edx;
+	}
+	SyscallTimes++;
+	__asm{
+		mov eax,eaxMem;
+		mov ebx,ebxMem;
+		mov ecx,ecxMem;
+		mov edx,edxMem;
+		call OriginSysenterEIP;
 	}
 }
 #endif
