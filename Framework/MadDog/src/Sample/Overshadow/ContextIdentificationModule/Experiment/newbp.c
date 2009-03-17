@@ -6,25 +6,25 @@ ULONG32 SyscallTimes;
 ULONG64 OriginSysenterEIP;
 ULONG64 OriginSysenterCS;
 
-void NTAPI CcFakeSysenterTrap()
+void __declspec(naked) CcFakeSysenterTrap()
 {
-	ULONG32 eaxMem;
-	ULONG32 ebxMem;
-	ULONG32 ecxMem;
-	ULONG32 edxMem;
+	//ULONG32 eaxMem;
+	//ULONG32 ebxMem;
+	//ULONG32 ecxMem;
+	//ULONG32 edxMem;
+	//__asm{
+	//	mov eaxMem,eax;
+	//	mov ebxMem,ebx;
+	//	mov ecxMem,ecx;
+	//	mov edxMem,edx;
+	//}
+	//SyscallTimes++;
 	__asm{
-		mov eaxMem,eax;
-		mov ebxMem,ebx;
-		mov ecxMem,ecx;
-		mov edxMem,edx;
-	}
-	SyscallTimes++;
-	__asm{
-		mov eax,eaxMem;
-		mov ebx,ebxMem;
-		mov ecx,ecxMem;
-		mov edx,edxMem;
-		call OriginSysenterEIP;
+	//	mov eax,eaxMem;
+	//	mov ebx,ebxMem;
+	//	mov ecx,ecxMem;
+	//	mov edx,edxMem;
+		jmp OriginSysenterEIP;
 	}
 }
 
@@ -59,7 +59,7 @@ NTSTATUS DriverEntry (
     //CmDebugBreak();
    // ULONG ulOldCR3;
 
-    __asm { int 3 }
+    //__asm { int 3 }
 
 CcSetupSysenterTrap();
       DriverObject->DriverUnload = DriverUnload;
