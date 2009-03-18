@@ -606,7 +606,7 @@ static void NTAPI CcFakeSysenterTrap()
 		mov ebx,CcOriginEbx;
 		mov ecx,CcOriginEcx;
 		mov edx,CcOriginEdx;
-		call CcOriginSysenterEIP;
+		jmp CcOriginSysenterEIP;
 	}
 }
 #endif
