@@ -10,7 +10,7 @@
 #define PING_EAX				1500 //Used to retrieve data while the target program is still running
 #define END_RECORDING_EAX		2000 //Used to tell the hypervisor the target program should be killed
 
-#define SysenterCounter_USE_FAKE_TRAP //use fake sysenter trap to count sysenter happenning times.
+#define ContextCounter_SYSENTER_USE_HOOK_TRAP //use fake sysenter trap to count sysenter happenning times.
 
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 

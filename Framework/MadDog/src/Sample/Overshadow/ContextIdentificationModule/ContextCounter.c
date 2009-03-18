@@ -1,18 +1,4 @@
-/* 
- * Copyright holder: Invisible Things Lab
- * 
- * This software is protected by domestic and International
- * copyright laws. Any use (including publishing and
- * distribution) of this software requires a valid license
- * from the copyright holder.
- *
- * This software is provided for the educational use only
- * during the Black Hat training. This software should not
- * be used on production systems.
- *
- */
-
-#include "newbp.h"
+#include "ContextCounter.h"
 
 //extern PHYSICAL_ADDRESS g_PageMapBasePhysicalAddress;
 //extern BOOLEAN g_bDisableComOutput;
@@ -57,7 +43,7 @@ NTSTATUS DriverEntry (
 
     PrintInfoInit();
 	Print(("Hello world!"));
-    __asm { int 3 }
+    //__asm { int 3 }
 
     // test for our pagetabel
     //__asm 

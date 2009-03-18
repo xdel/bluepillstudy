@@ -1,5 +1,15 @@
 #pragma once
 
+#ifdef _X86_
+#define ULONG ULONG32
+#else
+
+#if defined(_AMD64_)|| defined(_IA64_)
+#define ULONG ULONG64
+#endif
+
+#endif
+
 //++++++++++++++Cpu Related Structs(Common Structs)++++++++++++++++
 typedef struct _CPU *PCPU;
 typedef struct _GUEST_REGS *PGUEST_REGS;

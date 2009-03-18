@@ -1,29 +1,33 @@
 #include "newbp.h"
 
 BOOLEAN StartRecording;
-ULONG32 SyscallTimes;
+ULONG64 SyscallTimes;
 
 ULONG64 OriginSysenterEIP;
 ULONG64 OriginSysenterCS;
 
+ULONG32 SavedEax;
+ULONG32 SavedEbx;
+ULONG32 SavedEcx;
+ULONG32 SavedEdx;
 void __declspec(naked) CcFakeSysenterTrap()
 {
 	//ULONG32 eaxMem;
 	//ULONG32 ebxMem;
 	//ULONG32 ecxMem;
 	//ULONG32 edxMem;
-	//__asm{
-	//	mov eaxMem,eax;
-	//	mov ebxMem,ebx;
-	//	mov ecxMem,ecx;
-	//	mov edxMem,edx;
-	//}
-	//SyscallTimes++;
 	__asm{
-	//	mov eax,eaxMem;
-	//	mov ebx,ebxMem;
-	//	mov ecx,ecxMem;
-	//	mov edx,edxMem;
+		mov SavedEax,eax;
+		mov SavedEbx,ebx;
+		mov SavedEcx,ecx;
+		mov SavedEdx,edx;
+	}
+	SyscallTimes++;
+	__asm{
+		mov eax,SavedEax;
+		mov ebx,SavedEbx;
+		mov ecx,SavedEcx;
+		mov edx,SavedEdx;
 		jmp OriginSysenterEIP;
 	}
 }
@@ -47,6 +51,7 @@ NTSTATUS DriverUnload (
 )
 {
 CcDestroySysenterTrap();
+	DbgPrint("Sysenter %d times\n",SyscallTimes);
     return STATUS_SUCCESS;
 }
 
