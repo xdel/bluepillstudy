@@ -16,7 +16,7 @@ ULONG64 __stdcall NBPCall (ULONG32 knock) {
 return;
 }
 int __cdecl main(int argc, char **argv) {
-	ULONG32 knock;
+	ULONG64 knock;
 	if (argc != 2) {
 		printf ("bpknock <magic knock>\n");
 		return 0;
