@@ -4,8 +4,6 @@ BOOLEAN StartRecording;
 
 ULONG64 CcSysenterTimes;//Record Sysenter instruction happen times.
 
-
-
 //Register backup
 ULONG32 CcOriginEax;
 ULONG32 CcOriginEbx;
@@ -13,12 +11,11 @@ ULONG32 CcOriginEcx;
 ULONG32 CcOriginEdx;
 
 //MSR backup
-ULONG64 CcOriginSysenterEIP;
+ULONG32 CcOriginSysenterEIP;
 
 #ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
 static void NTAPI CcSetupSysenterTrap();
 static void NTAPI CcDestroySysenterTrap();
-static __declspec(naked) CcFakeSysenterTrap();
 #endif
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
@@ -580,18 +577,7 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 }
 
 #ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
-static void NTAPI CcSetupSysenterTrap()
-{
-	CcOriginSysenterEIP = VmxRead(GUEST_SYSENTER_EIP);
-	HvmPrint(("In CcSetupSysenterTrap(): OriginSysenterAddr:%x\n",CcOriginSysenterEIP));
-	VmxWrite (GUEST_SYSENTER_EIP,&CcFakeSysenterTrap);
-	HvmPrint(("In CcSetupSysenterTrap(): NewSysenterEntry:%x\n",VmxRead(GUEST_SYSENTER_EIP)));
-}
-static void NTAPI CcDestroySysenterTrap()
-{
-	VmxWrite (GUEST_SYSENTER_EIP,CcOriginSysenterEIP);
-}
-static __declspec(naked) CcFakeSysenterTrap()
+void __declspec(naked) CcFakeSysenterTrap()
 {
 	__asm{
 		mov CcOriginEax,eax;
@@ -608,4 +594,16 @@ static __declspec(naked) CcFakeSysenterTrap()
 		jmp CcOriginSysenterEIP;
 	}
 }
+static void NTAPI CcSetupSysenterTrap()
+{
+	CcOriginSysenterEIP = VmxRead(GUEST_SYSENTER_EIP);
+	HvmPrint(("In CcSetupSysenterTrap(): OriginSysenterAddr:%x\n",CcOriginSysenterEIP));
+	VmxWrite (GUEST_SYSENTER_EIP,&CcFakeSysenterTrap);
+	HvmPrint(("In CcSetupSysenterTrap(): NewSysenterEntry:%x\n",VmxRead(GUEST_SYSENTER_EIP)));
+}
+static void NTAPI CcDestroySysenterTrap()
+{
+	VmxWrite (GUEST_SYSENTER_EIP,CcOriginSysenterEIP);
+}
+
 #endif
