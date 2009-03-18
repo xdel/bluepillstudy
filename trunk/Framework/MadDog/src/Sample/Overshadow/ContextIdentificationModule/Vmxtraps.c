@@ -13,13 +13,12 @@ ULONG32 CcOriginEcx;
 ULONG32 CcOriginEdx;
 
 //MSR backup
-ULONG32 CcOriginSysenterEIP;
-ULONG32 CcOriginSysenterCS;
+ULONG64 CcOriginSysenterEIP;
 
 #ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
 static void NTAPI CcSetupSysenterTrap();
 static void NTAPI CcDestroySysenterTrap();
-static void NTAPI CcFakeSysenterTrap();
+static __declspec(naked) CcFakeSysenterTrap();
 #endif
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
@@ -592,7 +591,7 @@ static void NTAPI CcDestroySysenterTrap()
 {
 	VmxWrite (GUEST_SYSENTER_EIP,CcOriginSysenterEIP);
 }
-static void NTAPI CcFakeSysenterTrap()
+static __declspec(naked) CcFakeSysenterTrap()
 {
 	__asm{
 		mov CcOriginEax,eax;
