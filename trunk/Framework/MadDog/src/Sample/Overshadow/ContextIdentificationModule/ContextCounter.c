@@ -45,7 +45,7 @@ NTSTATUS DriverEntry (
 
     PrintInfoInit();
 	Print(("Hello world!"));
-    __asm { int 3 }
+    //__asm { int 3 }
 
     // test for our pagetabel
     //__asm 

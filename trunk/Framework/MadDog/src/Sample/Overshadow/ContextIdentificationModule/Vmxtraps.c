@@ -14,8 +14,8 @@ ULONG32 CcOriginEdx;
 ULONG32 CcOriginSysenterEIP;
 
 #ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
-static void NTAPI CcSetupSysenterTrap();
-static void NTAPI CcDestroySysenterTrap();
+static NTSTATUS NTAPI CcSetupSysenterTrap();
+static NTSTATUS NTAPI CcDestroySysenterTrap();
 #endif
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
@@ -200,7 +200,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
 	ULONG inst_len;
-	
+	NTSTATUS status;
 	if (!Cpu || !GuestRegs)
 	return TRUE;
 	fn = GuestRegs->eax;
@@ -218,29 +218,41 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 		HvmPrint(("Hypervisor: Start Recording\n"));
 
 		#ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
-		if(StartRecording == FALSE)
+		//if(StartRecording == FALSE)
 		{
 			HvmPrint(("ContextCounter: Hacking sysenter entry\n"));
-			CcSetupSysenterTrap();//Setup Sysenter trap
+			status = CcSetupSysenterTrap();//Setup Sysenter trap
+			if(status == STATUS_SUCCESS)
+			{
+				StartRecording = TRUE;
+				CcSysenterTimes = 0;
+			}
+			
 		}
-		#else		
+		#else	
+		StartRecording = TRUE;	
 		#endif
-		StartRecording = TRUE;
+		
 	}
 	else if(fn == END_RECORDING_EAX)
 	{
 		HvmPrint(("Hypervisor: End Recording\n"));	
 		
 		#ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
-		if(StartRecording == TRUE)
+		//if(StartRecording == TRUE)
 		{
 			HvmPrint(("ContextCounter: Releasing sysenter entry\n"));
-			CcDestroySysenterTrap();
+			status = CcDestroySysenterTrap();
+			if(status == STATUS_SUCCESS)
+			{
+				StartRecording = FALSE;
+			}
 		}
-		#else		
+		#else	
+		StartRecording = FALSE;	
 		#endif
 
-		StartRecording = FALSE;
+		
 		GuestRegs->eax = (ULONG32) CcSysenterTimes;
 		GuestRegs->edx = (ULONG32) (CcSysenterTimes>>32);
 		return TRUE;
@@ -601,7 +613,7 @@ void __declspec(naked) CcFakeSysenterTrap()
 		jmp CcOriginSysenterEIP;
 	}
 }
-static void NTAPI CcSetupSysenterTrap()
+static NTSTATUS NTAPI CcSetupSysenterTrap()
 {
 	CcOriginSysenterEIP = VmxRead(GUEST_SYSENTER_EIP);
 	HvmPrint(("ContextCounter: In CcSetupSysenterTrap(): OriginSysenterAddr:%x\n",CcOriginSysenterEIP));
@@ -609,7 +621,7 @@ static void NTAPI CcSetupSysenterTrap()
 	HvmPrint(("ContextCounter: In CcSetupSysenterTrap(): NewSysenterEntry:%x\n",VmxRead(GUEST_SYSENTER_EIP)));
 	return STATUS_SUCCESS;
 }
-static void NTAPI CcDestroySysenterTrap()
+static NTSTATUS NTAPI CcDestroySysenterTrap()
 {
 	//Step 1.Verify if the current sysenter entry is our CcFakeSysenterTrap()
 	//This verify enables nested sysenter trap.
