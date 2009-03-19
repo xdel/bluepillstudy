@@ -20,6 +20,8 @@
  */
 typedef struct _MadDog_Control
 {
+	NTSTATUS (*UserInitialization)();//This always happens before VMXON, You don't need to handle the initialization on multi processor 
+	NTSTATUS (*UserFinalization)();//This always happens after Hypervisor removed, You don't need to handle the initialization on multi processor 
 	NTSTATUS (*SetupVMCB)(PCPU Cpu, PVOID GuestEip, PVOID GuestEsp);
 	NTSTATUS (*ApplyTraps) (PCPU Cpu);
 } MadDog_Control,

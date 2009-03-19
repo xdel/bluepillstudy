@@ -52,17 +52,27 @@ NTSTATUS NTAPI HvmSpitOutBluepill (
 		Status = CmDeliverToProcessor (cProcessorNumber, HvmLiberateCpu, NULL, &CallbackStatus,TRUE);//<-------------3.1  Finish
 
 		if (!NT_SUCCESS (Status)) {
-			KdPrint(("HelloWorld:HvmSpitOutBluepill(): CmDeliverToProcessor() failed with status 0x%08hX\n", Status));
+			HvmPrint(("HelloWorld:HvmSpitOutBluepill(): CmDeliverToProcessor() failed with status 0x%08hX\n", Status));
 		}
 
 		if (!NT_SUCCESS (CallbackStatus)) {
-			Print(("HelloWorld:HvmSpitOutBluepill(): HvmLiberateCpu() failed with status 0x%08hX\n", CallbackStatus));
+			HvmPrint(("HelloWorld:HvmSpitOutBluepill(): HvmLiberateCpu() failed with status 0x%08hX\n", CallbackStatus));
+		}
+
+		if (g_HvmControl->UserFinalization)
+		{
+			Status = g_HvmControl->UserFinalization();
+			if (!NT_SUCCESS (Status)) {
+				HvmPrint(("HelloWorld:HvmSpitOutBluepill():User Finalization failed with status 0x%08hX\n", Status));
+				return Status;
+			}
 		}
 	}
 
 	Print(("HelloWorld:HvmSpitOutBluepill(): Finished at irql %d\n", KeGetCurrentIrql ()));
 
 	KeReleaseMutex (&g_HvmMutex, FALSE);
+
 	return STATUS_SUCCESS;
 	#endif
 }
@@ -86,6 +96,15 @@ NTSTATUS NTAPI HvmSwallowBluepill()
 	{
 		Print(("HelloWorld:HvmSwallowBluepill():Installing HelloWorld VT Root Manager on processor #%d\n", cProcessorNumber));
 
+		if (g_HvmControl->UserInitialization)
+		{
+			Status = g_HvmControl->UserInitialization();
+			if (!NT_SUCCESS (Status)) {
+				HvmPrint(("HelloWorld:HvmSwallowBluepill():User Initialization failed with status 0x%08hX\n", Status));
+				return Status;
+			}
+		}
+		
 		Status = CmDeliverToProcessor(cProcessorNumber, CmSubvert, NULL, &CallbackStatus,TRUE);//<----------------2.1 Finish
 
 		if (!NT_SUCCESS (Status)) {

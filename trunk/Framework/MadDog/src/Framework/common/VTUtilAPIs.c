@@ -111,4 +111,5 @@ NTSTATUS NTAPI MadDog_DeliverToAllProcessors (
 	}
 
 	KeReleaseMutex (&g_MadDogUtilMutex, FALSE);
+	return STATUS_SUCCESS;
 }
