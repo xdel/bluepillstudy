@@ -5,6 +5,8 @@
 unsigned int numCore;
 
 ULONG64 __stdcall NBPCall (ULONG32 knock) {
+	ULONG32 SavedEax;
+	ULONG32 SavedEdx;
 	unsigned int cProcessorNumber;
 	HANDLE hProcess = GetCurrentProcess(); 
 	DWORD dwProcessAffinityMask, dwSystemAffinityMask; 
@@ -15,16 +17,16 @@ ULONG64 __stdcall NBPCall (ULONG32 knock) {
 		//KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
 		SetProcessAffinityMask( hProcess, (ULONG)(1<<cProcessorNumber) );
 		__asm { 
-		mov eax, [ebp + 8H]
-		cpuid
-		push eax;
-		push edx; //Store the result returned by cpuid instruction	
+			mov eax, [ebp + 8H];
+			cpuid;
+			mov SavedEax,eax;
+			mov SavedEdx,edx;
 		}
 	}
 	SetProcessAffinityMask(hProcess, dwProcessAffinityMask);
 	__asm { 
-	pop eax;
-	pop edx; //Restore the result returned by cpuid instruction	
+	mov eax,SavedEax;
+	mov edx,SavedEdx; //Restore the result returned by cpuid instruction	
 	}
 
 return;
