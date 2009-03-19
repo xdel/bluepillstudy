@@ -611,7 +611,7 @@ static NTSTATUS NTAPI CcSetupSysenterForEachProcessor()
 }
 static void NTAPI CcSetupSysenterTrap()
 {
-	MadDog_DeliverToAllProcessors(CcSetupSysenterForEachProcessor,NULL);
+	MadDog_DeliverToAllProcessors(CcSetupSysenterForEachProcessor,NULL,FALSE);
 }
 
 static NTSTATUS NTAPI CcDestroySysenterTrapForEachProcessor()
@@ -632,7 +632,7 @@ static NTSTATUS NTAPI CcDestroySysenterTrapForEachProcessor()
 }
 static void NTAPI CcDestroySysenterTrap()
 {
-	MadDog_DeliverToAllProcessors(CcDestroySysenterTrapForEachProcessor,NULL);
+	MadDog_DeliverToAllProcessors(CcDestroySysenterTrapForEachProcessor,NULL,FALSE);
 }
 
 #endif

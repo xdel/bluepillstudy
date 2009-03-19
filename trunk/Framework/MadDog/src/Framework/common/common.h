@@ -296,7 +296,8 @@ NTSTATUS NTAPI CmDeliverToProcessor (
   CCHAR cProcessorNumber,
   PCALLBACK_PROC CallbackProc,
   PVOID CallbackParam,
-  PNTSTATUS pCallbackStatus
+  PNTSTATUS pCallbackStatus,
+  BOOLEAN needRaiseIRQL
 );
 
 /**

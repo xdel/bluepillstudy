@@ -49,7 +49,7 @@ NTSTATUS NTAPI HvmSpitOutBluepill (
 
 		Print(("HelloWorld:HvmSpitOutBluepill(): Liberating processor #%d\n", cProcessorNumber));
 
-		Status = CmDeliverToProcessor (cProcessorNumber, HvmLiberateCpu, NULL, &CallbackStatus);//<-------------3.1  Finish
+		Status = CmDeliverToProcessor (cProcessorNumber, HvmLiberateCpu, NULL, &CallbackStatus,TRUE);//<-------------3.1  Finish
 
 		if (!NT_SUCCESS (Status)) {
 			KdPrint(("HelloWorld:HvmSpitOutBluepill(): CmDeliverToProcessor() failed with status 0x%08hX\n", Status));
@@ -86,7 +86,7 @@ NTSTATUS NTAPI HvmSwallowBluepill()
 	{
 		Print(("HelloWorld:HvmSwallowBluepill():Installing HelloWorld VT Root Manager on processor #%d\n", cProcessorNumber));
 
-		Status = CmDeliverToProcessor(cProcessorNumber, CmSubvert, NULL, &CallbackStatus);//<----------------2.1 Finish
+		Status = CmDeliverToProcessor(cProcessorNumber, CmSubvert, NULL, &CallbackStatus,TRUE);//<----------------2.1 Finish
 
 		if (!NT_SUCCESS (Status)) {
 			Print(("HelloWorld:HvmSwallowBluepill(): CmDeliverToProcessor() failed with status 0x%08hX\n", Status));
