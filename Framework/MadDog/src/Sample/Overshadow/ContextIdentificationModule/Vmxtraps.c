@@ -601,7 +601,7 @@ void __declspec(naked) CcFakeSysenterTrap()
 		jmp CcOriginSysenterEIP;
 	}
 }
-static NTSTATUS NTAPI CcSetupSysenterForEachProcessor()
+static void NTAPI CcSetupSysenterTrap()
 {
 	CcOriginSysenterEIP = VmxRead(GUEST_SYSENTER_EIP);
 	HvmPrint(("ContextCounter: In CcSetupSysenterTrap(): OriginSysenterAddr:%x\n",CcOriginSysenterEIP));
@@ -609,12 +609,7 @@ static NTSTATUS NTAPI CcSetupSysenterForEachProcessor()
 	HvmPrint(("ContextCounter: In CcSetupSysenterTrap(): NewSysenterEntry:%x\n",VmxRead(GUEST_SYSENTER_EIP)));
 	return STATUS_SUCCESS;
 }
-static void NTAPI CcSetupSysenterTrap()
-{
-	MadDog_DeliverToAllProcessors(CcSetupSysenterForEachProcessor,NULL,FALSE);
-}
-
-static NTSTATUS NTAPI CcDestroySysenterTrapForEachProcessor()
+static void NTAPI CcDestroySysenterTrap()
 {
 	//Step 1.Verify if the current sysenter entry is our CcFakeSysenterTrap()
 	//This verify enables nested sysenter trap.
@@ -629,10 +624,6 @@ static NTSTATUS NTAPI CcDestroySysenterTrapForEachProcessor()
 	}
 	HvmPrint(("ContextCounter: In CcDestroySysenterTrap(): Can't Restore origin sysenter entry, it has been substituded by other app.\n"));
 	return STATUS_UNSUCCESSFUL;
-}
-static void NTAPI CcDestroySysenterTrap()
-{
-	MadDog_DeliverToAllProcessors(CcDestroySysenterTrapForEachProcessor,NULL,FALSE);
 }
 
 #endif

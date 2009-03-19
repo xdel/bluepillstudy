@@ -19,6 +19,8 @@
 
 static MadDog_Control md_Control = 
 {
+	NULL,
+	NULL,
 	&HvmSetupVMControlBlock,
 	&VmxRegisterTraps
 };
