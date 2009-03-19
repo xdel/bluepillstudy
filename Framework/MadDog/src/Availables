@@ -8,3 +8,8 @@ Revision 101:
 Revision 106:
 	- Fix the "GDTR limit and IDTR limit DO NOT Restore after unloading the driver" issue. Tthe driver can re-entrant now.
 	- Release Build 0.2009.2.15
+
+Revision 151:
+	- Add UserInitialization & UserFinalization callback
+	- Add some helper function
+	- Release Build 0.2009.3.19
