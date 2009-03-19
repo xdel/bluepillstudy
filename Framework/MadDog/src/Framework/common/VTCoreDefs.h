@@ -27,3 +27,6 @@ typedef BOOLEAN (
   PNBP_TRAP Trap,
   BOOLEAN WillBeAlsoHandledByGuestHv
 );
+
+//+++++++++++++++++++++Other Definitions+++++++++++++++++++++++++++
+typedef NTSTATUS (NTAPI * PCALLBACK_PROC) (PVOID Param);

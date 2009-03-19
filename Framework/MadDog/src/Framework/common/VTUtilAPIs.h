@@ -24,3 +24,21 @@ VOID NTAPI MadDog_CpuidWithEcxEdx (
   IN OUT PULONG32 ret_ecx,
   IN OUT PULONG32 ret_edx
 );
+
+/**
+ * effects: Let the indicated processor run the function.
+ */
+NTSTATUS NTAPI MadDog_DeliverToProcessor (
+  CCHAR cProcessorNumber,
+  PCALLBACK_PROC CallbackProc,
+  PVOID CallbackParam,
+  PNTSTATUS pCallbackStatus
+);
+
+/**
+ * effects: Let all processor run the function.
+ */
+NTSTATUS NTAPI MadDog_DeliverToAllProcessors (
+  PCALLBACK_PROC CallbackProc,
+  PVOID CallbackParam
+);
