@@ -32,7 +32,8 @@ NTSTATUS NTAPI MadDog_DeliverToProcessor (
   CCHAR cProcessorNumber,
   PCALLBACK_PROC CallbackProc,
   PVOID CallbackParam,
-  PNTSTATUS pCallbackStatus
+  PNTSTATUS pCallbackStatus,
+  BOOLEAN needRaiseIRQL
 );
 
 /**
@@ -40,5 +41,6 @@ NTSTATUS NTAPI MadDog_DeliverToProcessor (
  */
 NTSTATUS NTAPI MadDog_DeliverToAllProcessors (
   PCALLBACK_PROC CallbackProc,
-  PVOID CallbackParam
+  PVOID CallbackParam,
+  BOOLEAN needRaiseIRQL
 );

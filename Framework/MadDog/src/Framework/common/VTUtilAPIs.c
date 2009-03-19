@@ -75,10 +75,11 @@ NTSTATUS NTAPI MadDog_DeliverToProcessor (
   CCHAR cProcessorNumber,
   PCALLBACK_PROC CallbackProc,
   PVOID CallbackParam,
-  PNTSTATUS pCallbackStatus
+  PNTSTATUS pCallbackStatus,
+  BOOLEAN needRaiseIRQL
 )
 {
-	return CmDeliverToProcessor(cProcessorNumber,CallbackProc,CallbackParam,pCallbackStatus);
+	return CmDeliverToProcessor(cProcessorNumber,CallbackProc,CallbackParam,pCallbackStatus,needRaiseIRQL);
 }
 
 /**
@@ -86,7 +87,8 @@ NTSTATUS NTAPI MadDog_DeliverToProcessor (
  */
 NTSTATUS NTAPI MadDog_DeliverToAllProcessors (
   PCALLBACK_PROC CallbackProc,
-  PVOID CallbackParam
+  PVOID CallbackParam,
+  BOOLEAN needRaiseIRQL
 )
 {
 	CCHAR cProcessorNumber;
@@ -95,7 +97,7 @@ NTSTATUS NTAPI MadDog_DeliverToAllProcessors (
 
 	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
 	{
-		Status = CmDeliverToProcessor(cProcessorNumber, CallbackProc, CallbackParam, &CallbackStatus);
+		Status = CmDeliverToProcessor(cProcessorNumber, CallbackProc, CallbackParam, &CallbackStatus,needRaiseIRQL);
 
 		if (!NT_SUCCESS (Status)) {
 			KeReleaseMutex (&g_MadDogUtilMutex, FALSE);

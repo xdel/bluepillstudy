@@ -23,7 +23,8 @@ NTSTATUS NTAPI CmDeliverToProcessor (
   CCHAR cProcessorNumber,
   PCALLBACK_PROC CallbackProc,
   PVOID CallbackParam,
-  PNTSTATUS pCallbackStatus
+  PNTSTATUS pCallbackStatus,
+  BOOLEAN needRaiseIRQL
 )
 { //Finish//SAME
   NTSTATUS CallbackStatus;
@@ -36,11 +37,11 @@ NTSTATUS NTAPI CmDeliverToProcessor (
     *pCallbackStatus = STATUS_UNSUCCESSFUL;
 
   KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
-
-  OldIrql = KeRaiseIrqlToDpcLevel ();
+  if(needRaiseIRQL)
+  	OldIrql = KeRaiseIrqlToDpcLevel ();
   CallbackStatus = CallbackProc (CallbackParam);
-
-  KeLowerIrql (OldIrql);
+  if(needRaiseIRQL)
+  	KeLowerIrql (OldIrql);
 
   KeRevertToUserAffinityThread ();
 
