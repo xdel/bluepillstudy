@@ -78,12 +78,6 @@
 #define REG_CR3	REG_CONTROL | 3
 #define REG_CR4	REG_CONTROL | 4
 
-typedef NTSTATUS (
-  NTAPI * PCALLBACK_PROC
-) (
-  PVOID Param
-);
-
 //typedef struct _CPU *PCPU;
 
 //typedef struct _GUEST_REGS
@@ -294,7 +288,8 @@ BOOLEAN CmIsBitSet (
 );
 
 /**
- * effects:Raise the interruption level to dispatch level, then
+ * effects: Let the indicated processor run the function.
+ * Raise the interruption level to dispatch level, then
  * install VM Root hypervisor by call <CallbackProc>
  */
 NTSTATUS NTAPI CmDeliverToProcessor (

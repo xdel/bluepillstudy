@@ -1,5 +1,10 @@
 #include "VTUtilAPIs.h"
 #include "cpuid.h"
+#include "common.h"
+
+//This Mutex lock uis used for Maddog Utility function
+static KMUTEX g_MadDogUtilMutex;
+
 /**
  * effects:A Default Implementation of Initialize Segment Selector.
  */
@@ -61,4 +66,47 @@ VOID NTAPI MadDog_CpuidWithEcxEdx (
 )
 {
 	CpuidWithEcxEdx(ret_ecx,ret_edx);
+}
+
+/**
+ * effects: Let the indicated processor run the function.
+ */
+NTSTATUS NTAPI MadDog_DeliverToProcessor (
+  CCHAR cProcessorNumber,
+  PCALLBACK_PROC CallbackProc,
+  PVOID CallbackParam,
+  PNTSTATUS pCallbackStatus
+)
+{
+	return CmDeliverToProcessor(cProcessorNumber,CallbackProc,CallbackParam,pCallbackStatus);
+}
+
+/**
+ * effects: Let all processor run the function.
+ */
+NTSTATUS NTAPI MadDog_DeliverToAllProcessors (
+  PCALLBACK_PROC CallbackProc,
+  PVOID CallbackParam
+)
+{
+	CCHAR cProcessorNumber;
+	NTSTATUS Status, CallbackStatus;
+	KeWaitForSingleObject (&g_MadDogUtilMutex, Executive, KernelMode, FALSE, NULL);
+
+	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
+	{
+		Status = CmDeliverToProcessor(cProcessorNumber, CallbackProc, CallbackParam, &CallbackStatus);
+
+		if (!NT_SUCCESS (Status)) {
+			KeReleaseMutex (&g_MadDogUtilMutex, FALSE);
+			return Status;
+		}
+
+		if (!NT_SUCCESS (CallbackStatus)) {
+			KeReleaseMutex (&g_MadDogUtilMutex, FALSE);
+			return CallbackStatus;
+		}
+	}
+
+	KeReleaseMutex (&g_MadDogUtilMutex, FALSE);
 }
