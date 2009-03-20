@@ -3,56 +3,75 @@
 BOOLEAN StartRecording;
 ULONG64 SyscallTimes;
 
-ULONG64 OriginSysenterEIP;
-ULONG64 OriginSysenterCS;
-
+ULONG32 OriginSysenterEIP[2];
+ULONG32 OriginSysenterESP[2];
+static KMUTEX g_Mutex;
 ULONG32 SavedEax;
 ULONG32 SavedEbx;
 ULONG32 SavedEcx;
 ULONG32 SavedEdx;
+
+void NTAPI IncreaseCounter()
+{
+	//KeWaitForSingleObject (&g_Mutex, Executive, KernelMode, FALSE, NULL);
+	SyscallTimes++;
+	//KeReleaseMutex (&g_Mutex, FALSE);
+}
 void __declspec(naked) CcFakeSysenterTrap()
 {
-	//ULONG32 eaxMem;
-	//ULONG32 ebxMem;
-	//ULONG32 ecxMem;
-	//ULONG32 edxMem;
 	__asm{
-		mov SavedEax,eax;
-		mov SavedEbx,ebx;
-		mov SavedEcx,ecx;
-		mov SavedEdx,edx;
+		mov SavedEax,eax
+		mov SavedEbx,ebx
+		mov SavedEcx,ecx
+		mov SavedEdx,edx
 	}
-	SyscallTimes++;
+	//SyscallTimes++;
+	IncreaseCounter();
 	__asm{
-		mov eax,SavedEax;
-		mov ebx,SavedEbx;
-		mov ecx,SavedEcx;
-		mov edx,SavedEdx;
-		jmp OriginSysenterEIP;
+		mov eax,SavedEax
+		mov ebx,SavedEbx
+		mov ecx,SavedEcx
+		mov edx,SavedEdx
+		mov esp,OriginSysenterEIP
+		jmp OriginSysenterEIP
 	}
 }
 
 
-void NTAPI CcSetupSysenterTrap()
+void NTAPI CcSetupSysenterTrap(int cProcessorNumber)
 {
-	OriginSysenterEIP = MsrRead(MSR_IA32_SYSENTER_EIP);
-	HvmPrint(("In CcSetupSysenterTrap(): OriginSysenterAddr:%x\n",OriginSysenterEIP));
-	HvmPrint(("In CcSetupSysenterTrap(): FakeSysenterTrap:%x\n",&CcFakeSysenterTrap));
+	PVOID newSysenterESP;
+	OriginSysenterEIP[cProcessorNumber] = MsrRead(MSR_IA32_SYSENTER_EIP);
+	OriginSysenterESP[cProcessorNumber] = MsrRead(MSR_IA32_SYSENTER_ESP);
+	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterEIP:%x\n",cProcessorNumber,OriginSysenterEIP));
+	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterESP:%x\n",cProcessorNumber,OriginSysenterESP));
+	newSysenterESP = ExAllocatePoolWithTag (NonPagedPool, 256 * PAGE_SIZE, L"ITL");
 	MsrWrite(MSR_IA32_SYSENTER_EIP,&CcFakeSysenterTrap);
-	HvmPrint(("In CcSetupSysenterTrap(): NewSysenterEntry:%x\n",MsrRead(MSR_IA32_SYSENTER_EIP)));
+	MsrWrite(MSR_IA32_SYSENTER_ESP,newSysenterESP);
+	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, NewSysenterEntry:%x\n",cProcessorNumber,MsrRead(MSR_IA32_SYSENTER_EIP)));
 }
- void NTAPI CcDestroySysenterTrap()
+void NTAPI CcDestroySysenterTrap(int cProcessorNumber)
 {
-	MsrWrite(MSR_IA32_SYSENTER_EIP,OriginSysenterEIP);
+	MsrWrite(MSR_IA32_SYSENTER_EIP,OriginSysenterEIP[cProcessorNumber]);
+	MsrWrite(MSR_IA32_SYSENTER_ESP,OriginSysenterESP[cProcessorNumber]);
 }
 
 NTSTATUS DriverUnload (
     PDRIVER_OBJECT DriverObject
 )
 {
-CcDestroySysenterTrap();
+	CCHAR cProcessorNumber;
+	cProcessorNumber = 0;
+	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
+	{
+		KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
+
+		CcDestroySysenterTrap(cProcessorNumber);
+
+	}
+
 	DbgPrint("Sysenter %d times\n",SyscallTimes);
-    return STATUS_SUCCESS;
+    	return STATUS_SUCCESS;
 }
 
 NTSTATUS DriverEntry (
@@ -60,13 +79,21 @@ NTSTATUS DriverEntry (
     PUNICODE_STRING RegistryPath
 )
 {
-    NTSTATUS Status;
-    //CmDebugBreak();
-   // ULONG ulOldCR3;
+   	 NTSTATUS Status;
+   	 CCHAR cProcessorNumber;
 
-    //__asm { int 3 }
+    	__asm { int 3 }
+	cProcessorNumber = 0;
+	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
+	{
+		KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
 
-CcSetupSysenterTrap();
-      DriverObject->DriverUnload = DriverUnload;
-    return STATUS_SUCCESS;
+		CcSetupSysenterTrap(cProcessorNumber);
+
+	}
+
+	KeRevertToUserAffinityThread ();
+
+      	DriverObject->DriverUnload = DriverUnload;
+    	return STATUS_SUCCESS;
 }

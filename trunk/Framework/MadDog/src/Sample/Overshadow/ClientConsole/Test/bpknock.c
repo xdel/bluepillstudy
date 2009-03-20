@@ -23,7 +23,7 @@ ULONG64 __stdcall NBPCall (ULONG32 knock) {
 			mov SavedEdx,edx;
 		}
 	}
-	SetProcessAffinityMask(hProcess, dwProcessAffinityMask);
+	//SetProcessAffinityMask(hProcess, dwProcessAffinityMask);
 	__asm { 
 	mov eax,SavedEax;
 	mov edx,SavedEdx; //Restore the result returned by cpuid instruction	
@@ -34,7 +34,7 @@ return;
 int __cdecl main(int argc, char **argv) {
 	ULONG64 knock;
 	SYSTEM_INFO si;
-
+__asm { int 3 }
 	if (argc != 2) {
 		printf ("bpknock <magic knock>\n");
 		return 0;
