@@ -2,38 +2,60 @@
 
 BOOLEAN StartRecording;
 ULONG64 SyscallTimes;
+ULONG32 pSyscallTimes;
 
 ULONG32 OriginSysenterEIP[2];
 ULONG32 OriginSysenterESP[2];
 static KMUTEX g_Mutex;
-ULONG32 SavedEax;
-ULONG32 SavedEbx;
-ULONG32 SavedEcx;
-ULONG32 SavedEdx;
-
+static ULONG lock;
+static ULONG plock;
 void NTAPI IncreaseCounter()
 {
 	//KeWaitForSingleObject (&g_Mutex, Executive, KernelMode, FALSE, NULL);
-	SyscallTimes++;
+	//SyscallTimes++;
+	__asm{
+		//inc dword ptr [pSyscallTimes]
+	}
 	//KeReleaseMutex (&g_Mutex, FALSE);
 }
 void __declspec(naked) CcFakeSysenterTrap()
 {
+	//ULONG32 currentProcessor;
+	//ULONG32 targetESP;
+	//ULONG32 targetEIP;
+	
 	__asm{
-		mov SavedEax,eax
-		mov SavedEbx,ebx
-		mov SavedEcx,ecx
-		mov SavedEdx,edx
+	loop_down:
+		lock	bts dword ptr [plock], 0
+		jb	loop_down; Acquire A Spin Lock
 	}
-	//SyscallTimes++;
-	IncreaseCounter();
+
 	__asm{
-		mov eax,SavedEax
-		mov ebx,SavedEbx
-		mov ecx,SavedEcx
-		mov edx,SavedEdx
-		mov esp,OriginSysenterEIP
-		jmp OriginSysenterEIP
+		//mov SavedEax,eax
+		//mov SavedEbx,ebx
+		//mov SavedEcx,ecx
+		//mov SavedEdx,edx
+		push eax
+		push ebx
+		push ecx
+		push edx
+	}
+	
+	//currentProcessor = KeGetCurrentProcessorNumber();
+	//targetESP=OriginSysenterESP[currentProcessor];
+	//targetEIP=OriginSysenterEIP[currentProcessor];
+
+	SyscallTimes++;
+	//IncreaseCounter();
+	__asm{
+		pop edx
+		pop ecx
+		pop ebx
+		pop eax
+		lock	btr dword ptr [plock], 0; Release the Spin Lock
+		//mov esp,targetESP
+		//jmp targetEIP
+		jmp OriginSysenterEIP[0]
 	}
 }
 
@@ -43,12 +65,18 @@ void NTAPI CcSetupSysenterTrap(int cProcessorNumber)
 	PVOID newSysenterESP;
 	OriginSysenterEIP[cProcessorNumber] = MsrRead(MSR_IA32_SYSENTER_EIP);
 	OriginSysenterESP[cProcessorNumber] = MsrRead(MSR_IA32_SYSENTER_ESP);
-	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterEIP:%x\n",cProcessorNumber,OriginSysenterEIP));
-	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterESP:%x\n",cProcessorNumber,OriginSysenterESP));
-	newSysenterESP = ExAllocatePoolWithTag (NonPagedPool, 256 * PAGE_SIZE, L"ITL");
+	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterEIP:%x\n",cProcessorNumber,OriginSysenterEIP[cProcessorNumber]));
+	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterESP:%x\n",cProcessorNumber,OriginSysenterESP[cProcessorNumber]));
+	newSysenterESP = ExAllocatePoolWithTag (NonPagedPool, 4 * PAGE_SIZE, 'ITL');
 	MsrWrite(MSR_IA32_SYSENTER_EIP,&CcFakeSysenterTrap);
 	MsrWrite(MSR_IA32_SYSENTER_ESP,newSysenterESP);
 	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, NewSysenterEntry:%x\n",cProcessorNumber,MsrRead(MSR_IA32_SYSENTER_EIP)));
+	
+	pSyscallTimes =&SyscallTimes;
+	plock=&lock;
+	__asm{
+		and	dword ptr [plock], 0
+	}
 }
 void NTAPI CcDestroySysenterTrap(int cProcessorNumber)
 {
@@ -61,7 +89,6 @@ NTSTATUS DriverUnload (
 )
 {
 	CCHAR cProcessorNumber;
-	cProcessorNumber = 0;
 	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
 	{
 		KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
@@ -82,8 +109,7 @@ NTSTATUS DriverEntry (
    	 NTSTATUS Status;
    	 CCHAR cProcessorNumber;
 
-    	__asm { int 3 }
-	cProcessorNumber = 0;
+    	//__asm { int 3 }
 	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
 	{
 		KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
