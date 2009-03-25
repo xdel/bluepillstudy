@@ -9,6 +9,6 @@ if not exist %SAMPLE_OVERSHADOW_BIN_ROOT% mkdir %SAMPLE_OVERSHADOW_BIN_ROOT%
 if not exist %SAMPLE_OVERSHADOW_LOG_ROOT% mkdir %SAMPLE_OVERSHADOW_LOG_ROOT%
 
 @rem Step 1. Set command alias 
-doskey bos=%ENLISTMENT_PROJ_ROOT%\src\Sample\Overshadow\build_code.bat
-doskey src=cd /d %SAMPLE_OVERSHADOW_SRC_ROOT%
-doskey bin=cd /d 5SAMPLE_OVERSHADOW_BIN_ROOT%
+doskey /OVERSTRIKE bos=%ENLISTMENT_PROJ_ROOT%\src\Sample\Overshadow\build_code.bat
+doskey /OVERSTRIKE src=cd /d %SAMPLE_OVERSHADOW_SRC_ROOT%
+doskey /OVERSTRIKE bin=cd /d 5SAMPLE_OVERSHADOW_BIN_ROOT%
