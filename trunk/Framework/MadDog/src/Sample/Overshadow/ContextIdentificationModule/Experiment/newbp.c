@@ -9,6 +9,15 @@ ULONG32 OriginSysenterESP[2];
 static KMUTEX g_Mutex;
 static ULONG lock;
 static ULONG plock;
+
+ULONG32 SavedEax;
+ULONG32 SavedEbx;
+ULONG32 SavedEcx;
+ULONG32 SavedEdx;
+ULONG32 SavedEax2[2];
+ULONG32 SavedEbx2[2];
+ULONG32 SavedEcx2[2];
+ULONG32 SavedEdx2[2];
 void NTAPI IncreaseCounter()
 {
 	//KeWaitForSingleObject (&g_Mutex, Executive, KernelMode, FALSE, NULL);
@@ -31,6 +40,7 @@ void __declspec(naked) CcFakeSysenterTrap()
 	}
 
 	__asm{
+
 		//mov SavedEax,eax
 		//mov SavedEbx,ebx
 		//mov SavedEcx,ecx
@@ -40,13 +50,25 @@ void __declspec(naked) CcFakeSysenterTrap()
 		push ecx
 		push edx
 	}
-	
+
 	//currentProcessor = KeGetCurrentProcessorNumber();
 	//targetESP=OriginSysenterESP[currentProcessor];
 	//targetEIP=OriginSysenterEIP[currentProcessor];
+	
+	//SavedEax2[currentProcessor] = SavedEax;
+	//SavedEcx2[currentProcessor] = SavedEcx;
+	//SavedEdx2[currentProcessor] = SavedEdx;
 
 	SyscallTimes++;
 	//IncreaseCounter();
+	__asm{
+			//mov ebx, currentProcessor
+			//imul ebx,4
+			//mov eax,[SavedEax2+ebx]
+			//mov ecx,[SavedEcx2+ebx]
+			//mov edx,[SavedEdx2+ebx]
+	}
+
 	__asm{
 		pop edx
 		pop ecx
@@ -56,6 +78,7 @@ void __declspec(naked) CcFakeSysenterTrap()
 		//mov esp,targetESP
 		//jmp targetEIP
 		jmp OriginSysenterEIP[0]
+		//jmp targetEIP
 	}
 }
 
@@ -74,9 +97,7 @@ void NTAPI CcSetupSysenterTrap(int cProcessorNumber)
 	
 	pSyscallTimes =&SyscallTimes;
 	plock=&lock;
-	__asm{
-		and	dword ptr [plock], 0
-	}
+	
 }
 void NTAPI CcDestroySysenterTrap(int cProcessorNumber)
 {
@@ -89,6 +110,7 @@ NTSTATUS DriverUnload (
 )
 {
 	CCHAR cProcessorNumber;
+	//cProcessorNumber = 0;
 	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
 	{
 		KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
@@ -108,8 +130,11 @@ NTSTATUS DriverEntry (
 {
    	 NTSTATUS Status;
    	 CCHAR cProcessorNumber;
-
+	//cProcessorNumber = 0;
     	//__asm { int 3 }
+	__asm{
+		and	dword ptr [plock], 0
+	}
 	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
 	{
 		KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
