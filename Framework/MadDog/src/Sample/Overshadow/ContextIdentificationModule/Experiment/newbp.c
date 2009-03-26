@@ -128,8 +128,8 @@ NTSTATUS DriverEntry (
     PUNICODE_STRING RegistryPath
 )
 {
-   	 NTSTATUS Status;
-   	 CCHAR cProcessorNumber;
+   	NTSTATUS Status;
+   	CCHAR cProcessorNumber;
 	//cProcessorNumber = 0;
     	//__asm { int 3 }
 	__asm{
