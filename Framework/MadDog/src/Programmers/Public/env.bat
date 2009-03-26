@@ -1,4 +1,7 @@
 @rem Step 1. Set command alias 
+doskey src=cd /d %ENLISTMENT_PROJ_ROOT%\src\Framework
+doskey bin=cd /d %ENLISTMENT_PROJ_ROOT%\bin\Framework
+doskey test=cd /d %ENLISTMENT_PROJ_ROOT%\test
 doskey up=cd /d ..
 doskey up2=cd /d ..\..
 doskey n=notepad $*
