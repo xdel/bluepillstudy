@@ -1,4 +1,4 @@
-#include "newbp.h"
+#include "SysenterHooker.h"
 
 BOOLEAN StartRecording;
 ULONG64 SyscallTimes;
