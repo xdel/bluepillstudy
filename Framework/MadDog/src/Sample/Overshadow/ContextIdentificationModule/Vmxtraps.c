@@ -1,22 +1,31 @@
 #include "vmxtraps.h"
 
-BOOLEAN StartRecording;
+BOOLEAN StartRecording[CoreCount];
+Parameter g_CommandInfo;
+static ULONG lock;//This is used as a spin-lock in CcFakeSysenterTrap()
+static ULONG plock;//Points to the <lock> variable
 
 ULONG64 CcSysenterTimes;//Record Sysenter instruction happen times.
 
-//Register backup
-ULONG32 CcOriginEax;
-ULONG32 CcOriginEbx;
-ULONG32 CcOriginEcx;
-ULONG32 CcOriginEdx;
-
 //MSR backup
-ULONG32 CcOriginSysenterEIP;
+ULONG32 CcOriginSysenterEIP[CoreCount];
+ULONG32 CcOriginSysenterESP[CoreCount];
 
-#ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
-static NTSTATUS NTAPI CcSetupSysenterTrap();
-static NTSTATUS NTAPI CcDestroySysenterTrap();
-#endif
+/**
+ * Used to Setup ourselves sysenter entry.
+ */
+static NTSTATUS NTAPI CcSetupSysenterTrap(int cProcessorNumber);
+
+/**
+ * Used to restore the origin sysenter entry.
+ */
+static NTSTATUS NTAPI CcDestroySysenterTrap(int cProcessorNumber);
+
+/**
+ * When start recording, This function is used to initialize the members which is important 
+ * in all recording-related scenrios.
+ */
+static VOID NTAPI GeneralInitialization(PGUEST_REGS GuestRegs);
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
@@ -200,6 +209,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
 	ULONG inst_len;
+	ULONG32 cProcessorNumber;
 	NTSTATUS status;
 	if (!Cpu || !GuestRegs)
 	return TRUE;
@@ -213,49 +223,53 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	if (Trap->General.RipDelta == 0)
 	Trap->General.RipDelta = inst_len;
 
-	if (fn == START_RECORDING_EAX) 
+	if (fn == START_RECORDING_EAX) //Start Recording
 	{
+		cProcessorNumber = KeGetCurrentProcessorNumber();
 		HvmPrint(("Hypervisor: Start Recording\n"));
-
-		#ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
-		//if(StartRecording == FALSE)
+		//Step 1. Initialize members for generialize use.
+		GeneralInitialization(GuestRegs);
+		
+		//Check if ContextCounter is recording currently
+		//If true, ContextCounter Hypervisor should do nothing
+		//We only allow only 1 ContextCounter instance to record at one time.
+		if(StartRecording[cProcessorNumber] == FALSE)
 		{
 			HvmPrint(("ContextCounter: Hacking sysenter entry\n"));
-			status = CcSetupSysenterTrap();//Setup Sysenter trap
+			status = CcSetupSysenterTrap(cProcessorNumber);//Setup Sysenter trap
 			if(status == STATUS_SUCCESS)
 			{
-				StartRecording = TRUE;
+				StartRecording[cProcessorNumber] = TRUE;
 				CcSysenterTimes = 0;
-			}
-			
-		}
-		#else	
-		StartRecording = TRUE;	
-		#endif
-		
+			}		
+		}		
 	}
-	else if(fn == END_RECORDING_EAX)
+	else if(fn == END_RECORDING_EAX) //End Recording
 	{
+		cProcessorNumber = KeGetCurrentProcessorNumber();
 		HvmPrint(("Hypervisor: End Recording\n"));	
-		
-		#ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
-		//if(StartRecording == TRUE)
+
+		//Check if ContextCounter is recording currently
+		//If false, ContextCounter Hypervisor should do nothing
+		//We only allow only 1 ContextCounter instance to record at one time.
+		if(StartRecording[cProcessorNumber] == TRUE)
 		{
 			HvmPrint(("ContextCounter: Releasing sysenter entry\n"));
-			status = CcDestroySysenterTrap();
+			status = CcDestroySysenterTrap(cProcessorNumber);
 			if(status == STATUS_SUCCESS)
 			{
-				StartRecording = FALSE;
+				StartRecording[cProcessorNumber] = FALSE;
 			}
 		}
-		#else	
-		StartRecording = FALSE;	
-		#endif
-
-		
+	
 		GuestRegs->eax = (ULONG32) CcSysenterTimes;
 		GuestRegs->edx = (ULONG32) (CcSysenterTimes>>32);
 		return TRUE;
+	}
+	else if(fn == TEST_PASSINVALUE_EAX)
+	{
+		HvmPrint(("ContextCounter: In Testing Mode\n"));
+		GeneralInitialization(GuestRegs);
 	}
 
 	ecx = (ULONG) GuestRegs->ecx;
@@ -353,15 +367,6 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
     Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
         VmxRead(GUEST_RIP), 
         MsrValue.QuadPart));
-
-	#ifndef ContextCounter_SYSENTER_USE_HOOK_TRAP
-	if (StartRecording) 
-	{
-		HvmPrint(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", VmxRead(GUEST_RIP), MsrValue.QuadPart));
-		CcSysenterTimes++;
-	}
-	#endif
-
     break;
   case MSR_GS_BASE:
     MsrValue.QuadPart = VmxRead (GUEST_GS_BASE);
@@ -546,7 +551,7 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
             if (Cpu->Vmx.GuestCR0 & X86_CR0_PG)       //enable paging
             {
 #if DEBUG_LEVEL>2
-                Print(("VmxDispatchCrAccess(): TYPE_MOV_TO_CR cr3:0x%x\n", *(((PULONG64) GuestRegs) + gp)));
+                HvmPrint(("VmxDispatchCrAccess(): TYPE_MOV_TO_CR cr3:0x%x\n", *(((PULONG64) GuestRegs) + gp)));
 #endif
                 VmxWrite (GUEST_CR3, Cpu->Vmx.GuestCR3);
 
@@ -580,7 +585,7 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
         {
             value = Cpu->Vmx.GuestCR3;
 #if DEBUG_LEVEL>2
-            Print(("VmxDispatchCrAccess(): TYPE_MOV_FROM_CR cr3:0x%x\n", value));
+            HvmPrint(("VmxDispatchCrAccess(): TYPE_MOV_FROM_CR cr3:0x%x\n", value));
 #endif
             *(((PULONG32) GuestRegs) + gp) = (ULONG32) value;
 
@@ -595,47 +600,82 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
     return TRUE;
 }
 
-#ifdef ContextCounter_SYSENTER_USE_HOOK_TRAP
+/**
+ * When start recording, This function is used to initialize the members which is important 
+ * in all recording-related scenrios.
+ */
+VOID NTAPI GeneralInitialization(PGUEST_REGS GuestRegs)
+{
+	plock=(ULONG)&lock;
+	
+	//Copy the Parameter Struct from user space to kernel space.
+	g_CommandInfo = *((PParameter)(GuestRegs->edx));
+	HvmPrint(("g_CommandInfo->pid value:%d",g_CommandInfo.pid));
+}
+
 void __declspec(naked) CcFakeSysenterTrap()
 {
+	
 	__asm{
-		mov CcOriginEax,eax;
-		mov CcOriginEbx,ebx;
-		mov CcOriginEcx,ecx;
-		mov CcOriginEdx,edx;
+	loop_down:
+		lock	bts dword ptr [plock], 0
+		jb	loop_down; Acquire A Spin Lock
 	}
-	CcSysenterTimes++;
+
 	__asm{
-		mov eax,CcOriginEax;
-		mov ebx,CcOriginEbx;
-		mov ecx,CcOriginEcx;
-		mov edx,CcOriginEdx;
-		jmp CcOriginSysenterEIP;
+		push eax
+		push ebx
+		push ecx
+		push edx
+	}
+
+	CcSysenterTimes++;
+
+	__asm{
+		pop edx
+		pop ecx
+		pop ebx
+		pop eax
+		lock	btr dword ptr [plock], 0; Release the Spin Lock
+		jmp CcOriginSysenterEIP[0]
 	}
 }
-static NTSTATUS NTAPI CcSetupSysenterTrap()
+static NTSTATUS NTAPI CcSetupSysenterTrap(int cProcessorNumber)
 {
-	CcOriginSysenterEIP = VmxRead(GUEST_SYSENTER_EIP);
-	HvmPrint(("ContextCounter: In CcSetupSysenterTrap(): OriginSysenterAddr:%x\n",CcOriginSysenterEIP));
-	VmxWrite (GUEST_SYSENTER_EIP,(ULONG)&CcFakeSysenterTrap);
-	HvmPrint(("ContextCounter: In CcSetupSysenterTrap(): NewSysenterEntry:%x\n",VmxRead(GUEST_SYSENTER_EIP)));
+	PVOID newSysenterESP;
+	
+	CcOriginSysenterEIP[cProcessorNumber] = VmxRead(GUEST_SYSENTER_EIP);
+	CcOriginSysenterESP[cProcessorNumber] = VmxRead(GUEST_SYSENTER_ESP);
+	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterEIP:%x\n",cProcessorNumber,CcOriginSysenterEIP[cProcessorNumber]));
+	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterESP:%x\n",cProcessorNumber,CcOriginSysenterESP[cProcessorNumber]));
+	newSysenterESP = ExAllocatePoolWithTag (NonPagedPool, 4 * PAGE_SIZE, LAB_TAG);
+
+	//Begin to rewrite the entry in MSR
+	VmxWrite (GUEST_SYSENTER_EIP, (ULONG)&CcFakeSysenterTrap);
+	VmxWrite (GUEST_SYSENTER_ESP, newSysenterESP);
+
+	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, NewSysenterEntry:%x\n",cProcessorNumber,VmxRead(GUEST_SYSENTER_EIP)));
+
 	return STATUS_SUCCESS;
 }
-static NTSTATUS NTAPI CcDestroySysenterTrap()
+
+static NTSTATUS NTAPI CcDestroySysenterTrap(int cProcessorNumber)
 {
 	//Step 1.Verify if the current sysenter entry is our CcFakeSysenterTrap()
 	//This verify enables nested sysenter trap.
-	ULONG32 currentSysEnterEIP = VmxRead(GUEST_SYSENTER_EIP);
+	ULONG currentSysEnterEIP = VmxRead(GUEST_SYSENTER_EIP);
 	HvmPrint(("ContextCounter: In CcDestroySysenterTrap(): currentSysEnterEIP:%x\n",currentSysEnterEIP));
 	HvmPrint(("ContextCounter: In CcDestroySysenterTrap(): CcFakeSysenterTrap:%x\n",&CcFakeSysenterTrap));
 	if(currentSysEnterEIP == (ULONG)(&CcFakeSysenterTrap))//It is our fake entry
 	{
 		HvmPrint(("ContextCounter: In CcDestroySysenterTrap(): Restore origin sysenter entry\n"));
-		VmxWrite (GUEST_SYSENTER_EIP,CcOriginSysenterEIP);
+		cProcessorNumber = KeGetCurrentProcessorNumber();
+		//Step 2. Replace the entry with the origin sysenter entry address.
+		VmxWrite (GUEST_SYSENTER_EIP,CcOriginSysenterEIP[cProcessorNumber]);
+		VmxWrite (GUEST_SYSENTER_ESP,CcOriginSysenterESP[cProcessorNumber]);
+
 		return STATUS_SUCCESS;
 	}
 	HvmPrint(("ContextCounter: In CcDestroySysenterTrap(): Can't Restore origin sysenter entry, it has been substituded by other app.\n"));
 	return STATUS_UNSUCCESSFUL;
 }
-
-#endif

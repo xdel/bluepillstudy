@@ -10,6 +10,9 @@
 
 #endif
 
+#define LAB_TAG 'VSL' 	//Define the tag. This value will be used in allocate pool memory. 
+			// 'VSL'- Virtualization Security Lab
+
 //++++++++++++++Cpu Related Structs(Common Structs)++++++++++++++++
 typedef struct _CPU *PCPU;
 typedef struct _GUEST_REGS *PGUEST_REGS;
