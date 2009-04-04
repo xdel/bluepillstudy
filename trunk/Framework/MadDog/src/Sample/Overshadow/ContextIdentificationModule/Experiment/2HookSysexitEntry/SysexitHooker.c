@@ -40,11 +40,6 @@ void __declspec(naked) CcFakeSysenterTrap()
 	}
 
 	__asm{
-
-		mov SavedEax,eax
-		mov SavedEbx,ebx
-		mov SavedEcx,ecx
-		mov SavedEdx,edx
 		push eax
 		push ebx
 		push ecx
@@ -76,39 +71,10 @@ void __declspec(naked) CcFakeSysenterTrap()
 	}
 
 	__asm{
-		//pop edx
-		//pop ecx
-		//pop ebx
-		//pop eax
-		//lock	btr dword ptr [plock], 0; Release the Spin Lock
-		mov SavedEax2,eax
-		mov SavedEbx2,ebx
-		mov SavedEcx2,ecx
-		mov SavedEdx2,edx
-		//jmp OriginSysenterEIP[0]
-	}
-	if((SavedEax2!=SavedEax))
-	{
-		DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EAX:%x, Now EAX: %x",SavedEax,SavedEax2);
-	}
-	if((SavedEbx2!=SavedEbx))
-	{
-		DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EBX:%x, Now EBX: %x",SavedEbx,SavedEbx2);
-	}
-	if((SavedEcx2!=SavedEcx))
-	{
-		DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin ECX:%x, Now ECX: %x",SavedEcx,SavedEcx2);
-	}
-	if((SavedEdx2!=SavedEdx))
-	{
-		DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EDX:%x, Now EDX: %x",SavedEdx,SavedEdx2);
-	}
-
-	__asm{
-		mov eax,SavedEax
-		mov ebx,SavedEbx
-		mov ecx,SavedEcx
-		mov edx,SavedEdx
+		pop edx
+		pop ecx
+		pop ebx
+		pop eax
 		lock	btr dword ptr [plock], 0; Release the Spin Lock
 		jmp OriginSysenterEIP[0]
 	}
@@ -169,7 +135,7 @@ NTSTATUS DriverEntry (
    	CCHAR cProcessorNumber;
 	KIRQL OldIrql;
 	//cProcessorNumber = 0;
-    	__asm { int 3 }
+    	//__asm { int 3 }
 	__asm{
 		and	dword ptr [plock], 0
 	}
