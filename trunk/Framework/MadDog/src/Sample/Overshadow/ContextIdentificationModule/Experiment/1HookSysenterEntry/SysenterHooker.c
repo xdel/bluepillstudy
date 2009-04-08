@@ -41,10 +41,10 @@ void __declspec(naked) CcFakeSysenterTrap()
 
 	__asm{
 
-		mov SavedEax,eax
-		mov SavedEbx,ebx
-		mov SavedEcx,ecx
-		mov SavedEdx,edx
+		//mov SavedEax,eax
+		//mov SavedEbx,ebx
+		//mov SavedEcx,ecx
+		//mov SavedEdx,edx
 		push eax
 		push ebx
 		push ecx
@@ -81,34 +81,34 @@ void __declspec(naked) CcFakeSysenterTrap()
 		//pop ebx
 		//pop eax
 		//lock	btr dword ptr [plock], 0; Release the Spin Lock
-		mov SavedEax2,eax
-		mov SavedEbx2,ebx
-		mov SavedEcx2,ecx
-		mov SavedEdx2,edx
+		//mov SavedEax2,eax
+		//mov SavedEbx2,ebx
+		//mov SavedEcx2,ecx
+		//mov SavedEdx2,edx
 		//jmp OriginSysenterEIP[0]
 	}
-	if((SavedEax2!=SavedEax))
-	{
-		DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EAX:%x, Now EAX: %x",SavedEax,SavedEax2);
-	}
-	if((SavedEbx2!=SavedEbx))
-	{
-		DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EBX:%x, Now EBX: %x",SavedEbx,SavedEbx2);
-	}
-	if((SavedEcx2!=SavedEcx))
-	{
-		DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin ECX:%x, Now ECX: %x",SavedEcx,SavedEcx2);
-	}
-	if((SavedEdx2!=SavedEdx))
-	{
-		DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EDX:%x, Now EDX: %x",SavedEdx,SavedEdx2);
-	}
+	//if((SavedEax2!=SavedEax))
+	//{
+	//	DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EAX:%x, Now EAX: %x",SavedEax,SavedEax2);
+	//}
+	//if((SavedEbx2!=SavedEbx))
+	//{
+	//	DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EBX:%x, Now EBX: %x",SavedEbx,SavedEbx2);
+	//}
+	//if((SavedEcx2!=SavedEcx))
+	//{
+	//	DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin ECX:%x, Now ECX: %x",SavedEcx,SavedEcx2);
+	//}
+	//if((SavedEdx2!=SavedEdx))
+	//{
+	//	DbgPrint ("!!!!!!Inconsistent EAX Register Value!!!!!! Origin EDX:%x, Now EDX: %x",SavedEdx,SavedEdx2);
+	//}
 
 	__asm{
-		mov eax,SavedEax
-		mov ebx,SavedEbx
-		mov ecx,SavedEcx
-		mov edx,SavedEdx
+		//mov eax,SavedEax
+		//mov ebx,SavedEbx
+		//mov ecx,SavedEcx
+		//mov edx,SavedEdx
 		lock	btr dword ptr [plock], 0; Release the Spin Lock
 		jmp OriginSysenterEIP[0]
 	}
@@ -122,7 +122,7 @@ void NTAPI CcSetupSysenterTrap(int cProcessorNumber)
 	OriginSysenterESP[cProcessorNumber] = MsrRead(MSR_IA32_SYSENTER_ESP);
 	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterEIP:%x\n",cProcessorNumber,OriginSysenterEIP[cProcessorNumber]));
 	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, OriginSysenterESP:%x\n",cProcessorNumber,OriginSysenterESP[cProcessorNumber]));
-	newSysenterESP = ExAllocatePoolWithTag (NonPagedPool, 4 * PAGE_SIZE, 'ITL');
+	newSysenterESP = ExAllocatePoolWithTag (NonPagedPool, 4 * PAGE_SIZE, 'VSL');
 	MsrWrite(MSR_IA32_SYSENTER_EIP,&CcFakeSysenterTrap);
 	MsrWrite(MSR_IA32_SYSENTER_ESP,newSysenterESP);
 	HvmPrint(("In CcSetupSysenterTrap(): Core:%d, NewSysenterEntry:%x\n",cProcessorNumber,MsrRead(MSR_IA32_SYSENTER_EIP)));
@@ -133,6 +133,9 @@ void NTAPI CcSetupSysenterTrap(int cProcessorNumber)
 }
 void NTAPI CcDestroySysenterTrap(int cProcessorNumber)
 {
+	PVOID currentSysenterESP;
+	currentSysenterESP = MsrRead(MSR_IA32_SYSENTER_ESP);
+	ExFreePoolWithTag(currentSysenterESP, 'VSL' );
 	MsrWrite(MSR_IA32_SYSENTER_EIP,OriginSysenterEIP[cProcessorNumber]);
 	MsrWrite(MSR_IA32_SYSENTER_ESP,OriginSysenterESP[cProcessorNumber]);
 }
@@ -169,7 +172,7 @@ NTSTATUS DriverEntry (
    	CCHAR cProcessorNumber;
 	KIRQL OldIrql;
 	//cProcessorNumber = 0;
-    	__asm { int 3 }
+    	//__asm { int 3 }
 	__asm{
 		and	dword ptr [plock], 0
 	}
