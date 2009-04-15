@@ -14,13 +14,13 @@ ULONG32 __declspec(naked) NBPCall (ULONG32 knock) {
 	mov	ebp, esp
 		cpuid
 
-push    edx;
-push	ebx;
-push	eax;
-mov ecx, esp;
-push	ecx;
-call print;
-add	esp, 16;
+	push    edx;
+	push	ebx;
+	push	eax;
+	mov ecx, esp;
+	push	ecx;
+	call print;
+	add	esp, 16;
 	mov	esp, ebp
 	pop	ebp
 	ret
@@ -35,8 +35,8 @@ int __cdecl main(int argc, char **argv) {
 	knock = strtoul (argv[1], 0, 0);
 
 	__try {
-  NBPCall(knock); 
-//printf("%d, %d, %d, %d\n", eax, ebx, ecx, edx);
+  		NBPCall(knock); 
+		//printf("%d, %d, %d, %d\n", eax, ebx, ecx, edx);
 		//printf ("knock answer: %#x\n", NBPCall (knock));
 	} __except (EXCEPTION_EXECUTE_HANDLER) {
 		printf ("CPUDID caused exception");
