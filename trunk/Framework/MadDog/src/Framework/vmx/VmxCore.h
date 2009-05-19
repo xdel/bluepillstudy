@@ -9,8 +9,6 @@
 #include <ntddk.h>
 #include "common.h"
 #include "traps.h"
-#include "Vmx.h"
-#include "vmcs.h"
 #include "cpuid.h"
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 

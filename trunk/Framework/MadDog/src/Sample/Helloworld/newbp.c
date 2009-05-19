@@ -58,7 +58,6 @@ NTSTATUS DriverEntry (
    // ULONG ulOldCR3;
 
     PrintInfoInit();
-	Print(("Hello world!"));
     //__asm { int 3 }
 
     // test for our pagetabel

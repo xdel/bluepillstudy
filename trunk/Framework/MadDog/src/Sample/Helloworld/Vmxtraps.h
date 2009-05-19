@@ -2,9 +2,7 @@
 
 #include <ntddk.h>
 #include "VTCore.h"
-#include "vmx/Vmx.h"
-#include "vmx/Vmcs.h"
-#include "VTUtilAPIs.h"
+
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 // BPKNOCK backdoor
 #define BP_KNOCK

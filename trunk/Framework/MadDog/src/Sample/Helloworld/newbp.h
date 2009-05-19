@@ -19,7 +19,3 @@
 #include "Handlers.h"
 #include "Vmxtraps.h"
 //#include "version.h"
-//#include "hvm.h"
-//#include "paging.h"
-//#include "portio.h"
-//#include "dbgclient.h"
