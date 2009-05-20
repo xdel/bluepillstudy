@@ -10,5 +10,8 @@
 //+++++++++Strategies++++++++++++++
 #include "HvStrategies.h"
 
+//+++++++++Available Compile Switches++++++++++++++
+#include "HvCompileSwitches.h"
+
 //+++++++++++++Global Settings+++++++++++++++
 #define USE_DEBUG_LIBRUARY

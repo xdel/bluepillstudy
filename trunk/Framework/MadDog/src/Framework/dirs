@@ -1,7 +1,8 @@
 DIRS= \
      Util \
      vmx \
-     svm \     
+     svm \
+     Memory \     
      common \
      
     

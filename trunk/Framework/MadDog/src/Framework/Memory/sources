@@ -1,0 +1,12 @@
+TARGETNAME=Memory
+TARGETPATH=$(FRAMEWORK_BIN_ROOT)\lib
+TARGETTYPE=DRIVER_LIBRARY
+INCLUDES= .; $(FRAMEWORK_HEADERS_ROOT);\
+          $(FRAMEWORK_SRC_ROOT)\Util\Headers;
+SOURCES=\
+    	DefaultMemoryStrategy.c \
+	MemoryHidingStrategy.c
+
+
+
+
