@@ -25,6 +25,12 @@ static MadDog_Control md_Control =
 	&VmxRegisterTraps
 };
 
+VOID NTAPI Finalize()
+{
+	HvMmShutdownManager();
+	PrintInfoDispose();
+};
+
 NTSTATUS DriverUnload (
     PDRIVER_OBJECT DriverObject
 )
@@ -38,13 +44,13 @@ NTSTATUS DriverUnload (
     if (!NT_SUCCESS (Status = MadDog_UninstallHypervisor())) 
     {
         Print(("NEWBLUEPILL: UninstallHypervisor() failed with status 0x%08hX\n",Status));
-		PrintInfoDispose();
+		Finalize();
         return Status;
     }
 
     Print(("NEWBLUEPILL: Unloading finished\n"));
 
-	PrintInfoDispose();
+	Finalize();
     return STATUS_SUCCESS;
 }
 
@@ -58,7 +64,7 @@ NTSTATUS DriverEntry (
    // ULONG ulOldCR3;
 
     PrintInfoInit();
-    //__asm { int 3 }
+    __asm { int 3 }
 
     // test for our pagetabel
     //__asm 
@@ -68,12 +74,19 @@ NTSTATUS DriverEntry (
     //    mov eax, g_PageMapBasePhysicalAddress.LowPart
     //    mov cr3, eax
     //}
-
+	
+	Status = HvMmInitManager();
+    if (!NT_SUCCESS (Status)) 
+    {
+        Print(("HELLOWORLD: MadDog_MmInitManager() failed with status 0x%08hX\n", Status));
+        Finalize();
+		return Status;
+    }
 
     if (!NT_SUCCESS (Status = MadDog_HypervisorInit())) 
     {
-        Print(("HELLOWORLD: HypervisorInit() failed with status 0x%08hX\n", Status));
-		PrintInfoDispose();
+        Print(("HELLOWORLD: MadDog_HypervisorInit() failed with status 0x%08hX\n", Status));
+		Finalize();
 		return Status;
     }
 	Print(("HELLOWORLD: Successful in execute HvmInit()"));
@@ -82,7 +95,7 @@ NTSTATUS DriverEntry (
     if (!NT_SUCCESS (Status = MadDog_InstallHypervisor(&md_Control))) //<------------------1 Finish
     {
         Print(("HELLOWORLD: InstallHypervisor() failed with status 0x%08hX\n", Status));
-		PrintInfoDispose();
+		Finalize();
 		return Status;
     }
 //

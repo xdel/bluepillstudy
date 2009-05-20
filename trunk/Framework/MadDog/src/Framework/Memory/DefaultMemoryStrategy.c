@@ -3,9 +3,19 @@
 #ifdef USE_MEMORY_DEFAULT_STRATEGY
 
 /**
+ * effects: Initialize the memory manager.
+ */
+NTSTATUS NTAPI HvMmInitManager (
+)
+{
+	Print(("Do Nothing To Initialize Default Memory Manager"));
+	return STATUS_SUCCESS;
+}
+
+/**
  * effects: Allocate <uNumberOfPages> pages from memory.
  */
-PVOID NTAPI MmAllocatePages (
+PVOID NTAPI HvMmAllocatePages (
   ULONG uNumberOfPages,
   PPHYSICAL_ADDRESS pFirstPagePA
 )
@@ -28,23 +38,25 @@ PVOID NTAPI MmAllocatePages (
 
   return FirstPage;
 }
+
 /**
  * effects: Allocate Contiguous Pages from memory.
  */
-PVOID NTAPI MmAllocateContiguousPages (
+PVOID NTAPI HvMmAllocateContiguousPages (
   ULONG uNumberOfPages,
   PPHYSICAL_ADDRESS pFirstPagePA
 )
 {
-    return MmAllocateContiguousPagesSpecifyCache(
+    return HvMmAllocateContiguousPagesSpecifyCache(
         uNumberOfPages,
         pFirstPagePA,
         MmCached);
 }
+
 /**
  * effects: Allocate Contiguous Pages from memory with the indicated cache strategy.
  */
-PVOID NTAPI MmAllocateContiguousPagesSpecifyCache (
+PVOID NTAPI HvMmAllocateContiguousPagesSpecifyCache (
   ULONG uNumberOfPages,
   PPHYSICAL_ADDRESS pFirstPagePA,
   ULONG CacheType
@@ -79,4 +91,35 @@ PVOID NTAPI MmAllocateContiguousPagesSpecifyCache (
 
   return FirstPage;
 }
+
+/**
+ * effects: Shutdown the memory manager.
+ */
+NTSTATUS NTAPI HvMmShutdownManager (
+)
+{
+	Print(("Do Nothing To Initialize Default Memory Manager"));
+	return STATUS_SUCCESS;
+}
+
+
+/**
+ * effects: Return the value of Host CR3
+ */
+ULONG NTAPI HvMmGetHostCR3 (
+)
+{
+	return RegGetCr3();
+}
+
+/**
+ * effects: Return the value of Guest CR3
+ */
+ULONG NTAPI HvMmGetGuestCR3 (
+)
+{
+	return RegGetCr3();
+}
+
+
 #endif

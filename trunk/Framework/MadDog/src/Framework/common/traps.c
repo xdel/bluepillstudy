@@ -24,7 +24,7 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
         return STATUS_INVALID_PARAMETER;
     }
 
-    Trap = MmAllocatePages (BYTES_TO_PAGES (sizeof (NBP_TRAP)), NULL);
+    Trap = HvMmAllocatePages (BYTES_TO_PAGES (sizeof (NBP_TRAP)), NULL);
     if (!Trap) 
     {
         Print(("HelloWorld:TrInitializeGeneralTrap(): Failed to allocate NBP_TRAP structure (%d bytes)\n", sizeof (NBP_TRAP)));

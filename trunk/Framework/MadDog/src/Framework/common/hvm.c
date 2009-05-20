@@ -196,7 +196,7 @@ NTSTATUS NTAPI HvmSubvertCpu (
     //}
 
     // allocate memory for host stack, 16 * 4k
-    HostKernelStackBase = MmAllocatePages(HOST_STACK_SIZE_IN_PAGES, &HostStackPA);
+    HostKernelStackBase = HvMmAllocatePages(HOST_STACK_SIZE_IN_PAGES, &HostStackPA);
     if (!HostKernelStackBase) 
     {
         Print(("HvmSubvertCpu(): Failed to allocate %d pages for the host stack\n", HOST_STACK_SIZE_IN_PAGES));
@@ -218,14 +218,14 @@ NTSTATUS NTAPI HvmSubvertCpu (
     InitializeListHead (&Cpu->MsrTrapsList);
    // InitializeListHead (&Cpu->IoTrapsList);
 
-    Cpu->GdtArea = MmAllocatePages (BYTES_TO_PAGES (BP_GDT_LIMIT), NULL);//Currently we create our own GDT and IDT area
+    Cpu->GdtArea = HvMmAllocatePages (BYTES_TO_PAGES (BP_GDT_LIMIT), NULL);//Currently we create our own GDT and IDT area
     if (!Cpu->GdtArea) 
     {
         Print(("HvmSubvertCpu(): Failed to allocate memory for GDT\n"));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
-    Cpu->IdtArea = MmAllocatePages (BYTES_TO_PAGES (BP_IDT_LIMIT), NULL);
+    Cpu->IdtArea = HvMmAllocatePages (BYTES_TO_PAGES (BP_IDT_LIMIT), NULL);
     if (!Cpu->IdtArea) 
     {
         Print(("HvmSubvertCpu(): Failed to allocate memory for IDT\n"));
@@ -236,8 +236,8 @@ NTSTATUS NTAPI HvmSubvertCpu (
     // allocate a 4k page. Fail the init if we can't allocate such page
     // (e.g. all allocations reside on 2mb pages).
 
-//    //Cpu->SparePage=MmAllocatePages(1,&Cpu->SparePagePA);
-//    Cpu->SparePage = MmAllocateContiguousPagesSpecifyCache (1, &Cpu->SparePagePA, MmCached);
+//    //Cpu->SparePage=HvMmAllocatePages(1,&Cpu->SparePagePA);
+//    Cpu->SparePage = HvMmAllocateContiguousPagesSpecifyCache (1, &Cpu->SparePagePA, MmCached);
 //    if (!Cpu->SparePage)
 //    {
 //        Print (("HvmSubvertCpu(): Failed to allocate 1 page for the dummy page (DPA_CONTIGUOUS)\n"));
