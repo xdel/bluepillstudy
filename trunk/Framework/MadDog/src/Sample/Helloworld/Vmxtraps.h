@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ntddk.h>
-#include "VTCore.h"
+#include "HvCore.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 // BPKNOCK backdoor

@@ -1,4 +1,5 @@
 #pragma once
+#include <ntddk.h>
 
 #ifdef _X86_
 #define ULONG ULONG32

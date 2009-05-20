@@ -1,15 +1,15 @@
 #pragma once
 
 #include <ntddk.h>
-#include "VTCoreDefs.h"
-#include "VTCoreTypes.h"
+#include "HvCoreDefs.h"
+#include "HvCoreTypes.h"
 #include "Regs.h"
 #include "Msr.h"
 
-#define DEBUG_VTCORE
+#define DEBUG_HVCORE
 
-#ifdef DEBUG_VTCORE
-#include "VTCoreDebugger.h"
+#ifdef DEBUG_HVCORE
+#include "HvCoreDebugger.h"
 #endif
 
 //+++++++++++++++++++++Structs Definitions+++++++++++++++++++++

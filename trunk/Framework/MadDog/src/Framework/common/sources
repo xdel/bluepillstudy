@@ -4,9 +4,9 @@ TARGETTYPE=DRIVER_LIBRARY
 TARGETLIBS=$(FRAMEWORK_BIN_ROOT)\lib\*\*.lib   
 INCLUDES=.; $(FRAMEWORK_HEADERS_ROOT);$(FRAMEWORK_SRC_ROOT)\Util\Headers; $(FRAMEWORK_SRC_ROOT)\vmx; 
 SOURCES=\
-	VTCoreDebugger.c \
-	VTCoreAPIs.c \
-	VTUtilAPIs.c \
+	HvCoreDebugger.c \
+	HvCoreAPIs.c \
+	HvUtilAPIs.c \
 	hvm.c \
 	common.c \
 	traps.c \

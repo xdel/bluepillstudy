@@ -1,4 +1,4 @@
-#include "memory.h"
+#include "HvCore.h"
 
 /**
  * effects: Allocate <uNumberOfPages> pages from memory.
@@ -16,7 +16,7 @@ PVOID NTAPI MmAllocatePages (
   if (!uNumberOfPages)
     return NULL;
 
-  FirstPage = PageVA = ExAllocatePoolWithTag (NonPagedPool, uNumberOfPages * PAGE_SIZE, ITL_TAG);
+  FirstPage = PageVA = ExAllocatePoolWithTag (NonPagedPool, uNumberOfPages * PAGE_SIZE, LAB_TAG);
   if (!PageVA)
     return NULL;
   RtlZeroMemory (PageVA, uNumberOfPages * PAGE_SIZE);

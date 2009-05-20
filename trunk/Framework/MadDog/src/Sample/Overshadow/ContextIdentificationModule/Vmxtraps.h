@@ -1,10 +1,11 @@
 #pragma once
 
 #include <ntddk.h>
-#include "VTCore.h"
-#include "vmx/Vmx.h"
-#include "vmx/Vmcs.h"
-#include "VTUtilAPIs.h"
+#include "HvCore.h"
+//#include "vmx/Vmx.h"
+//#include "vmx/Vmcs.h"
+//#include "VTUtilAPIs.h"
+
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 #define START_RECORDING_EAX		1000 //Used to tell the hypervisor to start run the target program
 #define PING_EAX				1500 //Used to retrieve data while the target program is still running

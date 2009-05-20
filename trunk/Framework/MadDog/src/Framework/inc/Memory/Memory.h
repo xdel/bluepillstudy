@@ -1,6 +1,6 @@
 #pragma once
 #include <ntddk.h>
-#include "common.h"
+//#include "common.h"
 /**
  * effects: Allocate <uNumberOfPages> pages from memory.
  */
