@@ -1,4 +1,4 @@
-#include "VTCoreAPIs.h"
+#include "HvCoreAPIs.h"
 #include "hvm.h"
 #include "traps.h"
 

@@ -2,6 +2,6 @@
 #pragma once
 
 #include <ntddk.h>
-#include "VTCore.h"
+#include "HvCore.h"
 #include "Handlers.h"
 #include "Vmxtraps.h"

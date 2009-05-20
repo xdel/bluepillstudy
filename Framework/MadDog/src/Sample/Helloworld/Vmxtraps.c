@@ -203,15 +203,16 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	GuestRegs->edx = BP_KNOCK_EDX_ANSWER;
     return TRUE;
   }
-  else if(fn == 1)
-  {
-    MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
-  	GuestRegs->eax = 0x000126c5; //Core i7
-	GuestRegs->ebx = ebx;
-  	GuestRegs->ecx = ecx;
-  	GuestRegs->edx = edx;
-	return TRUE;
-  }
+  //else if(fn == 1)
+  //{
+    //MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
+  	//GuestRegs->eax = 0x000126c5; //Core i7
+  	//GuestRegs->eax = 0x000106A5; //Core i7
+	//GuestRegs->ebx = ebx;
+  	//GuestRegs->ecx = ecx;
+  	//GuestRegs->edx = edx;
+	//return TRUE;
+  //}
 
   ecx = (ULONG) GuestRegs->ecx;
   MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);

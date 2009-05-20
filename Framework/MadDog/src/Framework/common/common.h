@@ -2,7 +2,7 @@
 
 #include <ntddk.h>
 #include "PrintInfos.h"
-#include "VTCore.h"
+#include "HvCore.h"
 //#include "hvm.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++

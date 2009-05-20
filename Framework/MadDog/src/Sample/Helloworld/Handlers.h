@@ -1,6 +1,6 @@
 #pragma once
 #include <ntddk.h>
-#include "VTCore.h"
+#include "HvCore.h"
 
 NTSTATUS HvmSetupVMControlBlock (
     PCPU Cpu,

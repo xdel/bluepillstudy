@@ -1,4 +1,4 @@
-#include "VTUtilAPIs.h"
+#include "HvUtilAPIs.h"
 #include "cpuid.h"
 #include "common.h"
 
