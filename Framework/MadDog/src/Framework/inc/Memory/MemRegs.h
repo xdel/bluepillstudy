@@ -8,7 +8,7 @@ ULONG NTAPI HvMmGetHostCR3 (
 );
 
 /**
- * effects: Return the value of Guest CR3
+ * effects: Return the origin value of Guest CR3 before install the hypervisor
  */
-ULONG NTAPI HvMmGetGuestCR3 (
+ULONG NTAPI HvMmGetOriginGuestCR3 (
 );

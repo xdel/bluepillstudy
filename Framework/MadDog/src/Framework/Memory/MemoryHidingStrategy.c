@@ -45,6 +45,7 @@ static KSPIN_LOCK g_PageTableListLock;
 PHYSICAL_ADDRESS g_PageMapBasePhysicalAddress;
 PHYSICAL_ADDRESS g_IdentityPageTableBasePhysicalAddress, g_IdentityPageTableBasePhysicalAddress_Legacy;
 PHYSICAL_ADDRESS SparePagePA; // original PA of the SparePage
+ULONG originGuestCR3; // the guest CR3 value before installing the hypervisor. 
 
 //static PUCHAR g_PageTableBases[2] = {
 //  (PUCHAR) PTE_BASE,
@@ -764,8 +765,11 @@ NTSTATUS NTAPI HvMmInitManager (
 	//Step 1. Allocate memory for Cpu->SparePage First
 	SparePage = ExAllocatePoolWithTag (NonPagedPool, PAGE_SIZE, LAB_TAG);
     SparePagePA = MmGetPhysicalAddress (SparePage);
+
+	//Step 2. Set the <originGuestCR3> global variable
+	originGuestCR3 = RegGetCr3();
 	
-	//Step 2.
+	//Step 3.
 	InitializeListHead (&g_PageTableList);
 	KeInitializeSpinLock (&g_PageTableListLock);
 
@@ -935,6 +939,30 @@ NTSTATUS NTAPI MmInitIdentityPageTable (
   //           FirstPdeVa_Legacy, g_IdentityPageTableBasePhysicalAddress_Legacy.QuadPart));
 
   return STATUS_SUCCESS;
+}
+
+/**
+ * effects: Return the value of Host CR3
+ */
+ULONG NTAPI HvMmGetHostCR3 (
+)
+{
+	#ifdef _X86_
+		return g_PageMapBasePhysicalAddress.LowPart;
+	#else 
+		#if defined(_AMD64_)|| defined(_IA64_)
+			return g_PageMapBasePhysicalAddress.QuadPart
+		#endif
+	#endif
+}
+
+/**
+ * effects: Return the origin value of Guest CR3 before install the hypervisor
+ */
+ULONG NTAPI HvMmGetOriginGuestCR3 (
+)
+{
+	return originGuestCR3;
 }
 
 #endif
