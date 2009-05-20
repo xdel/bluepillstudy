@@ -1,5 +1,7 @@
 #include "HvCore.h"
 
+#ifdef USE_MEMORY_DEFAULT_STRATEGY
+
 /**
  * effects: Allocate <uNumberOfPages> pages from memory.
  */
@@ -77,3 +79,4 @@ PVOID NTAPI MmAllocateContiguousPagesSpecifyCache (
 
   return FirstPage;
 }
+#endif
