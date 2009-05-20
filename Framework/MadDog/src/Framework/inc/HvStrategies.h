@@ -1,3 +1,4 @@
 #pragma once
 
-#include "Memory/Memory.h" 
+#include "Memory/MemOps.h" 
+#include "Memory/MemRegs.h" 

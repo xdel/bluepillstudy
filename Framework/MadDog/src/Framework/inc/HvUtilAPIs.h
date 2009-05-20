@@ -1,6 +1,8 @@
 #pragma once
 #include <ntddk.h>
 #include "HvCore.h"
+#include "msr.h"
+#include "regs.h"
 
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 /**

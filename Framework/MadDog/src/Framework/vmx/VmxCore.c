@@ -140,13 +140,13 @@ static NTSTATUS NTAPI VmxInitialize (
     NTSTATUS Status;
 
 //#ifndef _X86_
-    PVOID tmp = MmAllocateContiguousPages (1, NULL);
+    PVOID tmp = HvMmAllocateContiguousPages (1, NULL);
     g_HostStackBaseAddress = (ULONG) tmp;
 //#endif
     // do not deallocate anything here; MmShutdownManager will take care of that
 	
     //Allocate VMXON region
-    Cpu->Vmx.OriginaVmxonR = MmAllocateContiguousPages(
+    Cpu->Vmx.OriginaVmxonR = HvMmAllocateContiguousPages(
         VMX_VMXONR_SIZE_IN_PAGES, 
         &Cpu->Vmx.OriginalVmxonRPA);
     if (!Cpu->Vmx.OriginaVmxonR) 
@@ -158,7 +158,7 @@ static NTSTATUS NTAPI VmxInitialize (
     Print(("Helloworld:VmxInitialize(): OriginaVmxonR VA: 0x%x\n", Cpu->Vmx.OriginaVmxonR));
     Print(("Helloworld:VmxInitialize(): OriginaVmxonR PA: 0x%llx\n", Cpu->Vmx.OriginalVmxonRPA.QuadPart));
     //Allocate VMCS	
-    Cpu->Vmx.OriginalVmcs = MmAllocateContiguousPages(
+    Cpu->Vmx.OriginalVmcs = HvMmAllocateContiguousPages(
         VMX_VMCS_SIZE_IN_PAGES, 
         &Cpu->Vmx.OriginalVmcsPA);
     if (!Cpu->Vmx.OriginalVmcs) 
@@ -174,7 +174,7 @@ static NTSTATUS NTAPI VmxInitialize (
     Cpu->Vmx.VmcsToContinuePA = Cpu->Vmx.OriginalVmcsPA;
 
     // init IOBitmap and MsrBitmap
-    /*Cpu->Vmx.IOBitmapA = MmAllocateContiguousPages (
+    /*Cpu->Vmx.IOBitmapA = HvMmAllocateContiguousPages (
         VMX_IOBitmap_SIZE_IN_PAGES, 
         &Cpu->Vmx.IOBitmapAPA);
     if (!Cpu->Vmx.IOBitmapA) 
@@ -187,7 +187,7 @@ static NTSTATUS NTAPI VmxInitialize (
     _KdPrint (("VmxInitialize(): IOBitmapA VA: 0x%x\n", Cpu->Vmx.IOBitmapA));
     _KdPrint (("VmxInitialize(): IOBitmapA PA: 0x%llx\n", Cpu->Vmx.IOBitmapAPA.QuadPart));
 
-    Cpu->Vmx.IOBitmapB = MmAllocateContiguousPages(
+    Cpu->Vmx.IOBitmapB = HvMmAllocateContiguousPages(
         VMX_IOBitmap_SIZE_IN_PAGES, 
         &Cpu->Vmx.IOBitmapBPA);
     if (!Cpu->Vmx.IOBitmapB) 
@@ -200,7 +200,7 @@ static NTSTATUS NTAPI VmxInitialize (
     _KdPrint (("VmxInitialize(): IOBitmapB VA: 0x%x\n", Cpu->Vmx.IOBitmapB));
     _KdPrint (("VmxInitialize(): IOBitmapB PA: 0x%llx\n", Cpu->Vmx.IOBitmapBPA.QuadPart));*/
 
-    Cpu->Vmx.MSRBitmap = MmAllocateContiguousPages(
+    Cpu->Vmx.MSRBitmap = HvMmAllocateContiguousPages(
         VMX_MSRBitmap_SIZE_IN_PAGES, 
         &Cpu->Vmx.MSRBitmapPA);
     if (!Cpu->Vmx.MSRBitmap) 

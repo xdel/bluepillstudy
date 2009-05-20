@@ -134,7 +134,7 @@ NTSTATUS HvmSetupVMControlBlock (
     /* NATURAL GUEST State Fields. */
 
     VmxWrite (GUEST_CR0, RegGetCr0 ());
-    VmxWrite (GUEST_CR3, RegGetCr3 ());
+    VmxWrite (GUEST_CR3, HvMmGetGuestCR3());
     VmxWrite (GUEST_CR4, RegGetCr4 ());
 
     GdtBase = (PVOID) GetGdtBase ();
@@ -168,7 +168,7 @@ NTSTATUS HvmSetupVMControlBlock (
     // private cr3
     VmxWrite (HOST_CR3, g_PageMapBasePhysicalAddress.QuadPart);
 #else
-    VmxWrite (HOST_CR3, RegGetCr3 ());
+    VmxWrite (HOST_CR3, HvMmGetHostCR3());
 #endif
     VmxWrite (HOST_CR4, RegGetCr4 ());
 

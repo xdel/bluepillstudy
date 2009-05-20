@@ -8,5 +8,6 @@ SOURCES=\
 	MemoryHidingStrategy.c
 
 
-
+I386_SOURCES=\
+    	memory-asm.asm \
 

@@ -11,7 +11,6 @@
 
 // DEBUG settings -------------
 //#define	ENABLE_DEBUG_PRINTS
-#define ITL_TAG	'LTI'
 
 #define	DEBUG_LEVEL	2
 
@@ -229,10 +228,6 @@ VOID NTAPI CmClflush (
   PVOID mem8
 );
 
-VOID NTAPI CmInvalidatePage (
-  PVOID Page
-);
-
 VOID NTAPI CmReloadGdtr (
   PVOID GdtBase,
   ULONG GdtLimit
@@ -272,6 +267,11 @@ VOID NTAPI CmFreePhysPages (
 
 NTSTATUS NTAPI CmSubvert (
   PVOID
+);
+
+
+VOID NTAPI CmInvalidatePage (
+  PVOID Page
 );
 
 NTSTATUS NTAPI CmSlipIntoMatrix (
