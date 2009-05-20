@@ -102,7 +102,6 @@ NTSTATUS NTAPI HvMmShutdownManager (
 	return STATUS_SUCCESS;
 }
 
-
 /**
  * effects: Return the value of Host CR3
  */
@@ -113,13 +112,12 @@ ULONG NTAPI HvMmGetHostCR3 (
 }
 
 /**
- * effects: Return the value of Guest CR3
+ * effects: Return the origin value of Guest CR3 before install the hypervisor
  */
-ULONG NTAPI HvMmGetGuestCR3 (
+ULONG NTAPI HvMmGetOriginGuestCR3 (
 )
 {
 	return RegGetCr3();
 }
-
 
 #endif
