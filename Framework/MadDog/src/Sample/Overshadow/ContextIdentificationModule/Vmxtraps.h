@@ -2,9 +2,6 @@
 
 #include <ntddk.h>
 #include "HvCore.h"
-//#include "vmx/Vmx.h"
-//#include "vmx/Vmcs.h"
-//#include "VTUtilAPIs.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 #define START_RECORDING_EAX		1000 //Used to tell the hypervisor to start run the target program
