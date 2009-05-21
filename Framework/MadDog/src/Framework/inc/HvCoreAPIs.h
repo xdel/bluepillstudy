@@ -48,17 +48,18 @@ NTSTATUS NTAPI MadDog_HypervisorInit();
  * effects:Build and Initialize General Trap struct (which is also a Trap struct).
  */
 NTSTATUS NTAPI MadDog_InitializeGeneralTrap (
-  PCPU Cpu,
-  ULONG TrappedVmExit,
-  UCHAR RipDelta,
-  NBP_TRAP_CALLBACK TrapCallback,
-  PNBP_TRAP * pInitializedTrap
+	PCPU Cpu,
+	ULONG TrappedVmExit,
+	UCHAR RipDelta,
+	NBP_TRAP_CALLBACK TrapCallback,
+	PNBP_TRAP * pInitializedTrap,
+    ULONG uDebugTag //Pool Debug Tag
 );
 
 /**
  * effects: Register trap struct.
  */
 NTSTATUS NTAPI MadDog_RegisterTrap (
-  PCPU Cpu,
-  PNBP_TRAP Trap
+	PCPU Cpu,
+	PNBP_TRAP Trap
 );

@@ -17,7 +17,8 @@ NTSTATUS NTAPI HvMmInitManager (
  */
 PVOID NTAPI HvMmAllocatePages (
   ULONG uNumberOfPages,
-  PPHYSICAL_ADDRESS pFirstPagePA
+  PPHYSICAL_ADDRESS pFirstPagePA,
+  ULONG uDebugTag
 )
 {
   PVOID PageVA, FirstPage;
@@ -28,7 +29,7 @@ PVOID NTAPI HvMmAllocatePages (
   if (!uNumberOfPages)
     return NULL;
 
-  FirstPage = PageVA = ExAllocatePoolWithTag (NonPagedPool, uNumberOfPages * PAGE_SIZE, LAB_TAG);
+  FirstPage = PageVA = ExAllocatePoolWithTag (NonPagedPool, uNumberOfPages * PAGE_SIZE, uDebugTag);
   if (!PageVA)
     return NULL;
   RtlZeroMemory (PageVA, uNumberOfPages * PAGE_SIZE);

@@ -10,7 +10,8 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
     ULONG TrappedVmExit,
     UCHAR RipDelta,
     NBP_TRAP_CALLBACK TrapCallback,
-    PNBP_TRAP *pInitializedTrap
+    PNBP_TRAP *pInitializedTrap,
+	ULONG uDebugTag //Pool Debug Tag
 )
 {//Finish
     PNBP_TRAP Trap;
@@ -24,7 +25,7 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
         return STATUS_INVALID_PARAMETER;
     }
 
-    Trap = HvMmAllocatePages (BYTES_TO_PAGES (sizeof (NBP_TRAP)), NULL);
+    Trap = HvMmAllocatePages (BYTES_TO_PAGES (sizeof (NBP_TRAP)), NULL, uDebugTag);
     if (!Trap) 
     {
         Print(("HelloWorld:TrInitializeGeneralTrap(): Failed to allocate NBP_TRAP structure (%d bytes)\n", sizeof (NBP_TRAP)));

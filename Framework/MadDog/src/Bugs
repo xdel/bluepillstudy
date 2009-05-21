@@ -1,0 +1,1 @@
+Memory-Hiding Strategy: Didn't hide the page table memory from guest OS, only hiding the page content currently.

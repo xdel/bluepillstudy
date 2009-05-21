@@ -71,7 +71,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
         EXIT_REASON_CPUID, 
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
         VmxDispatchCpuid, //<----------------4.2 Finish
-        &Trap);
+        &Trap,
+		LAB_TAG);
   if (!NT_SUCCESS (Status)) 
   {
     Print(("VmxRegisterTraps(): Failed to register VmxDispatchCpuid with status 0x%08hX\n", Status));
@@ -85,7 +86,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
         VmxDispatchMsrRead, 
 		//VmxDispatchVmxInstrDummy,
-        &Trap);
+        &Trap,
+		LAB_TAG);
   if (!NT_SUCCESS (Status)) 
   {
     Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status));
@@ -99,7 +101,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
       0,   // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchMsrWrite, 
 	  //VmxDispatchVmxInstrDummy,
-      &Trap);
+      &Trap,
+	  LAB_TAG);
   if (!NT_SUCCESS (Status)) 
   {
     Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status));
@@ -112,7 +115,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
       EXIT_REASON_CR_ACCESS, 
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchCrAccess, 
-      &Trap);
+      &Trap,
+	  LAB_TAG);
   if (!NT_SUCCESS (Status)) 
   {
     Print(("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status));
@@ -125,7 +129,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
       EXIT_REASON_INVD, 
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchINVD, 
-      &Trap);
+      &Trap,
+	  LAB_TAG);
   if (!NT_SUCCESS (Status)) 
   {
     Print(("VmxRegisterTraps(): Failed to register VmxDispatchINVD with status 0x%08hX\n", Status));
@@ -138,7 +143,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
       EXIT_REASON_EXCEPTION_NMI, 
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchVmxInstrDummy,//VmxDispatchPageFault, 
-      &Trap);
+      &Trap,
+	  LAB_TAG);
   if (!NT_SUCCESS (Status)) 
   {
     Print(("VmxRegisterTraps(): Failed to register VmxDispatchPageFault with status 0x%08hX\n", Status));
@@ -154,7 +160,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
           TableOfVmxExits[i], 
           0,    // length of the instruction, 0 means length need to be get from vmcs later. 
           VmxDispatchVmxInstrDummy, 
-          &Trap);
+          &Trap,
+		  LAB_TAG);
     if (!NT_SUCCESS (Status)) 
     {
       Print(("VmxRegisterTraps(): Failed to register VmxDispatchVmon with status 0x%08hX\n", Status));
