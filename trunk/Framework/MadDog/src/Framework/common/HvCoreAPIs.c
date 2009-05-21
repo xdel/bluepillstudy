@@ -46,10 +46,11 @@ NTSTATUS NTAPI MadDog_InitializeGeneralTrap (
   ULONG TrappedVmExit,
   UCHAR RipDelta,
   NBP_TRAP_CALLBACK TrapCallback,
-  PNBP_TRAP *pInitializedTrap
+  PNBP_TRAP *pInitializedTrap,
+  ULONG uDebugTag //Pool Debug Tag
 )
 {
-	return TrInitializeGeneralTrap(Cpu,TrappedVmExit,RipDelta,TrapCallback,pInitializedTrap);
+	return TrInitializeGeneralTrap(Cpu,TrappedVmExit,RipDelta,TrapCallback,pInitializedTrap,uDebugTag);
 }
 
 /**

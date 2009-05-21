@@ -13,3 +13,8 @@ Revision 151:
 	- Add UserInitialization & UserFinalization callback
 	- Add some helper function
 	- Release Build 0.2009.3.19
+
+Revision 195:
+	- Rename and modify interfaces to support SVM and x64 platform in the future
+	- Add interfaces for strategies
+	- Fix the bug: Can't uninstall hypervisor when using Memory-hiding technology 

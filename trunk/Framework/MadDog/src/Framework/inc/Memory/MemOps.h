@@ -12,7 +12,8 @@ NTSTATUS NTAPI HvMmInitManager (
  */
 PVOID NTAPI HvMmAllocatePages (
   ULONG uNumberOfPages,
-  PPHYSICAL_ADDRESS pFirstPagePA
+  PPHYSICAL_ADDRESS pFirstPagePA,
+  ULONG uDebugTag
 );
 
 /**

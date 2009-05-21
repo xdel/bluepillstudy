@@ -86,7 +86,7 @@ NTSTATUS CmPatchPTEPhysicalAddress (
     // flush the tlb cache
     MmInvalidatePage (PageVA);
 
-    //return STATUS_SUCCESS;
+    return STATUS_SUCCESS;
 };
 
 void NTAPI MmCoverHostVA(
@@ -289,7 +289,7 @@ static NTSTATUS NTAPI MmUpdatePageTable (
         ((PULONG)PageTable)[PageTableOffset] & ALIGN_4KPAGE_MASK;
     // get the host pagetable va
     LowerPageTableHostVA = 
-        ((((ULONG)VirtualAddress & 0xffc00000) >> 12) << 2) + PTE_BASE;
+        (((((ULONG)VirtualAddress & 0xffc00000) >> 12) << 2) + PTE_BASE);
 
     if (!LowerPageTablePA.QuadPart) 
     {
@@ -391,7 +391,8 @@ static NTSTATUS NTAPI MmUpdatePageTable (
  */
 PVOID NTAPI HvMmAllocatePages (
   ULONG uNumberOfPages,
-  PPHYSICAL_ADDRESS pFirstPagePA
+  PPHYSICAL_ADDRESS pFirstPagePA,
+  ULONG uDebugTag
 )
 {
   PVOID PageVA, FirstPage;
@@ -402,7 +403,7 @@ PVOID NTAPI HvMmAllocatePages (
   if (!uNumberOfPages)
     return NULL;
 
-  FirstPage = PageVA = ExAllocatePoolWithTag (NonPagedPool, uNumberOfPages * PAGE_SIZE, LAB_TAG);
+  FirstPage = PageVA = ExAllocatePoolWithTag (NonPagedPool, uNumberOfPages * PAGE_SIZE, uDebugTag);
   if (!PageVA)
     return NULL;
   RtlZeroMemory (PageVA, uNumberOfPages * PAGE_SIZE);
@@ -819,6 +820,23 @@ NTSTATUS NTAPI HvMmShutdownManager (
     PALLOCATED_PAGE AllocatedPage;
     ULONG i;
     PULONG Entry;
+
+	//BUGFIX(Superymk 5/21/2009):When free a non-pagetable page, we must remap it back first. 
+	//So add the iteration here to do this job.
+	//KeWaitForSingleObject(&g_PageTableListLock,Executive,KernelMode,FALSE,NULL);
+	
+	AllocatedPage = (PALLOCATED_PAGE)g_PageTableList.Flink;
+	while(AllocatedPage != (PALLOCATED_PAGE)&g_PageTableList)
+	{
+		AllocatedPage = CONTAINING_RECORD(AllocatedPage,ALLOCATED_PAGE,le);
+		if(AllocatedPage->Flags == 0)
+		{
+			MmCoverHostVA(AllocatedPage->GuestAddress,AllocatedPage->PhysicalAddress);
+		}
+		AllocatedPage=(PALLOCATED_PAGE)AllocatedPage->le.Flink;
+	}
+		
+	//KeReleaseMutex(&g_PageTableListLock,FALSE);	
 
     while (AllocatedPage = (PALLOCATED_PAGE) ExInterlockedRemoveHeadList (&g_PageTableList, &g_PageTableListLock)) 
     {
