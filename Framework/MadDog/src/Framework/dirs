@@ -1,7 +1,6 @@
 DIRS= \
      Util \
-     vmx \
-     svm \
+     Arch \
      Memory \     
      common \
      
