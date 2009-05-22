@@ -101,7 +101,7 @@ void NTAPI MmCoverHostVA(
     //让SparePage 对应的PA变成页目录页
     Pde = (PULONG)GET_PDE_VADDRESS(uSource);
     Pte  = (PULONG)GET_PTE_VADDRESS(uSource);
-    CmPatchPTEPhysicalAddress(Pde,Pte,uSource,Destaddr);
+    CmPatchPTEPhysicalAddress(Pde,Pte,Source,Destaddr);
 }
 
 static NTSTATUS NTAPI MmProtectKernelMemory()
@@ -288,7 +288,7 @@ static NTSTATUS NTAPI MmUpdatePageTable (
     LowerPageTablePA.QuadPart = 
         ((PULONG)PageTable)[PageTableOffset] & ALIGN_4KPAGE_MASK;
     // get the host pagetable va
-    LowerPageTableHostVA = 
+    LowerPageTableHostVA = (PVOID)
         (((((ULONG)VirtualAddress & 0xffc00000) >> 12) << 2) + PTE_BASE);
 
     if (!LowerPageTablePA.QuadPart) 
