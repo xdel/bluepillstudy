@@ -1,12 +1,8 @@
 #pragma once
 
 #include <ntddk.h>
-#include "VmxCore.h" 
 #include "common.h"
-#include "regs.h"
 //#include "memory.h"
-#include "msr.h"
-//#include "HvCoreTypes.h"
 #include "HvCore.h"
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 #define	HOST_STACK_SIZE_IN_PAGES	16
