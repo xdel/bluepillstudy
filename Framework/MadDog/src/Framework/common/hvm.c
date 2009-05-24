@@ -182,9 +182,11 @@ NTSTATUS NTAPI HvmSubvertCpu (
 )
 { //Finish
     PCPU Cpu;//It will be used as the hypervisor struct.
+	WORMHOLE HvGuestPipe;
     PVOID HostKernelStackBase;
     NTSTATUS Status;
     PHYSICAL_ADDRESS HostStackPA;
+	PALLOCATED_PAGE AllocatedPage;
 
     Print(("HvmSubvertCpu(): Running on processor #%d\n", KeGetCurrentProcessorNumber()));
 	
@@ -196,7 +198,7 @@ NTSTATUS NTAPI HvmSubvertCpu (
     //}
 
     // allocate memory for host stack, 16 * 4k
-    HostKernelStackBase = HvMmAllocatePages(HOST_STACK_SIZE_IN_PAGES, &HostStackPA,'HKSB');
+    HostKernelStackBase = HvMmAllocatePages(HOST_STACK_SIZE_IN_PAGES, &HostStackPA,LAB_TAG,&AllocatedPage);
     if (!HostKernelStackBase) 
     {
         Print(("HvmSubvertCpu(): Failed to allocate %d pages for the host stack\n", HOST_STACK_SIZE_IN_PAGES));
@@ -206,11 +208,12 @@ NTSTATUS NTAPI HvmSubvertCpu (
     // unchecked -8 or -4 ?
     Cpu = (PCPU) ((PCHAR) HostKernelStackBase + HOST_STACK_SIZE_IN_PAGES * PAGE_SIZE - 4 - sizeof (CPU));
     Cpu->HostStack = HostKernelStackBase;
-
+	Cpu->HypervisorGuestPipe = &HvGuestPipe;
     // for interrupt handlers which will address CPU through the FS
     Cpu->SelfPointer = Cpu;
 
     Cpu->ProcessorNumber = KeGetCurrentProcessorNumber();
+	HvGuestPipe.ProcessorNumber = Cpu->ProcessorNumber;
 
    // Cpu->Nested = FALSE;
 
@@ -218,14 +221,14 @@ NTSTATUS NTAPI HvmSubvertCpu (
     InitializeListHead (&Cpu->MsrTrapsList);
    // InitializeListHead (&Cpu->IoTrapsList);
 
-    Cpu->GdtArea = HvMmAllocatePages (BYTES_TO_PAGES (BP_GDT_LIMIT), NULL, 'GDTA');//Currently we create our own GDT and IDT area
+    Cpu->GdtArea = HvMmAllocatePages (BYTES_TO_PAGES (BP_GDT_LIMIT), NULL, 'GDTA',&AllocatedPage);//Currently we create our own GDT and IDT area
     if (!Cpu->GdtArea) 
     {
         Print(("HvmSubvertCpu(): Failed to allocate memory for GDT\n"));
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
-    Cpu->IdtArea = HvMmAllocatePages (BYTES_TO_PAGES (BP_IDT_LIMIT), NULL, 'IDTA');
+    Cpu->IdtArea = HvMmAllocatePages (BYTES_TO_PAGES (BP_IDT_LIMIT), NULL, 'IDTA',&AllocatedPage);
     if (!Cpu->IdtArea) 
     {
         Print(("HvmSubvertCpu(): Failed to allocate memory for IDT\n"));
@@ -281,6 +284,10 @@ NTSTATUS NTAPI HvmSubvertCpu (
     Print(("HvmSubvertCpu(): RFLAGS = %#x\n", RegGetRflags ()));
 #endif
 
+	//#ifdef USE_MEMORY_MEMORYHIDING_STRATEGY
+	//	//MmHidingStrategyHideGuestPages(HostKernelStackBase,HOST_STACK_SIZE_IN_PAGES);
+	//#endif
+	
     Status = Hvm->ArchVirtualize(Cpu);//<----------------3.5 Finish
 
     // never reached
@@ -297,6 +304,7 @@ NTSTATUS NTAPI HvmResumeGuest (
 
     // irql will be lowered in the CmDeliverToProcessor()
     //CmSti();
+    //bCurrentMachineState = CURRENT_STATE_GUEST;
     return STATUS_SUCCESS;
 }
 

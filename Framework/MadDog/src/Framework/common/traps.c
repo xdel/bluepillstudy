@@ -15,8 +15,9 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
 )
 {//Finish
     PNBP_TRAP Trap;
-	Print(("HelloWorld:TrInitializeGeneralTrap():TrappedVmExit 0x%x\n", TrappedVmExit));
+	PALLOCATED_PAGE AllocatedPage;
 
+	Print(("MadDog:TrInitializeGeneralTrap():TrappedVmExit 0x%x\n", TrappedVmExit));
     if (!Cpu || 
         !TrapCallback || 
         !Hvm->ArchIsTrapValid (TrappedVmExit) ||//<----------------5.1 Finish
@@ -25,7 +26,7 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
         return STATUS_INVALID_PARAMETER;
     }
 
-    Trap = HvMmAllocatePages (BYTES_TO_PAGES (sizeof (NBP_TRAP)), NULL, uDebugTag);
+    Trap = HvMmAllocatePages (BYTES_TO_PAGES (sizeof (NBP_TRAP)), NULL, uDebugTag,&AllocatedPage);
     if (!Trap) 
     {
         Print(("HelloWorld:TrInitializeGeneralTrap(): Failed to allocate NBP_TRAP structure (%d bytes)\n", sizeof (NBP_TRAP)));

@@ -11,8 +11,12 @@
 
 #endif
 
+//+++++++++++++++++++++Global Definitions+++++++++++++++++++++++++++
 #define LAB_TAG 'VSL' 	//Define the tag. This value will be used in allocate pool memory. 
 			// 'VSL'- Virtualization Security Lab
+//CURRENT_STATE_HYPERVISOR & CURRENT_STATE_GUEST are used for bCurrentMachineState
+#define CURRENT_STATE_HYPERVISOR 0
+#define CURRENT_STATE_GUEST 1
 
 //++++++++++++++Cpu Related Structs(Common Structs)++++++++++++++++
 typedef struct _CPU *PCPU;
@@ -34,3 +38,5 @@ typedef BOOLEAN (
 
 //+++++++++++++++++++++Other Definitions+++++++++++++++++++++++++++
 typedef NTSTATUS (NTAPI * PCALLBACK_PROC) (PVOID Param);
+
+
