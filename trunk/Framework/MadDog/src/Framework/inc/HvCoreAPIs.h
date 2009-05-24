@@ -12,6 +12,9 @@
 #include "HvCoreDebugger.h"
 #endif
 
+//+++++++++++++++++++++Global Variables Declaration+++++++++++++++
+//extern BOOLEAN bCurrentMachineState; //true means it is in guest OS now, otherwise in hypervisor
+
 //+++++++++++++++++++++Structs Definitions+++++++++++++++++++++
 
 /**

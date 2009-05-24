@@ -1,8 +1,8 @@
 DIRS= \
-     Util \
-     Arch \
-     Memory \     
-     common \
+     	Memory \ 
+	Util \
+     	Arch \    
+     	common \
      
     
 

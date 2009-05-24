@@ -5,7 +5,9 @@ INCLUDES= .; $(FRAMEWORK_HEADERS_ROOT);\
           $(FRAMEWORK_SRC_ROOT)\Util\Headers;
 SOURCES=\
     	DefaultMemoryStrategy.c \
-	MemoryHidingStrategy.c
+	MemoryHidingStrategy.c \
+	AllocPageMgr.c \
+	AllocPage.c
 
 
 I386_SOURCES=\

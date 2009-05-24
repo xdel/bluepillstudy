@@ -2,8 +2,10 @@
 #include "hvm.h"
 #include "traps.h"
 
-//Global handlers, include how to setep VMCB etc.
-PMadDog_Control g_HvmControl;
+//+++++++++++++++++++++Global Variables Definition+++++++++++++++
+PMadDog_Control g_HvmControl;		//Global handlers, include how to setep VMCB etc.
+//BOOLEAN bCurrentMachineState = CURRENT_STATE_GUEST; 	//true means it is in guest OS now, otherwise in hypervisor
+
 
 /**
  * effects: Install HelloWorld VMM hypervisor.

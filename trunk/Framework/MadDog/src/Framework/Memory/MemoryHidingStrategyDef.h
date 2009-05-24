@@ -34,35 +34,8 @@
 #define P_LARGE				0x80
 #define P_GLOBAL			0x100
 
-#define     ALIGN_4KPAGE_MASK   0xfffff000
-
-
-#define AP_PAGETABLE	1       // used to mark allocations of host pagetables
-#define AP_PTE		    2
-#define AP_PDE		    4
 //#define AP_PDP		8
 //#define AP_PML4		16
 
-typedef enum
-{
-  PAT_DONT_FREE = 0,
-  PAT_POOL,
-  PAT_CONTIGUOUS
-} PAGE_ALLOCATION_TYPE;
 
-typedef struct _ALLOCATED_PAGE
-{
 
-  LIST_ENTRY le;
-
-  ULONG Flags;
-
-  PAGE_ALLOCATION_TYPE AllocationType;
-  ULONG uNumberOfPages;         // for PAT_CONTIGUOUS only
-
-  PHYSICAL_ADDRESS PhysicalAddress;
-  PVOID HostAddress;
-  PVOID GuestAddress;
-
-} ALLOCATED_PAGE,
- *PALLOCATED_PAGE;

@@ -74,6 +74,13 @@ typedef struct _VMX
  *PVMX;
 
 //++++++++++++++Cpu Related Structs(Common Structs)++++++++++++++++
+//This struct stores the memory used by both Guest OS and Hypervisor,
+//So never applying memory-hiding mechnism to this struct and related memory.
+typedef struct _WORMHOLE
+{
+	ULONG ProcessorNumber;
+	UCHAR Trampoline[0x600];
+} WORMHOLE,*PWORMHOLE;
 
 typedef struct _CPU
 {
@@ -101,6 +108,7 @@ typedef struct _CPU
   PVOID IdtArea;
 
     PVOID HostStack;              // note that CPU structure reside in this memory region
+    PWORMHOLE HypervisorGuestPipe; 
  // BOOLEAN Nested;
 
  // ULONG64 ComPrintLastTsc;

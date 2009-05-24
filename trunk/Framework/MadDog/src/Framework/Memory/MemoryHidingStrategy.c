@@ -1,5 +1,7 @@
-#include "HvCore.h"
 #include "MemoryHidingStrategyDef.h"
+#include "HvCore.h"
+#include "AllocPageMgr.h"
+
 
 #ifdef USE_MEMORY_MEMORYHIDING_STRATEGY 
 
@@ -8,7 +10,7 @@ VOID NTAPI MmInvalidatePage (
   PVOID Page
 );
 
-static NTSTATUS NTAPI MmProtectKernelMemory();
+//static NTSTATUS NTAPI MmProtectKernelMemory();
 
 static NTSTATUS NTAPI MmCreateMapping (
   PHYSICAL_ADDRESS PhysicalAddress,
@@ -33,14 +35,61 @@ static NTSTATUS NTAPI MmMapGuestKernelPages (
 static NTSTATUS NTAPI MmInitIdentityPageTable (
 );
 
-void NTAPI MmCoverHostVA(
+static void NTAPI MmCoverHostVA(
  PVOID Source,
  PHYSICAL_ADDRESS dest
 );
 
+/*
+ * This callback function is used by HvMmShutdownManager
+ */ 
+static VOID NTAPI MmShutdownMgrRestoreMappingCallback(
+	PALLOCATED_PAGE AllocatedPage,
+	...
+);
+
+/*
+ * This callback function is used by HvMmShutdownManager
+ */ 
+static VOID NTAPI MmShutdownMgrDeallocateHidedPagesCallback(
+	PALLOCATED_PAGE AllocatedPage,
+	...
+);
+
+/*
+ * This callback function is used by MmHidingStrategyHideAllAllocatedGuestPages
+ */ 
+static VOID NTAPI MmHidingStrategyHideAllAllocatedGuestPagesCallback (
+	PALLOCATED_PAGE AllocatedPage,
+	...
+);
+
+/*
+ * This callback function is used by MmHidingStrategyRevealHiddenPages
+ */ 
+static VOID NTAPI MmHidingStrategyRevealHiddenPagesCallback (
+	PALLOCATED_PAGE AllocatedPage,
+	PVOID GuestAddress,
+	ULONG uNumberOfPages,
+	PULONG RemainUnswappedPages,
+	...
+);
+
+/*
+ * This callback function is used by MmHidingStrategyHideGuestPages
+ */ 
+static VOID NTAPI MmHidingStrategyHideGuestPagesCallback (
+	PALLOCATED_PAGE AllocatedPage,
+	PVOID GuestAddress,
+	ULONG uNumberOfPages,
+	PULONG RemainUnswappedPages,
+	...
+);
+
 //++++++++++Global Variables++++++++++++++
-static LIST_ENTRY g_PageTableList;
-static KSPIN_LOCK g_PageTableListLock;
+//extern BOOLEAN bCurrentMachineState;
+//static LIST_ENTRY g_PageTableList;
+//static KSPIN_LOCK g_PageTableListLock;
 
 PHYSICAL_ADDRESS g_PageMapBasePhysicalAddress;
 PHYSICAL_ADDRESS g_IdentityPageTableBasePhysicalAddress, g_IdentityPageTableBasePhysicalAddress_Legacy;
@@ -89,151 +138,62 @@ NTSTATUS CmPatchPTEPhysicalAddress (
     return STATUS_SUCCESS;
 };
 
+/*
+ * effects: Modify the page table entry in the Guest OS to hide a guest page.
+ * requires: This happens iff <pAllocatedPage->bRequireHiding> is true.
+ */
 void NTAPI MmCoverHostVA(
-	PVOID Source,
+	//PVOID Source,
+	PALLOCATED_PAGE pAllocatedPage,
 	PHYSICAL_ADDRESS dest
 )
 {
     PULONG Pde = 0, Pte = 0, PA = 0;
-    PHYSICAL_ADDRESS Destaddr = dest;
-    ULONG uSource = (ULONG)Source;
+	PHYSICAL_ADDRESS mappedPhyAddr;
+	ULONG uSource;
 
+	mappedPhyAddr = MmGetPhysicalAddress(pAllocatedPage->GuestAddress);
+
+	if(dest.QuadPart == mappedPhyAddr.QuadPart || !pAllocatedPage->bRequireHiding)
+		return;
+	if(!pAllocatedPage->bIsCurrentlyHided && mappedPhyAddr.QuadPart 
+		== SparePagePA.QuadPart)//Hided means the related phy. address is SparePagePA,otherwise not. we never hide the SparePage.
+		return;
+	if(pAllocatedPage->bIsCurrentlyHided && mappedPhyAddr.QuadPart 
+		!= SparePagePA.QuadPart)
+		return;
+	
+    //ULONG uSource = (ULONG)Source;
+	
+	uSource = (ULONG)(pAllocatedPage->GuestAddress);
+	MmChangeIsCurrentlyHidedAllocPage(pAllocatedPage,~pAllocatedPage->bIsCurrentlyHided);//Hide->UnHide;UnHide->Hide
+	
     //让SparePage 对应的PA变成页目录页
     Pde = (PULONG)GET_PDE_VADDRESS(uSource);
     Pte  = (PULONG)GET_PTE_VADDRESS(uSource);
-    CmPatchPTEPhysicalAddress(Pde,Pte,Source,Destaddr);
+    CmPatchPTEPhysicalAddress(Pde,Pte,(PVOID)uSource,dest);
 }
 
-static NTSTATUS NTAPI MmProtectKernelMemory()
-{
-    PULONG pPde = (PULONG) PDE_BASE;
-    PULONG pPte;
-    ULONG uPdeIndex;
-
-    // just walk kernel space, va >= 0x80000000
-    for (uPdeIndex = 0x200; uPdeIndex < 0x400; uPdeIndex++)
-    {
-        if (!(pPde[uPdeIndex] & P_PRESENT)) 
-        {
-            continue;
-        }
-
-        // set it not writable
-        pPde[uPdeIndex] &= ~((ULONG)P_WRITABLE);
-    }
-
-    return STATUS_SUCCESS;
-}
-
-static NTSTATUS NTAPI MmSavePage (
-  PHYSICAL_ADDRESS PhysicalAddress,
-  PVOID HostAddress,
-  PVOID GuestAddress,
-  PAGE_ALLOCATION_TYPE AllocationType,
-  ULONG uNumberOfPages,
-  ULONG Flags
-)
-{
-  PALLOCATED_PAGE AllocatedPage;
-
-  if (!GuestAddress)
-    return STATUS_INVALID_PARAMETER;
-
-  AllocatedPage = ExAllocatePoolWithTag (NonPagedPool, sizeof (ALLOCATED_PAGE), LAB_TAG);
-  if (!AllocatedPage)
-    return STATUS_INSUFFICIENT_RESOURCES;
-  RtlZeroMemory (AllocatedPage, sizeof (ALLOCATED_PAGE));
-
-  PhysicalAddress.QuadPart = PhysicalAddress.QuadPart & ALIGN_4KPAGE_MASK;
-  HostAddress = (PVOID) ((ULONG) HostAddress & ALIGN_4KPAGE_MASK);
-
-  AllocatedPage->AllocationType = AllocationType;
-  AllocatedPage->PhysicalAddress = PhysicalAddress;
-  AllocatedPage->HostAddress = HostAddress;
-  AllocatedPage->GuestAddress = GuestAddress;
-  AllocatedPage->uNumberOfPages = uNumberOfPages;
-  AllocatedPage->Flags = Flags;
-
-  ExInterlockedInsertTailList (&g_PageTableList, &AllocatedPage->le, &g_PageTableListLock);
-
-  /*
-     DbgPrint("MmSavePage(): PA 0x%X, HostVA 0x%p, GuestVA 0x%p, AT %d, FL 0x%X\n",
-     PhysicalAddress.QuadPart,
-     HostAddress,
-     GuestAddress,
-     AllocationType,
-     Flags);
-   */
-  return STATUS_SUCCESS;
-}
-
-static NTSTATUS NTAPI MmFindPageByPA (
-  PHYSICAL_ADDRESS PhysicalAddress,
-  PALLOCATED_PAGE * pAllocatedPage
-)
-{
-  PALLOCATED_PAGE AllocatedPage;
-  KIRQL OldIrql;
-
-  if (!pAllocatedPage)
-    return STATUS_INVALID_PARAMETER;
-
-  KeAcquireSpinLock (&g_PageTableListLock, &OldIrql);
-
-  PhysicalAddress.QuadPart = PhysicalAddress.QuadPart & ALIGN_4KPAGE_MASK;
-
-  AllocatedPage = (PALLOCATED_PAGE) g_PageTableList.Flink;
-  while (AllocatedPage != (PALLOCATED_PAGE) & g_PageTableList) 
-  {
-    AllocatedPage = CONTAINING_RECORD (AllocatedPage, ALLOCATED_PAGE, le);
-
-    if (AllocatedPage->PhysicalAddress.QuadPart == PhysicalAddress.QuadPart) 
-    {
-      *pAllocatedPage = AllocatedPage;
-      KeReleaseSpinLock (&g_PageTableListLock, OldIrql);
-      return STATUS_SUCCESS;
-    }
-
-    AllocatedPage = (PALLOCATED_PAGE) AllocatedPage->le.Flink;
-  }
-
-  KeReleaseSpinLock (&g_PageTableListLock, OldIrql);
-  return STATUS_UNSUCCESSFUL;
-}
-
-static NTSTATUS NTAPI MmFindPageByHostVA (
-  PVOID HostAddress,
-  PALLOCATED_PAGE * pAllocatedPage
-)
-{
-  PALLOCATED_PAGE AllocatedPage;
-  KIRQL OldIrql;
-
-  if (!pAllocatedPage)
-    return STATUS_INVALID_PARAMETER;
-
-  KeAcquireSpinLock (&g_PageTableListLock, &OldIrql);
-
-  HostAddress = (PVOID) ((ULONG) HostAddress & ALIGN_4KPAGE_MASK);
-
-  AllocatedPage = (PALLOCATED_PAGE) g_PageTableList.Flink;
-  while (AllocatedPage != (PALLOCATED_PAGE) & g_PageTableList) 
-  {
-    AllocatedPage = CONTAINING_RECORD (AllocatedPage, ALLOCATED_PAGE, le);
-
-    if (AllocatedPage->HostAddress == HostAddress) 
-    {
-      *pAllocatedPage = AllocatedPage;
-      KeReleaseSpinLock (&g_PageTableListLock, OldIrql);
-      return STATUS_SUCCESS;
-    }
-
-    AllocatedPage = (PALLOCATED_PAGE) AllocatedPage->le.Flink;
-  }
-
-  KeReleaseSpinLock (&g_PageTableListLock, OldIrql);
-  return STATUS_UNSUCCESSFUL;
-}
+//static NTSTATUS NTAPI MmProtectKernelMemory()
+//{
+//    PULONG pPde = (PULONG) PDE_BASE;
+//    PULONG pPte;
+//    ULONG uPdeIndex;
+//
+//    // just walk kernel space, va >= 0x80000000
+//    for (uPdeIndex = 0x200; uPdeIndex < 0x400; uPdeIndex++)
+//    {
+//        if (!(pPde[uPdeIndex] & P_PRESENT)) 
+//        {
+//            continue;
+//        }
+//
+//        // set it not writable
+//        pPde[uPdeIndex] &= ~((ULONG)P_WRITABLE);
+//    }
+//
+//    return STATUS_SUCCESS;
+//}
 
 static NTSTATUS NTAPI MmUpdatePageTable (
   PVOID PageTable,
@@ -294,7 +254,7 @@ static NTSTATUS NTAPI MmUpdatePageTable (
     if (!LowerPageTablePA.QuadPart) 
     {
         // the next level page is not in the memory
-        Status = MmFindPageByHostVA (LowerPageTableHostVA, &LowerPageTable);
+        Status = MmAPMFindPageByHostVA (LowerPageTableHostVA, &LowerPageTable);
         if (!NT_SUCCESS (Status) || VirtualAddress == LowerPageTableHostVA) 
         {
             // fail to find the page, then allocate it
@@ -305,13 +265,14 @@ static NTSTATUS NTAPI MmUpdatePageTable (
 
             LowerPageTablePA = MmGetPhysicalAddress (LowerPageTableGuestVA);
 
-            Status = MmSavePage (
+            Status = MmAPMSavePage (
                 LowerPageTablePA, 
                 LowerPageTableHostVA,
                 LowerPageTableGuestVA, 
                 PAT_POOL, 
                 1, 
-                AP_PAGETABLE | AP_PDE);
+                AP_PAGETABLE | AP_PDE,
+				NULL);
             if (!NT_SUCCESS (Status)) 
             {
                 DbgPrint(
@@ -351,7 +312,7 @@ static NTSTATUS NTAPI MmUpdatePageTable (
     else 
     {
         // LowerPageTablePA.QuadPart is not NULL
-        Status = MmFindPageByPA (LowerPageTablePA, &LowerPageTable);
+        Status = MmAPMFindPageByPA (LowerPageTablePA, &LowerPageTable);
         if (!NT_SUCCESS (Status)) 
         {
             LowerPageTablePA.QuadPart = ((PULONG) PageTable)[PageTableOffset];
@@ -392,55 +353,66 @@ static NTSTATUS NTAPI MmUpdatePageTable (
 PVOID NTAPI HvMmAllocatePages (
   ULONG uNumberOfPages,
   PPHYSICAL_ADDRESS pFirstPagePA,
-  ULONG uDebugTag
+  ULONG uDebugTag,
+  PALLOCATED_PAGE * pAllocatedPage //Always point to the <AllocatedPage> of first page.
 )
 {
-  PVOID PageVA, FirstPage;
-  PHYSICAL_ADDRESS PagePA;
-  NTSTATUS Status;
-  ULONG i;
+	PVOID PageVA, FirstPage;
+	PHYSICAL_ADDRESS PagePA;
+	NTSTATUS Status;
+	PALLOCATED_PAGE Alloced = NULL;
+	ULONG i;
 
-  if (!uNumberOfPages)
-    return NULL;
+	if (!uNumberOfPages)
+		return NULL;
 
-  FirstPage = PageVA = ExAllocatePoolWithTag (NonPagedPool, uNumberOfPages * PAGE_SIZE, uDebugTag);
-  if (!PageVA)
-    return NULL;
-  RtlZeroMemory (PageVA, uNumberOfPages * PAGE_SIZE);
+	FirstPage = PageVA = ExAllocatePoolWithTag (NonPagedPool, uNumberOfPages * PAGE_SIZE, uDebugTag);
+	if (!PageVA)
+		return NULL;
+	RtlZeroMemory (PageVA, uNumberOfPages * PAGE_SIZE);
 
-  if (pFirstPagePA)
-    *pFirstPagePA = MmGetPhysicalAddress (PageVA);
+	if (pFirstPagePA)
+		*pFirstPagePA = MmGetPhysicalAddress (PageVA);
 
-  for (i = 0; i < uNumberOfPages; i++) 
-  {
-    // save pages
-    PagePA = MmGetPhysicalAddress (PageVA);
-    Status = MmSavePage (
-        PagePA, 
-        PageVA, 
-        PageVA, 
-        i == 0 ? PAT_POOL : PAT_DONT_FREE, 
-        uNumberOfPages, 
-        0);
-    if (!NT_SUCCESS (Status)) 
-    {
-      DbgPrint ("MmAllocatePages(): MmSavePage() failed with status 0x%08X\n", Status);
-      return NULL;
-    }
+	for (i = 0; i < uNumberOfPages; i++) 
+	{
+		// save pages
+		PagePA = MmGetPhysicalAddress (PageVA);
+		Status = MmAPMSavePage (
+			PagePA, 
+			PageVA, 
+			PageVA, 
+			i == 0 ? PAT_POOL : PAT_DONT_FREE, 
+			uNumberOfPages, 
+			0,
+			&Alloced);
+		if (!NT_SUCCESS (Status)) 
+		{
+		  DbgPrint ("MmAllocatePages(): MmSavePage() failed with status 0x%08X\n", Status);
+		  return NULL;
+		}
 
-    // map to the same addresses in the host pagetables as they are in guest's
-    Status = MmCreateMapping (PagePA, PageVA, FALSE);
-    if (!NT_SUCCESS (Status)) 
-    {
-      DbgPrint
-        ("MmAllocatePages(): MmCreateMapping() failed to map PA 0x%p with status 0x%08X\n", PagePA.QuadPart, Status);
-      return NULL;
-    }
-    MmCoverHostVA(PageVA,SparePagePA);
-    PageVA = (PUCHAR) PageVA + PAGE_SIZE;
-  }
+		// map to the same addresses in the host pagetables as they are in guest's
+		Status = MmCreateMapping (PagePA, PageVA, FALSE);
+		if (!NT_SUCCESS (Status)) 
+		{
+			DbgPrint
+				("MmAllocatePages(): MmCreateMapping() failed to map PA 0x%p with status 0x%08X\n", PagePA.QuadPart, Status);
+			return NULL;
+		}
+		
+		if(i==0)
+			*pAllocatedPage = Alloced;
 
-  return FirstPage;
+		//if(AllocatedPage.bMachineState == CURRENT_STATE_GUEST)//We only hide the memory allocated under guest OS
+		//{
+		//	MmCoverHostVA(&AllocatedPage,SparePagePA);
+		//}
+		
+		PageVA = (PUCHAR) PageVA + PAGE_SIZE;
+	}
+
+	return FirstPage;
 }
 
 /**
@@ -448,13 +420,15 @@ PVOID NTAPI HvMmAllocatePages (
  */
 PVOID NTAPI HvMmAllocateContiguousPages (
   ULONG uNumberOfPages,
-  PPHYSICAL_ADDRESS pFirstPagePA
+  PPHYSICAL_ADDRESS pFirstPagePA,
+  PALLOCATED_PAGE * pAllocatedPage //Always point to the <AllocatedPage> of first page.
 )
 {
     return HvMmAllocateContiguousPagesSpecifyCache(
         uNumberOfPages,
         pFirstPagePA,
-        MmCached);
+        MmCached,
+		pAllocatedPage);
 }
 
 /**
@@ -463,67 +437,78 @@ PVOID NTAPI HvMmAllocateContiguousPages (
 PVOID NTAPI HvMmAllocateContiguousPagesSpecifyCache (
   ULONG uNumberOfPages,
   PPHYSICAL_ADDRESS pFirstPagePA,
-  ULONG CacheType
+  ULONG CacheType,
+  PALLOCATED_PAGE * pAllocatedPage //Always point to the <AllocatedPage> of first page.
 )
 {
-  PVOID PageVA, FirstPage;
-  PHYSICAL_ADDRESS PagePA, l1, l2, l3;
-  NTSTATUS Status;
-  ULONG i;
+	PVOID PageVA, FirstPage;
+	PHYSICAL_ADDRESS PagePA, l1, l2, l3;
+	NTSTATUS Status;
+	PALLOCATED_PAGE Alloced = NULL;
+	ULONG i;
 
-  if (!uNumberOfPages)
-    return NULL;
+	if (!uNumberOfPages)
+		return NULL;
 
-  l1.QuadPart = 0;
-  l2.QuadPart = -1;
-  l3.QuadPart = 0x200000;    // 0x10000 ?
+	l1.QuadPart = 0;
+	l2.QuadPart = -1;
+	l3.QuadPart = 0x200000;    // 0x10000 ?
 
-  FirstPage = PageVA = MmAllocateContiguousMemorySpecifyCache (
-      uNumberOfPages * PAGE_SIZE, 
-      l1, 
-      l2, 
-      l3, 
-      CacheType);
-  if (!PageVA)
-    return NULL;
+	FirstPage = PageVA = MmAllocateContiguousMemorySpecifyCache (
+		uNumberOfPages * PAGE_SIZE, 
+		l1, 
+		l2, 
+		l3, 
+		CacheType);
+	if (!PageVA)
+		return NULL;
 
-  RtlZeroMemory (PageVA, uNumberOfPages * PAGE_SIZE);
+	RtlZeroMemory (PageVA, uNumberOfPages * PAGE_SIZE);
 
-  PagePA = MmGetPhysicalAddress (PageVA);
-  if (pFirstPagePA)
-    *pFirstPagePA = PagePA;
+	PagePA = MmGetPhysicalAddress (PageVA);
+	if (pFirstPagePA)
+		*pFirstPagePA = PagePA;
 
-  for (i = 0; i < uNumberOfPages; i++) 
-  {
-    // save page
-    Status = MmSavePage (
-        PagePA, 
-        PageVA, 
-        PageVA, 
-        i == 0 ? PAT_CONTIGUOUS : PAT_DONT_FREE, 
-        uNumberOfPages, 
-        0);
-    if (!NT_SUCCESS (Status)) 
-    {
-      DbgPrint ("MmAllocateContiguousPages(): MmSavePage() failed with status 0x%08X\n", Status);
-      return NULL;
-    }
+	for (i = 0; i < uNumberOfPages; i++) 
+	{
+		// save page
+		Status = MmAPMSavePage (
+			PagePA, 
+			PageVA, 
+			PageVA, 
+			i == 0 ? PAT_CONTIGUOUS : PAT_DONT_FREE, 
+			uNumberOfPages, 
+			0,
+			&Alloced);
+		if (!NT_SUCCESS (Status)) 
+		{
+			DbgPrint ("MmAllocateContiguousPages(): MmSavePage() failed with status 0x%08X\n", Status);
+			return NULL;
+		}
 
-    // map to the same addresses in the host pagetables as they are in guest's
-    Status = MmCreateMapping (PagePA, PageVA, FALSE);
-    if (!NT_SUCCESS (Status)) 
-    {
-      DbgPrint
-        ("MmAllocateContiguousPages(): MmCreateMapping() failed to map PA 0x%p with status 0x%08X\n",
-         PagePA.QuadPart, Status);
-      return NULL;
-    }
+		// map to the same addresses in the host pagetables as they are in guest's
+		Status = MmCreateMapping (PagePA, PageVA, FALSE);
+		if (!NT_SUCCESS (Status)) 
+		{
+			DbgPrint
+			("MmAllocateContiguousPages(): MmCreateMapping() failed to map PA 0x%p with status 0x%08X\n",
+			 PagePA.QuadPart, Status);
+			return NULL;
+		}
+		
+		//if(AllocatedPage.bMachineState == CURRENT_STATE_GUEST)//We only hide the memory allocated under guest OS
+		//{
+		//	MmCoverHostVA(&AllocatedPage,SparePagePA);
+		//}
+		
+		if(i==0)
+			*pAllocatedPage = Alloced;
 
-    PageVA = (PUCHAR) PageVA + PAGE_SIZE;
-    PagePA.QuadPart += PAGE_SIZE;
-  }
+		PageVA = (PUCHAR) PageVA + PAGE_SIZE;
+		PagePA.QuadPart += PAGE_SIZE;
+	}
 
-  return FirstPage;
+	return FirstPage;
 }
 
 NTSTATUS NTAPI MmCreateMapping (
@@ -535,7 +520,7 @@ NTSTATUS NTAPI MmCreateMapping (
   PALLOCATED_PAGE pPdePage;
   NTSTATUS Status;
 
-  Status = MmFindPageByPA (g_PageMapBasePhysicalAddress, &pPdePage);
+  Status = MmAPMFindPageByPA (g_PageMapBasePhysicalAddress, &pPdePage);
   if (!NT_SUCCESS (Status)) 
   {
     return STATUS_UNSUCCESSFUL;
@@ -762,17 +747,19 @@ NTSTATUS NTAPI HvMmInitManager (
 	PVOID pPdePage,SparePage;
 	NTSTATUS Status;
 	PHYSICAL_ADDRESS l1, l2, l3;
-	
+	char a[50]="I am s spare page!";
 	//Step 1. Allocate memory for Cpu->SparePage First
 	SparePage = ExAllocatePoolWithTag (NonPagedPool, PAGE_SIZE, LAB_TAG);
     SparePagePA = MmGetPhysicalAddress (SparePage);
 
+	RtlZeroMemory (SparePage, PAGE_SIZE);	
+	memcpy(SparePage,a,50);
+	
 	//Step 2. Set the <originGuestCR3> global variable
 	originGuestCR3 = RegGetCr3();
 	
-	//Step 3.
-	InitializeListHead (&g_PageTableList);
-	KeInitializeSpinLock (&g_PageTableListLock);
+	//Step 3. Init AllocPageManager.
+	MmAPMInit();
 
 	pPdePage = ExAllocatePoolWithTag (NonPagedPool, PAGE_SIZE, LAB_TAG);
 	if (!pPdePage)
@@ -781,13 +768,14 @@ NTSTATUS NTAPI HvMmInitManager (
 
 	// store the page root
 	g_PageMapBasePhysicalAddress = MmGetPhysicalAddress (pPdePage);
-	Status = MmSavePage (
+	Status = MmAPMSavePage (
 		g_PageMapBasePhysicalAddress, 
 		(PVOID) PDE_BASE, 
 		pPdePage, 
 		PAT_POOL, 
 		1, 
-		AP_PAGETABLE | AP_PDE);
+		AP_PAGETABLE | AP_PDE,
+		NULL);
 	if (!NT_SUCCESS(Status))
 	{
 		DbgPrint ("MmInitManager(): MmSavePage() failed to save PML4 page, status 0x%08X\n", Status);
@@ -811,6 +799,62 @@ NTSTATUS NTAPI HvMmInitManager (
 	return Status;
 }
 
+/*
+ * This callback function is used by HvMmShutdownManager
+ */ 
+VOID NTAPI MmShutdownMgrRestoreMappingCallback(
+	PALLOCATED_PAGE AllocatedPage,
+	...
+)
+{
+	if(AllocatedPage->Flags == 0)
+	{
+		MmCoverHostVA(AllocatedPage,AllocatedPage->PhysicalAddress);
+	}
+}
+
+/*
+ * This callback function is used by HvMmShutdownManager
+ */ 
+VOID NTAPI MmShutdownMgrDeallocateHidedPagesCallback(
+	PALLOCATED_PAGE AllocatedPage,
+	...
+)
+{
+	ULONG i;
+	PULONG Entry;
+
+	if (AllocatedPage->Flags & AP_PAGETABLE) 
+    {
+        for (i = 0, Entry = AllocatedPage->GuestAddress; i < 0x400; i++)
+        {
+            if (Entry[i] & P_ACCESSED)
+            {
+                DbgPrint
+                    ("MmShutdownManager(): HPT 0x%p: index %d accessed, entry 0x%p, FL 0x%X\n",
+                    AllocatedPage->HostAddress, i, Entry[i], AllocatedPage->Flags);
+            }
+        }
+    }
+
+    switch (AllocatedPage->AllocationType) 
+    {
+    case PAT_POOL:
+        ExFreePool (AllocatedPage->GuestAddress);
+        break;
+    case PAT_CONTIGUOUS:
+        MmFreeContiguousMemorySpecifyCache (
+            AllocatedPage->GuestAddress,
+            AllocatedPage->uNumberOfPages * PAGE_SIZE,
+            MmCached);
+        break;
+    case PAT_DONT_FREE:
+        // this is not the first page in the allocation
+        break;
+    }
+
+}
+
 /**
  * effects: Shutdown the Memory Manager.
  */
@@ -818,61 +862,16 @@ NTSTATUS NTAPI HvMmShutdownManager (
 )
 {
     PALLOCATED_PAGE AllocatedPage;
-    ULONG i;
-    PULONG Entry;
+    
 
 	//BUGFIX(Superymk 5/21/2009):When free a non-pagetable page, we must remap it back first. 
 	//So add the iteration here to do this job.
-	//KeWaitForSingleObject(&g_PageTableListLock,Executive,KernelMode,FALSE,NULL);
-	
-	AllocatedPage = (PALLOCATED_PAGE)g_PageTableList.Flink;
-	while(AllocatedPage != (PALLOCATED_PAGE)&g_PageTableList)
-	{
-		AllocatedPage = CONTAINING_RECORD(AllocatedPage,ALLOCATED_PAGE,le);
-		if(AllocatedPage->Flags == 0)
-		{
-			MmCoverHostVA(AllocatedPage->GuestAddress,AllocatedPage->PhysicalAddress);
-		}
-		AllocatedPage=(PALLOCATED_PAGE)AllocatedPage->le.Flink;
-	}
+
+	//Step 1. Restore the orginal guest virtual-physical mapping.
+	MmAPMDoCallback(MmShutdownMgrRestoreMappingCallback);
 		
-	//KeReleaseMutex(&g_PageTableListLock,FALSE);	
-
-    while (AllocatedPage = (PALLOCATED_PAGE) ExInterlockedRemoveHeadList (&g_PageTableList, &g_PageTableListLock)) 
-    {
-        AllocatedPage = CONTAINING_RECORD (AllocatedPage, ALLOCATED_PAGE, le);
-
-        if (AllocatedPage->Flags & AP_PAGETABLE) 
-        {
-            for (i = 0, Entry = AllocatedPage->GuestAddress; i < 0x400; i++)
-            {
-                if (Entry[i] & P_ACCESSED)
-                {
-                    DbgPrint
-                        ("MmShutdownManager(): HPT 0x%p: index %d accessed, entry 0x%p, FL 0x%X\n",
-                        AllocatedPage->HostAddress, i, Entry[i], AllocatedPage->Flags);
-                }
-            }
-        }
-
-        switch (AllocatedPage->AllocationType) 
-        {
-        case PAT_POOL:
-            ExFreePool (AllocatedPage->GuestAddress);
-            break;
-        case PAT_CONTIGUOUS:
-            MmFreeContiguousMemorySpecifyCache (
-                AllocatedPage->GuestAddress,
-                AllocatedPage->uNumberOfPages * PAGE_SIZE,
-                MmCached);
-            break;
-        case PAT_DONT_FREE:
-            // this is not the first page in the allocation
-            break;
-        }
-
-        ExFreePool (AllocatedPage);
-    }
+	//Step 2. Deallocate these hided pages as well as their <AllocatedPage> Structure
+    MmAPMPopDoCallback(MmShutdownMgrDeallocateHidedPagesCallback);
 
     return STATUS_SUCCESS;
 }
@@ -957,6 +956,161 @@ NTSTATUS NTAPI MmInitIdentityPageTable (
   //           FirstPdeVa_Legacy, g_IdentityPageTableBasePhysicalAddress_Legacy.QuadPart));
 
   return STATUS_SUCCESS;
+}
+
+/*
+ * This callback function is used by MmHidingStrategyRevealHiddenPages
+ */ 
+VOID NTAPI MmHidingStrategyRevealHiddenPagesCallback (
+	PALLOCATED_PAGE AllocatedPage,
+	PVOID GuestAddress,
+	ULONG uNumberOfPages,
+	PULONG RemainUnswappedPages,
+	...
+)
+{
+	ULONG GuestCR3,CurrentCR3;
+	if (*RemainUnswappedPages <= 0)
+		return;
+
+	if (AllocatedPage->GuestAddress == GuestAddress && AllocatedPage->uNumberOfPages == uNumberOfPages) 
+		{
+			//Found the pages
+			if (AllocatedPage->Flags == 0)//Not a page table page
+			{
+				if(AllocatedPage->FromCR3 != (ULONG)g_PageMapBasePhysicalAddress.QuadPart)//We only operate on the guest OS page table to 
+																			//hide and reveal the memory allocated under guest OS
+				{
+					CurrentCR3 = RegGetCr3(); //Save the current CR3
+					GuestCR3 = AllocatedPage->FromCR3;
+					__asm{ 
+						mov ebx, AllocatedPage
+						mov ecx, RemainUnswappedPages ;Store the params 
+
+						mov eax, GuestCR3
+						mov cr3, eax
+
+						mov AllocatedPage, ebx
+						mov RemainUnswappedPages,ecx ;Restore the params in the new page table
+					}
+
+					MmCoverHostVA(AllocatedPage,AllocatedPage->PhysicalAddress);
+					(*RemainUnswappedPages)--;
+
+					__asm{ 
+						mov eax, CurrentCR3
+						mov cr3, eax
+					}
+				}
+			}
+		}
+}
+/**
+ * effects: remap back the indicated hidden physical pages to the guest page table.
+ */
+VOID NTAPI MmHidingStrategyRevealHiddenPages (
+	PVOID GuestAddress,
+	ULONG uNumberOfPages
+)
+{
+	ULONG remainUnswappedPages = uNumberOfPages;
+	
+	MmAPMDoCallback(MmHidingStrategyRevealHiddenPagesCallback,GuestAddress,uNumberOfPages,&remainUnswappedPages);
+}
+
+/*
+ * This callback function is used by MmHidingStrategyHideGuestPages
+ */ 
+VOID NTAPI MmHidingStrategyHideGuestPagesCallback (
+	PALLOCATED_PAGE AllocatedPage,
+	PVOID GuestAddress,
+	ULONG uNumberOfPages,
+	PULONG RemainUnswappedPages,
+	...
+)
+{
+	ULONG GuestCR3,CurrentCR3;
+
+	if (*RemainUnswappedPages <= 0)
+		return;
+
+	if( RegGetCr3() == (ULONG)g_PageMapBasePhysicalAddress.QuadPart)//We only hide the memory allocated under guest OS
+		return;
+
+	if (AllocatedPage->GuestAddress == GuestAddress && AllocatedPage->uNumberOfPages == uNumberOfPages) 
+	{
+		//Found the pages
+		if(AllocatedPage->Flags == 0)//Not a page table page
+		{
+			CurrentCR3 = RegGetCr3(); //Save the current CR3
+			GuestCR3 = AllocatedPage->FromCR3;
+			__asm{ 
+				mov ebx, AllocatedPage
+				mov ecx, RemainUnswappedPages ;Store the params 
+
+				mov eax, GuestCR3
+				mov cr3, eax
+
+				mov AllocatedPage, ebx
+				mov RemainUnswappedPages,ecx ;Restore the params in the new page table
+			}
+
+			MmCoverHostVA(AllocatedPage,SparePagePA);
+			(*RemainUnswappedPages)--;
+
+			__asm{ 
+				mov eax, CurrentCR3
+				mov cr3, eax
+			}
+		}
+	}
+
+}
+
+/**
+ * effects:Hide the indicated physical page(s) from the guest page table.
+ */
+VOID NTAPI MmHidingStrategyHideGuestPages (
+	PVOID GuestAddress,
+	ULONG uNumberOfPages
+)
+{
+	ULONG remainUnswappedPages = uNumberOfPages;
+	
+	//if(bCurrentMachineState != CURRENT_STATE_GUEST)//We only hide the memory allocated under guest OS
+		//return;
+
+	MmAPMDoCallback(MmHidingStrategyHideGuestPagesCallback,GuestAddress,uNumberOfPages,&remainUnswappedPages);
+}
+
+/*
+ * This callback function is used by MmHidingStrategyRevealHiddenPages
+ */ 
+VOID NTAPI MmHidingStrategyHideAllAllocatedGuestPagesCallback (
+	PALLOCATED_PAGE AllocatedPage,
+	...
+)
+{
+	if( RegGetCr3()== (ULONG)g_PageMapBasePhysicalAddress.QuadPart)//We only hide the memory allocated under guest OS
+		return;
+
+	if(AllocatedPage->Flags == 0)//Not a page table page
+	{
+		MmCoverHostVA(AllocatedPage,SparePagePA);
+	}
+}
+
+/**
+ * effects:Hide all the hypervisor allocated physical pages from the guest page table.
+ */
+VOID NTAPI MmHidingStrategyHideAllAllocatedGuestPages (
+)
+{
+	PALLOCATED_PAGE AllocatedPage;
+	
+	//if(AllocatedPage->bMachineState != CURRENT_STATE_GUEST)//We only hide the memory allocated under guest OS
+		//return;
+	MmAPMDoCallback(MmHidingStrategyHideAllAllocatedGuestPagesCallback);
 }
 
 /**

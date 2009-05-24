@@ -1,6 +1,6 @@
 #pragma once
 #include <ntddk.h>
-
+#include "HvStrategies.h"
 /**
  * effects: Initialize the memory manager.
  */
@@ -13,7 +13,8 @@ NTSTATUS NTAPI HvMmInitManager (
 PVOID NTAPI HvMmAllocatePages (
   ULONG uNumberOfPages,
   PPHYSICAL_ADDRESS pFirstPagePA,
-  ULONG uDebugTag
+  ULONG uDebugTag,
+  PALLOCATED_PAGE * pAllocatedPage
 );
 
 /**
@@ -21,7 +22,8 @@ PVOID NTAPI HvMmAllocatePages (
  */
 PVOID NTAPI HvMmAllocateContiguousPages (
   ULONG uNumberOfPages,
-  PPHYSICAL_ADDRESS pFirstPagePA
+  PPHYSICAL_ADDRESS pFirstPagePA,
+  PALLOCATED_PAGE * pAllocatedPage //Out, return pointer of *AllocatePage Here.
 );
 
 /**
@@ -30,7 +32,8 @@ PVOID NTAPI HvMmAllocateContiguousPages (
 PVOID NTAPI HvMmAllocateContiguousPagesSpecifyCache (
   ULONG uNumberOfPages,
   PPHYSICAL_ADDRESS pFirstPagePA,
-  ULONG CacheType
+  ULONG CacheType,
+  PALLOCATED_PAGE * pAllocatedPage
 );
 
 /**

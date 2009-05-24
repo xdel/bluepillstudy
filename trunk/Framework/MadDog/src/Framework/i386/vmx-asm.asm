@@ -14,7 +14,7 @@
 option casemap:none
 
 EXTERN	 HvmEventCallback@8:PROC  
-
+;EXTERN   bCurrentMachineState:DWORD
 
 vmx_call MACRO
 	BYTE	0Fh, 01h, 0C1h
@@ -232,7 +232,8 @@ VmxResume ENDP
 ;HvmEventCallback (PCPU Cpu, PGUEST_REGS GuestRegs)
 VmxVmexitHandler PROC   StdCall  
 	HVM_SAVE_ALL_NOSEGREGS
-	
+
+	;mov	bCurrentMachineState, 0 ; The definition is in HvCoreDefs.h 
 	mov     ecx,[esp + 20h]     ;PCUP
 	mov 	ebx,esp		;ebx=GuestRegs
 	
