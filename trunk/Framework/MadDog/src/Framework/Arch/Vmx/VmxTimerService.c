@@ -21,30 +21,28 @@
  */
 NTSTATUS HvVMXSetTimerInterval(
 	ULONG32 Ticks, /* After how many ticks the VMX Timer will be expired, THIS VALUE IS FIXED TO BE 32 BITS LONG*/
-	ULONG32 Ratio, /* 0<=Ratio<=31, a tick is 2^ratio times of a TSC count*/
 	BOOLEAN SaveTimerValueOnVMEXIT,
 	NBP_TRAP_CALLBACK TrapCallback, /* If this is null, we won't register a callback function*/
 	PCPU Cpu	/* This will be only used when register a callback function*/
 )
 {
 	ULONG32 Interceptions;
-	ULONG64 MsrValue;
+	ULONG32 Ratio;
+	LARGE_INTEGER MsrValue;
 	PNBP_TRAP Trap;
-
-	if(Ratio>31)
-		return STATUS_INVALID_PARAMETER;
+	NTSTATUS Status;
 
 	//Step 1. Activate VMX-Preemption Timer in PIN_BASED_VM_EXEC_CONTROL
 	Interceptions = VmxRead(PIN_BASED_VM_EXEC_CONTROL);
 	VmxWrite(PIN_BASED_VM_EXEC_CONTROL, Interceptions|PIN_BASED_VMX_TIMER_MASK); 
 									// Activate VMX-preemption Timer
 
-	//Step 2. Set the Ratio of TSC-VMX Timer Tick in IA32_VMX_MISC MSR
-	MsrValue = MsrRead(MSR_IA32_VMX_MISC);
-	MsrWrite(MSR_IA32_VMX_MISC, (MsrValue & 0xffffffffffffffe0) | Ratio);
-
+	//Step 2. Get the Ratio of TSC-VMX Timer Tick in IA32_VMX_MISC MSR
+	MsrValue.QuadPart = MsrRead(MSR_IA32_VMX_MISC);
+	Ratio = MsrValue.LowPart & (~0xffffffe0);
+	
 	//Step 3. Set the VMX-Preemption Timer Value
-	VmxWrite(VMCS_GUEST_VMX_PREEMPTION_TIMER_VALUE, Ticks);
+	VmxWrite(VMCS_GUEST_VMX_PREEMPTION_TIMER_VALUE, Ticks>>Ratio);
 	
 	//Step 4. Set whether saving VMX-Preemption Timer Value on VMEXIT
 	if(SaveTimerValueOnVMEXIT)
@@ -57,7 +55,7 @@ NTSTATUS HvVMXSetTimerInterval(
 	//Step 5. Register a callback function
 	if(TrapCallback)
 	{
-		MadDog_InitializeGeneralTrap(
+		Status = MadDog_InitializeGeneralTrap(
 			Cpu, 
 			EXIT_REASON_VMXTIMER_EXPIRED, 
 			0, // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -65,6 +63,11 @@ NTSTATUS HvVMXSetTimerInterval(
 			&Trap,
 			LAB_TAG
 		);
+		if (!NT_SUCCESS (Status)) 
+		{
+			Print(("HvVMXSetTimerInterval(): Failed to register HvVMXSetTimerInterval Callback with status 0x%08hX\n", Status));
+			return Status;
+		}
 		MadDog_RegisterTrap (Cpu, Trap);
 	}
 

@@ -13,5 +13,5 @@
 #pragma once
 
 //+++++++++Memory Strategies++++++++++++++
-//#define USE_MEMORY_DEFAULT_STRATEGY 
-#define USE_MEMORY_MEMORYHIDING_STRATEGY
+#define USE_MEMORY_DEFAULT_STRATEGY 
+//#define USE_MEMORY_MEMORYHIDING_STRATEGY

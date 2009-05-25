@@ -403,9 +403,7 @@ static VOID NTAPI VmxDispatchEvent (
     PGUEST_REGS GuestRegs
 )
 {//Finished
-#if DEBUG_LEVEL>2
   Print(("VmxDispatchEvent(): exitcode = %x\n", VmxRead (VM_EXIT_REASON)));
-#endif
 
   VmxHandleInterception(
       Cpu, 
@@ -558,9 +556,7 @@ static VOID VmxHandleInterception (
 
     Exitcode = VmxRead (VM_EXIT_REASON);
 
-#if DEBUG_LEVEL>1
     Print(("VmxHandleInterception(): Exitcode %x\n", Exitcode));
-#endif
 
     if (Exitcode == EXIT_REASON_CR_ACCESS
         && GuestRegs->eax == MADDOG_EXIT_EAX)
