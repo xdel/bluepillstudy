@@ -25,3 +25,9 @@ NTSTATUS NTAPI VmxRegisterTraps (
   PCPU Cpu
 );
 
+BOOLEAN NTAPI VmxDispatchTimerExpired (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv
+);
