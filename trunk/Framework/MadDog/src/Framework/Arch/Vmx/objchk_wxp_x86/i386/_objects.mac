@@ -1,0 +1,17 @@
+
+
+386_OBJECTS=\
+ $(OBJ_PATH)\$O\vmxcore.obj \
+ $(OBJ_PATH)\$O\vmxdebug.obj \
+
+
+
+
+
+# lowercased
+BASEDIR=e:\winddk\6001.18001
+OBJECT_ROOT=e:\winddk\6001.18001
+MAKEDIR_LOWERCASE=d:\workspace\maddog\src\framework\arch\vmx
+OBJ_PATH=d:\workspace\maddog\src\framework\arch\vmx
+CONCURRENT_MIDL=0
+CONCURRENT_MANIFEST_BUILD=0
