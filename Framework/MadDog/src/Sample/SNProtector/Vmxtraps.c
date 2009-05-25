@@ -562,7 +562,7 @@ BOOLEAN NTAPI VmxDispatchTimerExpired (
 
 	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
 	if (Trap->General.RipDelta == 0)
-	Trap->General.RipDelta = inst_len;
+		Trap->General.RipDelta = inst_len;
 	
 	DbgPrint("Timer Bomb,HAHAHAHAHAHA!!");
 	return TRUE;

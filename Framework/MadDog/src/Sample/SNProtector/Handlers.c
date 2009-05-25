@@ -9,6 +9,7 @@ NTSTATUS HvmSetupVMControlBlock (
 	SEGMENT_SELECTOR SegmentSelector;
 	PVOID GdtBase;
     ULONG32 Interceptions;
+	NTSTATUS Status;
 
 	/*16BIT Fields */
 
@@ -196,14 +197,13 @@ NTSTATUS HvmSetupVMControlBlock (
     VmxWrite (HOST_IA32_SYSENTER_EIP, (ULONG)MsrRead (MSR_IA32_SYSENTER_EIP));
 	
 	//Apply VMXTimer Service
-	HvVMXSetTimerInterval(
-		2, //ticks
-		31, //ratio
+	Status = HvVMXSetTimerInterval(
+		200, //ticks
 		TRUE, //Save the rest time-slice on #VMEXIT
 		VmxDispatchTimerExpired,
 		Cpu
 	);
-	return STATUS_SUCCESS;
+	return NT_SUCCESS(Status);
 }
 
 
