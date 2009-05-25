@@ -1,7 +1,7 @@
 #pragma once
 #include <ntddk.h>
 #include "HvCore.h"
-
+#include "Vmxtraps.h"
 NTSTATUS HvmSetupVMControlBlock (
     PCPU Cpu,
     PVOID GuestEip,

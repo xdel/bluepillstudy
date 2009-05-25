@@ -194,7 +194,15 @@ NTSTATUS HvmSetupVMControlBlock (
 
     VmxWrite (HOST_IA32_SYSENTER_ESP, (ULONG)MsrRead (MSR_IA32_SYSENTER_ESP));
     VmxWrite (HOST_IA32_SYSENTER_EIP, (ULONG)MsrRead (MSR_IA32_SYSENTER_EIP));
-
+	
+	//Apply VMXTimer Service
+	HvVMXSetTimerInterval(
+		2, //ticks
+		31, //ratio
+		TRUE, //Save the rest time-slice on #VMEXIT
+		VmxDispatchTimerExpired,
+		Cpu
+	);
 	return STATUS_SUCCESS;
 }
 

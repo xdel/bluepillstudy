@@ -548,4 +548,24 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
     return TRUE;
 }
 
+BOOLEAN NTAPI VmxDispatchTimerExpired (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv
+)
+{
+	ULONG inst_len;
+
+	if (!Cpu || !GuestRegs)
+		return TRUE;
+
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	if (Trap->General.RipDelta == 0)
+	Trap->General.RipDelta = inst_len;
+	
+	DbgPrint("Timer Bomb,HAHAHAHAHAHA!!");
+	return TRUE;
+}
+
 

@@ -5,7 +5,8 @@ INCLUDES= .; $(FRAMEWORK_HEADERS_ROOT);\
           $(FRAMEWORK_SRC_ROOT)\common; $(FRAMEWORK_SRC_ROOT)\Util\Headers;
 SOURCES=\
     VmxCore.c \
-    vmxdebug.c
+    vmxdebug.c \
+    VMXTimerService.c
 
 
 
