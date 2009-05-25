@@ -2,8 +2,11 @@
 
 #include <ntddk.h>
 
+/*
+ * effects: This service introduced in VMX Preemption
+ * Timer function to the VMCS.
+ */
 VOID HvVMXSetTimerInterval(
-	PVOID Vmcs,
 	ULONG32 Ticks,
-	ULONG Radio
+	ULONG Ratio
 );
