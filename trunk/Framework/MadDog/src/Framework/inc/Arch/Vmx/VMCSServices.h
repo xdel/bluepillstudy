@@ -1,0 +1,15 @@
+/**************************************************************
+ * Original:
+ * This file is added to gather all the VMCS structure services.
+ *
+ * These services can help configure a VMCS structure instead of
+ * use a series of VMXWrite instruction to setup one function.
+ *
+ * Because of the possiblity of conflict with prior VMCS setup using 
+ * VMXWrite instruction, all these services can only be used at the 
+ * final step of configuring VMCS struct.
+ * Superymk Wed May 25 2:00 PM 2009
+ **************************************************************/
+#pragma once
+
+#include "VMCSServices/VMXTimerService.h"
