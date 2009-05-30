@@ -15,3 +15,4 @@
 
 //+++++++++++++Global Settings+++++++++++++++
 #define USE_DEBUG_LIBRUARY
+#define DEBUG_HVCORE
