@@ -39,4 +39,10 @@ typedef BOOLEAN (
 //+++++++++++++++++++++Other Definitions+++++++++++++++++++++++++++
 typedef NTSTATUS (NTAPI * PCALLBACK_PROC) (PVOID Param);
 
+//+++++++++++++Hypervisor Status+++++++++++
+#define HVSTATUS 	ULONG64
+
+#define HVSTATUS_UNSUPPORTED_FEATURE 	0x1
+#define HVSTATUS_SUCCESS				0x0
+#define HVSTATUS_NTSTATUS(x) (x==HVSTATUS_SUCCESS?STATUS_SUCCESS:STATUS_UNSUCCESSFUL)
 

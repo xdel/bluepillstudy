@@ -45,6 +45,15 @@ typedef struct
 
 //+++++++++++++++++++++VMX Structs++++++++++++++++++++++++++++++++
 
+//Used to record the virtual-machine extensions support configuation
+//on the current platform.
+typedef struct _VMXFEATURESMSR
+{
+	LARGE_INTEGER VmxPinBasedCTLs;
+	LARGE_INTEGER VmxTruePinBasedCTLs;
+
+} VMXFEATURESMSR,*PVMXFEATURESMSR;
+
 typedef struct _VMX
 {
   PHYSICAL_ADDRESS VmcsToContinuePA;    // MUST go first in the structure; refer to SvmVmrun() for details
@@ -70,6 +79,8 @@ typedef struct _VMX
   ULONG64 GuestEFER;
   UCHAR GuestStateBeforeInterrupt[0xc00];
 
+  VMXFEATURESMSR FeaturesMSR;
+
 } VMX,
  *PVMX;
 
@@ -85,33 +96,34 @@ typedef struct _WORMHOLE
 typedef struct _CPU
 {
 
-  PCPU SelfPointer;             // MUST go first in the structure; refer to interrupt handlers for details
+	PCPU SelfPointer;             // MUST go first in the structure; refer to interrupt handlers for details
+	
+	VMX Vmx;
 
-  VMX Vmx;
+	ULONG ProcessorNumber;
 
-  ULONG ProcessorNumber;
-//  ULONG64 TotalTscOffset;
+	//  ULONG64 TotalTscOffset;
 
-//  LARGE_INTEGER LapicBaseMsr;
-//  PHYSICAL_ADDRESS LapicPhysicalBase;
-//  PUCHAR LapicVirtualBase;
+	//  LARGE_INTEGER LapicBaseMsr;
+	//  PHYSICAL_ADDRESS LapicPhysicalBase;
+	//  PUCHAR LapicVirtualBase;
 
-  LIST_ENTRY GeneralTrapsList;  // list of BP_TRAP structures
-  LIST_ENTRY MsrTrapsList;      //
- // LIST_ENTRY IoTrapsList;       //
+	LIST_ENTRY GeneralTrapsList;  // list of BP_TRAP structures
+	LIST_ENTRY MsrTrapsList;      //
+	// LIST_ENTRY IoTrapsList;       //
+	
+	// PVOID SparePage;              // a single page which was allocated just to get an unused PTE.
+	// PHYSICAL_ADDRESS SparePagePA; // original PA of the SparePage
+	// PULONG SparePagePTE;
 
- // PVOID SparePage;              // a single page which was allocated just to get an unused PTE.
- // PHYSICAL_ADDRESS SparePagePA; // original PA of the SparePage
- // PULONG SparePagePTE;
+	PSEGMENT_DESCRIPTOR GdtArea;
+	PVOID IdtArea;
 
-  PSEGMENT_DESCRIPTOR GdtArea;
-  PVOID IdtArea;
+	PVOID HostStack;              // note that CPU structure reside in this memory region
+	PWORMHOLE HypervisorGuestPipe; 
+	// BOOLEAN Nested;
 
-    PVOID HostStack;              // note that CPU structure reside in this memory region
-    PWORMHOLE HypervisorGuestPipe; 
- // BOOLEAN Nested;
-
- // ULONG64 ComPrintLastTsc;
+	// ULONG64 ComPrintLastTsc;
 } CPU;
 
 typedef struct _GUEST_REGS

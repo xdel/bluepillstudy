@@ -149,7 +149,12 @@ static NTSTATUS NTAPI VmxInitialize (
 	#endif
 //#endif
     // do not deallocate anything here; MmShutdownManager will take care of that
-	
+
+	//Fill the virtual-machine extensions support configuation
+	//on the current platform by reading MSR register.
+	Cpu->Vmx.FeaturesMSR.VmxPinBasedCTLs.QuadPart = MsrRead(MSR_IA32_VMX_PINBASED_CTLS);
+	Cpu->Vmx.FeaturesMSR.VmxTruePinBasedCTLs.QuadPart = MsrRead(MSR_IA32_VMX_TRUE_PINBASED_CTLS);
+
     //Allocate VMXON region
     Cpu->Vmx.OriginaVmxonR = HvMmAllocateContiguousPages(
         VMX_VMXONR_SIZE_IN_PAGES, 
