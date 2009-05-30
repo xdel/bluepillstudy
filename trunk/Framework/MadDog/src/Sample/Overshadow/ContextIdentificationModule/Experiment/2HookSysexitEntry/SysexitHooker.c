@@ -1,4 +1,4 @@
-#include "SysenterHooker.h"
+#include "SysexitHooker.h"
 
 BOOLEAN StartRecording;
 ULONG64 SyscallTimes;
@@ -107,22 +107,22 @@ NTSTATUS DriverUnload (
     PDRIVER_OBJECT DriverObject
 )
 {
-	CCHAR cProcessorNumber;
-	KIRQL OldIrql;
-	//cProcessorNumber = 0;
-	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
-	{
-		KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
-		OldIrql = KeRaiseIrqlToDpcLevel ();
+	//CCHAR cProcessorNumber;
+	//KIRQL OldIrql;
+	////cProcessorNumber = 0;
+	//for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
+	//{
+	//	KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));
+	//	OldIrql = KeRaiseIrqlToDpcLevel ();
 
-		CcDestroySysenterTrap(cProcessorNumber);
+	//	CcDestroySysenterTrap(cProcessorNumber);
 
-		KeLowerIrql (OldIrql);
-		KeRevertToUserAffinityThread ();
+	//	KeLowerIrql (OldIrql);
+	//	KeRevertToUserAffinityThread ();
 
-	}
+	//}
 
-	DbgPrint("Sysenter %d times\n",SyscallTimes);
+	//DbgPrint("Sysenter %d times\n",SyscallTimes);
     	return STATUS_SUCCESS;
 }
 
@@ -132,27 +132,30 @@ NTSTATUS DriverEntry (
 )
 {
    	NTSTATUS Status;
-   	CCHAR cProcessorNumber;
-	KIRQL OldIrql;
-	//cProcessorNumber = 0;
-    	//__asm { int 3 }
-	__asm{
-		and	dword ptr [plock], 0
-	}
-	for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
-	{
-		KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));		
-		OldIrql = KeRaiseIrqlToDpcLevel ();
+	LARGE_INTEGER MsrValue,MsrValue1,MsrValue2;
+	MsrValue1.QuadPart = MsrRead(MSR_IA32_VMX_PINBASED_CTLS);
+	DbgPrint("0x%llX\n0x%llX\n",MsrValue1.LowPart,MsrValue1.HighPart);
+ //  	CCHAR cProcessorNumber;
+	//KIRQL OldIrql;
+	////cProcessorNumber = 0;
+ //   	//__asm { int 3 }
+	//__asm{
+	//	and	dword ptr [plock], 0
+	//}
+	//for (cProcessorNumber = 0; cProcessorNumber < KeNumberProcessors; cProcessorNumber++) 
+	//{
+	//	KeSetSystemAffinityThread ((KAFFINITY) (1 << cProcessorNumber));		
+	//	OldIrql = KeRaiseIrqlToDpcLevel ();
 
-		CcSetupSysenterTrap(cProcessorNumber);
+	//	CcSetupSysenterTrap(cProcessorNumber);
 
-		KeLowerIrql (OldIrql);
-		KeRevertToUserAffinityThread ();
+	//	KeLowerIrql (OldIrql);
+	//	KeRevertToUserAffinityThread ();
 
-	}
+	//}
 
-	KeRevertToUserAffinityThread ();
+	//KeRevertToUserAffinityThread ();
 
-      	DriverObject->DriverUnload = DriverUnload;
+     	DriverObject->DriverUnload = DriverUnload;
     	return STATUS_SUCCESS;
 }
