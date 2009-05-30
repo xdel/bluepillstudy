@@ -197,7 +197,7 @@ NTSTATUS HvmSetupVMControlBlock (
     VmxWrite (HOST_IA32_SYSENTER_EIP, (ULONG)MsrRead (MSR_IA32_SYSENTER_EIP));
 	
 	//Apply VMXTimer Service
-	Status = HvVMXSetTimerInterval(
+	Status = PtVMXSetTimerInterval(
 		200, //ticks
 		TRUE, //Save the rest time-slice on #VMEXIT
 		VmxDispatchTimerExpired,

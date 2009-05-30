@@ -6,11 +6,11 @@
 #include "Regs.h"
 #include "Msr.h"
 
-#define DEBUG_HVCORE
+//#define DEBUG_HVCORE
 
-#ifdef DEBUG_HVCORE
+//#ifdef DEBUG_HVCORE
 #include "HvCoreDebugger.h"
-#endif
+//#endif
 
 //+++++++++++++++++++++Global Variables Declaration+++++++++++++++
 //extern BOOLEAN bCurrentMachineState; //true means it is in guest OS now, otherwise in hypervisor
