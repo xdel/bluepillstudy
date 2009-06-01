@@ -50,7 +50,12 @@ typedef struct
 typedef struct _VMXFEATURESMSR
 {
 	LARGE_INTEGER VmxPinBasedCTLs;
+	
+    //When reference the value <VmxTruePinBasedCTLs>, 
+	//always check the boolean first. 
+	BOOLEAN EnableVmxTruePinBasedCTLs;
 	LARGE_INTEGER VmxTruePinBasedCTLs;
+	
 
 } VMXFEATURESMSR,*PVMXFEATURESMSR;
 
@@ -108,10 +113,13 @@ typedef struct _CPU
 	//  PHYSICAL_ADDRESS LapicPhysicalBase;
 	//  PUCHAR LapicVirtualBase;
 
-	LIST_ENTRY GeneralTrapsList;  // list of BP_TRAP structures
-	LIST_ENTRY MsrTrapsList;      //
+	// [Superymk 6/1/2009] Use hash table to store and handle Trap elements 
+	//LIST_ENTRY GeneralTrapsList;  // list of BP_TRAP structures
+	//LIST_ENTRY MsrTrapsList;      //
 	// LIST_ENTRY IoTrapsList;       //
-	
+	LIST_ENTRY TrapsList[NUM_VMEXITS];
+	// [Superymk 6/1/2009] End
+
 	// PVOID SparePage;              // a single page which was allocated just to get an unused PTE.
 	// PHYSICAL_ADDRESS SparePagePA; // original PA of the SparePage
 	// PULONG SparePagePTE;
@@ -140,6 +148,7 @@ typedef struct _GUEST_REGS
 
 //+++++++++++++++++++++Traps Structs++++++++++++++++++++++++++++++++
 
+// [Superymk 6/1/2009] Store less info in NBP_TRAP
 typedef enum
 {
   TRAP_DISABLED = 0,
@@ -150,46 +159,54 @@ typedef enum
 
 // The following three will be used as trap's data structure.
 // 下面的这三个是_NBP_TRAP_中的存放关键数据的数据结构
-typedef struct _NBP_TRAP_DATA_GENERAL
-{
-  ULONG TrappedVmExit;
-  ULONG RipDelta;             // this value will be added to rip to skip the trapped instruction
-} NBP_TRAP_DATA_GENERAL,
- *PNBP_TRAP_DATA_GENERAL;
 
+//typedef struct _NBP_TRAP_DATA_GENERAL
+//{
+//  ULONG TrappedVmExit;
+//  ULONG RipDelta;             // this value will be added to rip to skip the trapped instruction
+//} NBP_TRAP_DATA_GENERAL,
+// *PNBP_TRAP_DATA_GENERAL;
+//
 typedef struct _NBP_TRAP_DATA_MSR
 {
-  ULONG32 TrappedMsr;
-  UCHAR TrappedMsrAccess;
-  UCHAR GuestTrappedMsrAccess;
+	ULONG32 TrappedMsr;
+	UCHAR TrappedMsrAccess;
+	UCHAR GuestTrappedMsrAccess;
 } NBP_TRAP_DATA_MSR,
  *PNBP_TRAP_DATA_MSR;
 
 typedef struct _NBP_TRAP_DATA_IO
 {
-  ULONG TrappedPort;
+	ULONG TrappedPort;
 } NBP_TRAP_DATA_IO,
  *PNBP_TRAP_DATA_IO;
-
+// [Superymk 6/1/2009] End
 
 typedef struct _NBP_TRAP
 {
-  LIST_ENTRY le;
+	LIST_ENTRY le;
+	
+	TRAP_PRIORITY Priority;
 
-  TRAP_TYPE TrapType;
-  TRAP_TYPE SavedTrapType;
+	// [Superymk 6/1/2009] Store less info in NBP_TRAP
+	TRAP_TYPE TrapType;
+	TRAP_TYPE SavedTrapType;
+		
+	union
+	{
+		//NBP_TRAP_DATA_GENERAL General;
+		NBP_TRAP_DATA_MSR Msr;
+		NBP_TRAP_DATA_IO Io;
+	};
 
-  union
-  {
-    NBP_TRAP_DATA_GENERAL General;
-    NBP_TRAP_DATA_MSR Msr;
-    NBP_TRAP_DATA_IO Io;
-  };
+	ULONG TrappedVmExit;
+	ULONG RipDelta; 
+	// [Superymk 6/1/2009] End
 
-  NBP_TRAP_CALLBACK TrapCallback;
-  BOOLEAN bForwardTrapToGuest;  // FALSE if guest hypervisor doesn't want to intercept this in its own guest.
-  // This will be TRUE for TRAP_MSR record when we're going to intercept MSR "rw"
-  // but the guest wants to intercept only "r" or "w". 
-  // Check Msr.GuestTrappedMsrAccess for correct event forwarding.
+	NBP_TRAP_CALLBACK TrapCallback;
+	BOOLEAN bForwardTrapToGuest;  // FALSE if guest hypervisor doesn't want to intercept this in its own guest.
+	// This will be TRUE for TRAP_MSR record when we're going to intercept MSR "rw"
+	// but the guest wants to intercept only "r" or "w". 
+	// Check Msr.GuestTrappedMsrAccess for correct event forwarding.
 } NBP_TRAP,
  *PNBP_TRAP;

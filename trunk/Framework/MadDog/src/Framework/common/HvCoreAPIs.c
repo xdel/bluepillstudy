@@ -43,7 +43,7 @@ NTSTATUS NTAPI MadDog_HypervisorInit()
 /**
  * effects:Build and Initialize General Trap struct (which is also a Trap struct).
  */
-NTSTATUS NTAPI MadDog_InitializeGeneralTrap (
+NTSTATUS NTAPI HvInitializeGeneralTrap (
   PCPU Cpu,
   ULONG TrappedVmExit,
   UCHAR RipDelta,

@@ -18,3 +18,14 @@
 #pragma once
 
 #include "VMCSServices/VMXTimerService.h"
+#include "VMCSServices/VmxDefaultInterceptions.h"
+
+/**
+ * This function is used to set value safely according to MSR register.
+ * make the <Ctl> values legal.
+ * e.g some Vmx Settings use MSR_IA32_VMX_PINBASED_CTLS & MSR_IA32_VMX_TRUE_PINBASED_CTLS.
+ */
+ULONG32 NTAPI PtVmxAdjustControls (
+	ULONG32 Ctl,
+	ULONG32 Msr
+);

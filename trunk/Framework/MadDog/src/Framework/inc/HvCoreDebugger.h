@@ -23,6 +23,6 @@ NTSTATUS NTAPI DbgPrintInfo (PUCHAR fmt,...);
  * Effects: Initialize SpinLock, must be called before invoke WriteDbgInfo function
  * 初始化写信息自旋锁,必须在调用WriteDbgInfo方法前调用
  **/
-void NTAPI DbgInitPrintInfo();
+void NTAPI DbgInitComponent();
 
-void NTAPI DbgDisposePrintInfo();
+void NTAPI DbgDisposeComponent();

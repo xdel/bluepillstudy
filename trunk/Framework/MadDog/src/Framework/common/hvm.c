@@ -187,6 +187,7 @@ NTSTATUS NTAPI HvmSubvertCpu (
     NTSTATUS Status;
     PHYSICAL_ADDRESS HostStackPA;
 	PALLOCATED_PAGE AllocatedPage;
+	ULONG i;
 
     Print(("HvmSubvertCpu(): Running on processor #%d\n", KeGetCurrentProcessorNumber()));
 	
@@ -217,9 +218,14 @@ NTSTATUS NTAPI HvmSubvertCpu (
 
    // Cpu->Nested = FALSE;
 
-    InitializeListHead (&Cpu->GeneralTrapsList);
-    InitializeListHead (&Cpu->MsrTrapsList);
+   // InitializeListHead (&Cpu->GeneralTrapsList);
+    //InitializeListHead (&Cpu->MsrTrapsList);
    // InitializeListHead (&Cpu->IoTrapsList);
+
+	for(i = 0; i< NUM_VMEXITS ;i++)
+	{
+		InitializeListHead (&Cpu->TrapsList[i]);
+	}
 
     Cpu->GdtArea = HvMmAllocatePages (BYTES_TO_PAGES (BP_GDT_LIMIT), NULL, 'GDTA',&AllocatedPage);//Currently we create our own GDT and IDT area
     if (!Cpu->GdtArea) 

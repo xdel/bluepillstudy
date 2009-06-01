@@ -19,6 +19,18 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
 );
 
 /**
+ * effects:Build and Initialize MSR Trap struct.
+ */
+NTSTATUS NTAPI TrInitializeMSROpTrap (
+    PCPU Cpu,
+	ULONG MSROpType,
+    UCHAR RipDelta,
+    NBP_TRAP_CALLBACK TrapCallback,
+    PNBP_TRAP *pInitializedTrap,
+	ULONG uDebugTag //Pool Debug Tag
+);
+
+/**
  * effects: Register trap struct.
  */
 NTSTATUS NTAPI TrRegisterTrap (

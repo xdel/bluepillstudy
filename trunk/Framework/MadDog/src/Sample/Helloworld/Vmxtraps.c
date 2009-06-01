@@ -66,7 +66,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
     EXIT_REASON_VMXON,
     EXIT_REASON_VMXOFF
   };
-    Status = MadDog_InitializeGeneralTrap ( //<----------------4.1 Finish
+    Status = HvInitializeGeneralTrap ( //<----------------4.1 Finish
         Cpu, 
         EXIT_REASON_CPUID, 
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -80,7 +80,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   }
   MadDog_RegisterTrap (Cpu, Trap);//<----------------4.3//Finish
 
-    Status = MadDog_InitializeGeneralTrap (
+    Status = HvInitializeGeneralTrap (
         Cpu, 
         EXIT_REASON_MSR_READ, 
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -95,7 +95,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   }
   MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = MadDog_InitializeGeneralTrap (
+  Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_MSR_WRITE, 
       0,   // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -110,7 +110,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   }
   MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = MadDog_InitializeGeneralTrap (
+  Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_CR_ACCESS, 
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -124,7 +124,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   }
   MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = MadDog_InitializeGeneralTrap (
+  Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_INVD, 
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -138,7 +138,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   }
   MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = MadDog_InitializeGeneralTrap (
+  Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_EXCEPTION_NMI, 
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -155,7 +155,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   // set dummy handler for all VMX intercepts if we compile without nested support
   for (i = 0; i < sizeof (TableOfVmxExits) / sizeof (ULONG32); i++) 
   {
-      Status = MadDog_InitializeGeneralTrap (
+      Status = HvInitializeGeneralTrap (
           Cpu, 
           TableOfVmxExits[i], 
           0,    // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -187,50 +187,50 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   BOOLEAN WillBeAlsoHandledByGuestHv
 )//Finished//same
 {
-  ULONG32 fn, eax, ebx, ecx, edx;
-  ULONG inst_len;
+	ULONG32 fn, eax, ebx, ecx, edx;
+	ULONG inst_len;
 
-  if (!Cpu || !GuestRegs)
-    return TRUE;
-  fn = GuestRegs->eax;
+	if (!Cpu || !GuestRegs)
+		return TRUE;
+	fn = GuestRegs->eax;
 
-#if DEBUG_LEVEL>1
-  Print(("Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x%x\n", fn));
-#endif
+	#if DEBUG_LEVEL>1
+		Print(("Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x%x\n", fn));
+	#endif
 
-  inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-  if (Trap->General.RipDelta == 0)
-    Trap->General.RipDelta = inst_len;
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	if (Trap->RipDelta == 0)
+		Trap->RipDelta = inst_len;
 
-  if (fn == BP_KNOCK_EAX) 
-  {
-    Print(("Helloworld:Magic knock received: %p\n", BP_KNOCK_EAX));
-    GuestRegs->eax = BP_KNOCK_EAX_ANSWER;
-	GuestRegs->ebx = BP_KNOCK_EBX_ANSWER;
-	GuestRegs->edx = BP_KNOCK_EDX_ANSWER;
-    return TRUE;
-  }
-  //else if(fn == 1)
-  //{
-    //MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
-  	//GuestRegs->eax = 0x000126c5; //Core i7
-  	//GuestRegs->eax = 0x000106A5; //Core i7
+	if (fn == BP_KNOCK_EAX) 
+	{
+		Print(("Helloworld:Magic knock received: %p\n", BP_KNOCK_EAX));
+		GuestRegs->eax = BP_KNOCK_EAX_ANSWER;
+		GuestRegs->ebx = BP_KNOCK_EBX_ANSWER;
+		GuestRegs->edx = BP_KNOCK_EDX_ANSWER;
+		return TRUE;
+	}
+	//else if(fn == 1)
+	//{
+	//MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
+	//GuestRegs->eax = 0x000126c5; //Core i7
+	//GuestRegs->eax = 0x000106A5; //Core i7
 	//GuestRegs->ebx = ebx;
-  	//GuestRegs->ecx = ecx;
-  	//GuestRegs->edx = edx;
+	//GuestRegs->ecx = ecx;
+	//GuestRegs->edx = edx;
 	//return TRUE;
-  //}
+	//}
 
-  ecx = (ULONG) GuestRegs->ecx;
-  MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
-  GuestRegs->eax = eax;
-  GuestRegs->ebx = ebx;
-  GuestRegs->ecx = ecx;
-  GuestRegs->edx = edx;
-  
-  //VmxDumpVmcs()();
-  Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
-  return TRUE;
+	ecx = (ULONG) GuestRegs->ecx;
+	MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
+	GuestRegs->eax = eax;
+	GuestRegs->ebx = ebx;
+	GuestRegs->ecx = ecx;
+	GuestRegs->edx = edx;
+
+	//VmxDumpVmcs()();
+	Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
+	return TRUE;
 }
 
 static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
@@ -240,27 +240,27 @@ static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
   BOOLEAN WillBeAlsoHandledByGuestHv
 )
 {
-  ULONG32 inst_len;
-  ULONG32 addr;
-  
-  if (!Cpu || !GuestRegs)
-    return TRUE;
-  Print(("VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!\n"));
+	ULONG32 inst_len;
+	ULONG32 addr;
 
-  inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-  Trap->General.RipDelta = inst_len;
+	if (!Cpu || !GuestRegs)
+		return TRUE;
+	Print(("VmxDispatchVminstructionDummy(): Nested virtualization not supported in this build!\n"));
 
-  addr = GUEST_RIP;
-  Print(("VmxDispatchVminstructionDummy(): GUEST_RIP 0x%X: 0x%llX\n", addr, VmxRead (addr)));
-  addr = VM_EXIT_INTR_INFO;
-  Print(("VmxDispatchVminstructionDummy(): EXIT_INTR 0x%X: 0x%llX\n", addr, VmxRead (addr)));
-  addr = EXIT_QUALIFICATION;
-  Print(("VmxDispatchVminstructionDummy(): QUALIFICATION 0x%X: 0x%llX\n", addr, VmxRead (addr)));
-  addr = EXCEPTION_BITMAP;
-  Print(("VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x%X: 0x%llX\n", addr, VmxRead (addr)));
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	Trap->RipDelta = inst_len;
 
-  //VmxWrite (GUEST_RFLAGS, VmxRead (GUEST_RFLAGS) & (~0x8d5) | 0x1 /* VMFailInvalid */ );
-  return TRUE;
+	addr = GUEST_RIP;
+	Print(("VmxDispatchVminstructionDummy(): GUEST_RIP 0x%X: 0x%llX\n", addr, VmxRead (addr)));
+	addr = VM_EXIT_INTR_INFO;
+	Print(("VmxDispatchVminstructionDummy(): EXIT_INTR 0x%X: 0x%llX\n", addr, VmxRead (addr)));
+	addr = EXIT_QUALIFICATION;
+	Print(("VmxDispatchVminstructionDummy(): QUALIFICATION 0x%X: 0x%llX\n", addr, VmxRead (addr)));
+	addr = EXCEPTION_BITMAP;
+	Print(("VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x%X: 0x%llX\n", addr, VmxRead (addr)));
+
+	//VmxWrite (GUEST_RFLAGS, VmxRead (GUEST_RFLAGS) & (~0x8d5) | 0x1 /* VMFailInvalid */ );
+	return TRUE;
 }
 
 static BOOLEAN NTAPI VmxDispatchINVD (
@@ -270,16 +270,16 @@ static BOOLEAN NTAPI VmxDispatchINVD (
   BOOLEAN WillBeAlsoHandledByGuestHv
 )
 {
-  ULONG inst_len;
+	ULONG inst_len;
 
-  if (!Cpu || !GuestRegs)
-    return TRUE;
+	if (!Cpu || !GuestRegs)
+		return TRUE;
 
-  inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-  if (Trap->General.RipDelta == 0)
-    Trap->General.RipDelta = inst_len;
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	if (Trap->RipDelta == 0)
+		Trap->RipDelta = inst_len;
 
-  return TRUE;
+	return TRUE;
 }
 
 static BOOLEAN NTAPI VmxDispatchMsrRead (
@@ -289,55 +289,55 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
   BOOLEAN WillBeAlsoHandledByGuestHv
 )
 {
-  LARGE_INTEGER MsrValue;
-  ULONG32 ecx;
-  ULONG inst_len;
+	LARGE_INTEGER MsrValue;
+	ULONG32 ecx;
+	ULONG inst_len;
 
-  if (!Cpu || !GuestRegs)
-    return TRUE;
+	if (!Cpu || !GuestRegs)
+		return TRUE;
 
-  inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-  if (Trap->General.RipDelta == 0)
-    Trap->General.RipDelta = inst_len;
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	if (Trap->RipDelta == 0)
+		Trap->RipDelta = inst_len;
 
-  ecx = GuestRegs->ecx;
+	ecx = GuestRegs->ecx;
 
-  switch (ecx) 
-  {
-  case MSR_IA32_SYSENTER_CS:
-    MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_CS);
-    break;
-  case MSR_IA32_SYSENTER_ESP:
-    MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_ESP);
-    break;
-  case MSR_IA32_SYSENTER_EIP:
-    MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_EIP);
-    Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
-        VmxRead(GUEST_RIP), 
-        MsrValue.QuadPart));
-    break;
-  case MSR_GS_BASE:
-    MsrValue.QuadPart = VmxRead (GUEST_GS_BASE);
-    break;
-  case MSR_FS_BASE:
-    MsrValue.QuadPart = VmxRead (GUEST_FS_BASE);
-    break;
-  case MSR_EFER:
-    MsrValue.QuadPart = Cpu->Vmx.GuestEFER;
-    //_KdPrint(("Guestip 0x%llx MSR_EFER Read 0x%llx 0x%llx \n",VmxRead(GUEST_RIP),ecx,MsrValue.QuadPart));
-    break;
-  default:
-    if (ecx <= 0x1fff
-        || (ecx >= 0xC0000000 && ecx <= 0xC0001fff))
-    {
-        MsrValue.QuadPart = MsrRead (ecx);
-    }
-  }
+	switch (ecx) 
+	{
+		case MSR_IA32_SYSENTER_CS:
+			MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_CS);
+			break;
+		case MSR_IA32_SYSENTER_ESP:
+			MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_ESP);
+			break;
+		case MSR_IA32_SYSENTER_EIP:
+			MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_EIP);
+			Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
+				VmxRead(GUEST_RIP), 
+				MsrValue.QuadPart));
+			break;
+		case MSR_GS_BASE:
+			MsrValue.QuadPart = VmxRead (GUEST_GS_BASE);
+			break;
+		case MSR_FS_BASE:
+			MsrValue.QuadPart = VmxRead (GUEST_FS_BASE);
+			break;
+		case MSR_EFER:
+			MsrValue.QuadPart = Cpu->Vmx.GuestEFER;
+			//_KdPrint(("Guestip 0x%llx MSR_EFER Read 0x%llx 0x%llx \n",VmxRead(GUEST_RIP),ecx,MsrValue.QuadPart));
+			break;
+		default:
+			if (ecx <= 0x1fff
+				|| (ecx >= 0xC0000000 && ecx <= 0xC0001fff))
+			{
+				MsrValue.QuadPart = MsrRead (ecx);
+			}
+	}
 
-  GuestRegs->eax = MsrValue.LowPart;
-  GuestRegs->edx = MsrValue.HighPart;
+	GuestRegs->eax = MsrValue.LowPart;
+	GuestRegs->edx = MsrValue.HighPart;
 
-  return TRUE;
+	return TRUE;
 }
 
 
@@ -356,8 +356,8 @@ static BOOLEAN NTAPI VmxDispatchMsrWrite (
     return TRUE;
 
   inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-  if (Trap->General.RipDelta == 0)
-    Trap->General.RipDelta = inst_len;
+  if (Trap->RipDelta == 0)
+    Trap->RipDelta = inst_len;
 
   ecx = GuestRegs->ecx;
 
@@ -420,8 +420,8 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 #endif
 
     inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-    if (Trap->General.RipDelta == 0)
-        Trap->General.RipDelta = inst_len;
+    if (Trap->RipDelta == 0)
+        Trap->RipDelta = inst_len;
 
     //For MOV CR, the general-purpose register:
     //  0 = RAX

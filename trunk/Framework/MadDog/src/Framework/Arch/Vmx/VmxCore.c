@@ -17,7 +17,7 @@ static VOID VmxHandleInterception (
  * If <TrappedVmExit> >VMX_MAX_GUEST_VMEXIT(43),return false, otherwise true.
  * requires: a valid <TrappedVmExit>
  */
-static BOOLEAN NTAPI VmxIsTrapVaild (
+static BOOLEAN NTAPI PtVmxIsTrapVaild (
   ULONG TrappedVmExit
 );
 
@@ -25,12 +25,12 @@ static BOOLEAN NTAPI VmxIsTrapVaild (
  * effects:	Check if Intel VT Technology is implemented in this CPU
  *			return false if not, otherwise true.
  **/
-static BOOLEAN NTAPI VmxIsImplemented();
+static BOOLEAN NTAPI PtVmxIsImplemented();
 
 /**
  * effects: Initialize the guest VM with the callback eip and the esp
  */
-static NTSTATUS NTAPI VmxInitialize (
+static NTSTATUS NTAPI PtVmxInitialize (
   PCPU Cpu,
   PVOID GuestEip,//points to the next instruction in the guest os.
   PVOID GuestEsp //points to the guest environment-protection register file.
@@ -38,7 +38,7 @@ static NTSTATUS NTAPI VmxInitialize (
 /**
  * effects:启动VMCB块对应的Guest Machine
  */
-static NTSTATUS NTAPI VmxVirtualize (
+static NTSTATUS NTAPI PtVmxVirtualize (
   PCPU Cpu
 );
 
@@ -55,14 +55,14 @@ static NTSTATUS VmxSetupVMCS (
  * VM Exit Event Dispatcher
  * VMExit事件分发逻辑
  */
-static VOID NTAPI VmxDispatchEvent (
+static VOID NTAPI PtVmxDispatchEvent (
   PCPU Cpu,
   PGUEST_REGS GuestRegs
 );
 /**
  * Adjust Rip
  */
-static VOID NTAPI VmxAdjustRip (
+static VOID NTAPI PtVmxAdjustRip (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   ULONG Delta
@@ -72,10 +72,14 @@ static VOID NTAPI VmxAdjustRip (
  * Shutdown VM
  * 关闭虚拟机
  */
-static NTSTATUS NTAPI VmxShutdown (
+static NTSTATUS NTAPI PtVmxShutdown (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   BOOLEAN bSetupTimeBomb
+);
+
+static VOID NTAPI _PtVmxInitFeatureMSR(
+	PVMX Vmx
 );
 
 //+++++++++++++++++++++Definitions++++++++++++++++++++++++
@@ -85,16 +89,16 @@ extern PMadDog_Control g_HvmControl;
 
 HVM_DEPENDENT Vmx = {
   ARCH_VMX,
-  VmxIsImplemented,
-  VmxInitialize,
-  VmxVirtualize,
-  VmxShutdown,
+  PtVmxIsImplemented,
+  PtVmxInitialize,
+  PtVmxVirtualize,
+  PtVmxShutdown,
   //VmxIsNestedEvent,
   //VmxDispatchNestedEvent,
-  VmxDispatchEvent,
-  VmxAdjustRip,
+  PtVmxDispatchEvent,
+  PtVmxAdjustRip,
   //VmxRegisterTraps,
-  VmxIsTrapVaild
+  PtVmxIsTrapVaild
 };
 
 
@@ -103,7 +107,7 @@ HVM_DEPENDENT Vmx = {
  * effects:	Check if Intel VT Technology is implemented in this CPU
  *			return false if not, otherwise true.
  **/
-static BOOLEAN NTAPI VmxIsImplemented()
+static BOOLEAN NTAPI PtVmxIsImplemented()
 {
 	ULONG32 eax, ebx, ecx, edx;
 	GetCpuIdInfo (0, &eax, &ebx, &ecx, &edx);
@@ -124,12 +128,24 @@ static BOOLEAN NTAPI VmxIsImplemented()
 	return (BOOLEAN) (CmIsBitSet (ecx, 5));
 }
 
+VOID NTAPI _PtVmxInitFeatureMSR(
+	PVMX Vmx
+)
+{
+	//Set Vmx->FeaturesMSR.VmxPinBasedCTLs
+	Vmx->FeaturesMSR.VmxPinBasedCTLs.QuadPart = MsrRead(MSR_IA32_VMX_PINBASED_CTLS);
+
+	//Set Vmx->FeaturesMSR.VmxTruePinBasedCTLs
+	Vmx->FeaturesMSR.EnableVmxTruePinBasedCTLs = (BOOLEAN)(Vmx->FeaturesMSR.VmxPinBasedCTLs.HighPart & (1<<23));
+	if(Vmx->FeaturesMSR.EnableVmxTruePinBasedCTLs)
+		Vmx->FeaturesMSR.VmxTruePinBasedCTLs.QuadPart = MsrRead(MSR_IA32_VMX_TRUE_PINBASED_CTLS);
+}
 /**
  * effects: Initialize the guest VM with the callback eip and the esp
  * 构建Guest VM，传入的<GuestEip>和<GuestEsp>指明了再次进入Guest VM模式下继续执行的指令地址
  * 和堆栈地址。
  */
-static NTSTATUS NTAPI VmxInitialize (
+static NTSTATUS NTAPI PtVmxInitialize (
     PCPU Cpu,
     PVOID GuestEip,//points to the next instruction in the guest os.
     PVOID GuestEsp //points to the guest environment-protection register file.
@@ -152,8 +168,7 @@ static NTSTATUS NTAPI VmxInitialize (
 
 	//Fill the virtual-machine extensions support configuation
 	//on the current platform by reading MSR register.
-	Cpu->Vmx.FeaturesMSR.VmxPinBasedCTLs.QuadPart = MsrRead(MSR_IA32_VMX_PINBASED_CTLS);
-	Cpu->Vmx.FeaturesMSR.VmxTruePinBasedCTLs.QuadPart = MsrRead(MSR_IA32_VMX_TRUE_PINBASED_CTLS);
+	_PtVmxInitFeatureMSR(&Cpu->Vmx);
 
     //Allocate VMXON region
     Cpu->Vmx.OriginaVmxonR = HvMmAllocateContiguousPages(
@@ -262,7 +277,7 @@ static NTSTATUS NTAPI VmxInitialize (
 /**
  * effects:启动VMCB块对应的Guest Machine
  */
-static NTSTATUS NTAPI VmxVirtualize (
+static NTSTATUS NTAPI PtVmxVirtualize (
   PCPU Cpu
 )
 {//Finished
@@ -299,7 +314,7 @@ static NTSTATUS NTAPI VmxVirtualize (
  * If <TrappedVmExit> >VMX_MAX_GUEST_VMEXIT(43),return false, otherwise true.
  * requires: a valid <TrappedVmExit>
  */
-static BOOLEAN NTAPI VmxIsTrapVaild (
+static BOOLEAN NTAPI PtVmxIsTrapVaild (
   ULONG TrappedVmExit
 )//Finished
 {
@@ -403,7 +418,7 @@ static NTSTATUS VmxSetupVMCS (
  * VM Exit Event Dispatcher
  * VMExit事件分发逻辑
  */
-static VOID NTAPI VmxDispatchEvent (
+static VOID NTAPI PtVmxDispatchEvent (
     PCPU Cpu,
     PGUEST_REGS GuestRegs
 )
@@ -511,7 +526,7 @@ static VOID VmxGenerateTrampolineToGuest (
  * Shutdown VM
  * 关闭虚拟机
  */
-static NTSTATUS NTAPI VmxShutdown (
+static NTSTATUS NTAPI PtVmxShutdown (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   BOOLEAN bSetupTimeBomb
@@ -567,7 +582,7 @@ static VOID VmxHandleInterception (
         && GuestRegs->eax == MADDOG_EXIT_EAX)
     {
         // to uninstall
-        VmxShutdown(Cpu, GuestRegs, FALSE);
+        PtVmxShutdown(Cpu, GuestRegs, FALSE);
     }
 
     // search for a registered trap for this interception
@@ -594,7 +609,7 @@ static VOID VmxHandleInterception (
 /**
  * Adjust Rip
  */
-static VOID NTAPI VmxAdjustRip (
+static VOID NTAPI PtVmxAdjustRip (
     PCPU Cpu,
     PGUEST_REGS GuestRegs,
     ULONG Delta

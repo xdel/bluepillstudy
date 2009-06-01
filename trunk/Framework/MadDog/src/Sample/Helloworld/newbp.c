@@ -28,7 +28,7 @@ static MadDog_Control md_Control =
 VOID NTAPI Finalize()
 {
 	HvMmShutdownManager();
-	DbgDisposePrintInfo();
+	DbgDisposeComponent();
 };
 
 NTSTATUS DriverUnload (
@@ -63,8 +63,8 @@ NTSTATUS DriverEntry (
     //CmDebugBreak();
    // ULONG ulOldCR3;
 
-    DbgInitPrintInfo();
-    //__asm { int 3 }
+    DbgInitComponent();
+    __asm { int 3 }
 
     // test for our pagetabel
     //__asm 
