@@ -12,10 +12,14 @@
 /* MSRs & bits used for VMX enabling */
 #define MSR_IA32_VMX_MISC	0x485
 
-
-static ULONG32 NTAPI VmxAdjustControls (
-  ULONG32 Ctl,
-  ULONG32 Msr
+/**
+ * This function is used to set value safely according to MSR register.
+ * make the <Ctl> values legal.
+ * e.g some Vmx Settings use MSR_IA32_VMX_PINBASED_CTLS & MSR_IA32_VMX_TRUE_PINBASED_CTLS.
+ */
+ULONG32 NTAPI PtVmxAdjustControls (
+	ULONG32 Ctl,
+	ULONG32 Msr
 )
 {
   LARGE_INTEGER MsrValue;
@@ -32,7 +36,7 @@ static ULONG32 NTAPI VmxAdjustControls (
  * returns: If VMX-Preemption Timer is not supported on the current platform, 
  * returns HVSTATUS_UNSUPPORTED_FEATURE.
  */
-HVSTATUS PtVMXSetTimerInterval(
+HVSTATUS PtVmxSetTimerInterval(
 	PCPU Cpu,
 	ULONG32 Ticks, /* After how many ticks the VMX Timer will be expired, THIS VALUE IS FIXED TO BE 32 BITS LONG*/
 	BOOLEAN SaveTimerValueOnVMEXIT,
@@ -72,7 +76,7 @@ HVSTATUS PtVMXSetTimerInterval(
 	//Step 5. Register a callback function
 	if(TrapCallback)
 	{
-		Status = MadDog_InitializeGeneralTrap(
+		Status = HvInitializeGeneralTrap(
 			Cpu, 
 			EXIT_REASON_VMXTIMER_EXPIRED, 
 			0, // length of the instruction, 0 means length need to be get from vmcs later. 

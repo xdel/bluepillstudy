@@ -238,7 +238,7 @@ VmxVmexitHandler PROC   StdCall
 	mov 	ebx,esp		;ebx=GuestRegs
 	
 	push	ebx     ;GuestRegs	
-	push    ecx		;PCUP
+	push    ecx		;PCPU
 	call	HvmEventCallback@8
 	
 	HVM_RESTORE_ALL_NOSEGREGS	

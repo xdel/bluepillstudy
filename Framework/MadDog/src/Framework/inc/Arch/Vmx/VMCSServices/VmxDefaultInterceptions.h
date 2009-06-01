@@ -8,7 +8,7 @@
  * Timer function to the VMCS.
  * returns: if the <ratio> larger than 31, then returns STATUS_INVALID_PARAMETERS
  */
-HVSTATUS PtVmxSetTimerInterval(
+HVSTATUS PtVmxCPUIDInterception(
 	PCPU Cpu,
 	ULONG32 Ticks, /* After how many ticks the VMX Timer will be expired, THIS VALUE IS FIXED TO BE 32 BITS LONG*/
 	BOOLEAN SaveTimerValueOnVMEXIT,

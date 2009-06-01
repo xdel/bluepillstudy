@@ -16,6 +16,10 @@
 
 #include <ntddk.h>
 
+//Define MSR Operation Type.
+#define MSR_READ 0
+#define MSR_WRITE 1
+
 ULONG64 NTAPI MsrRead (
   ULONG32 reg
 );

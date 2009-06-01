@@ -59,13 +59,13 @@ NTSTATUS HvmSetupVMControlBlock (
     /*32BIT Control Fields. */
     //disable Vmexit by Extern-interrupt,NMI and Virtual NMI
     // Pin-based VM-execution controls
-    VmxWrite (PIN_BASED_VM_EXEC_CONTROL, VmxAdjustControls (0, MSR_IA32_VMX_PINBASED_CTLS));//<------------------5.1 Finished
+    VmxWrite (PIN_BASED_VM_EXEC_CONTROL, PtVmxAdjustControls (0, MSR_IA32_VMX_PINBASED_CTLS));//<------------------5.1 Finished
 
     Interceptions = CPU_BASED_ACTIVATE_MSR_BITMAP;
     // Primary processor-based VM-execution controls
     VmxWrite (
       CPU_BASED_VM_EXEC_CONTROL, 
-      VmxAdjustControls (Interceptions, MSR_IA32_VMX_PROCBASED_CTLS) );
+      PtVmxAdjustControls (Interceptions, MSR_IA32_VMX_PROCBASED_CTLS) );
 
     VmxWrite (EXCEPTION_BITMAP, (ULONG)1 << 14);
 
@@ -79,10 +79,10 @@ NTSTATUS HvmSetupVMControlBlock (
     // VM-exit controls
     // bit 15, Acknowledge interrupt on exit
     VmxWrite (VM_EXIT_CONTROLS, 
-        VmxAdjustControls (VM_EXIT_ACK_INTR_ON_EXIT, MSR_IA32_VMX_EXIT_CTLS));
+        PtVmxAdjustControls (VM_EXIT_ACK_INTR_ON_EXIT, MSR_IA32_VMX_EXIT_CTLS));
     // VM-entry controls
     VmxWrite (VM_ENTRY_CONTROLS, 
-        VmxAdjustControls (0, MSR_IA32_VMX_ENTRY_CTLS));
+        PtVmxAdjustControls (0, MSR_IA32_VMX_ENTRY_CTLS));
 
     VmxWrite (VM_EXIT_MSR_STORE_COUNT, 0);
     VmxWrite (VM_EXIT_MSR_LOAD_COUNT, 0);
@@ -197,30 +197,16 @@ NTSTATUS HvmSetupVMControlBlock (
     VmxWrite (HOST_IA32_SYSENTER_EIP, (ULONG)MsrRead (MSR_IA32_SYSENTER_EIP));
 	
 	//Apply VMXTimer Service
-	Status = PtVMXSetTimerInterval(
-		Cpu,
-		2^16, //ticks
-		TRUE, //Save the rest time-slice on #VMEXIT
-		VmxDispatchTimerExpired	
-	);
-	return HVSTATUS_NTSTATUS(Status);
-	//return STATUS_SUCCESS;
+	//Status = PtVmxSetTimerInterval(
+	//	Cpu,
+	//	2^16, //ticks
+	//	TRUE, //Save the rest time-slice on #VMEXIT
+	//	VmxDispatchTimerExpired	
+	//);
+	//return HVSTATUS_NTSTATUS(Status);
+	return STATUS_SUCCESS;
 }
 
-
-// make the ctl code legal
-static ULONG32 NTAPI VmxAdjustControls (
-    ULONG32 Ctl,
-    ULONG32 Msr
-)
-{//Finished
-    LARGE_INTEGER MsrValue;
-
-    MsrValue.QuadPart = MsrRead (Msr);
-    Ctl &= MsrValue.HighPart;     /* bit == 0 in high word ==> must be zero */
-    Ctl |= MsrValue.LowPart;      /* bit == 1 in low word  ==> must be one  */
-    return Ctl;
-}
 
 /**
  * effects: 用于填充VMCB中Guest状态描述中的段选择器部分
