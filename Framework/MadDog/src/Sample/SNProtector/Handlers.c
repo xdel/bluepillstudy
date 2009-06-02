@@ -127,7 +127,7 @@ NTSTATUS HvmSetupVMControlBlock (
 		0,
 		NULL,
 		FALSE,
-		VmxDispatchCR3Access
+		PtVmxDispatchCR3Access
 		);
 
     /* NATURAL Read-only State Fields:need not setup. */
