@@ -4,42 +4,48 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchINVD (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchMsrRead (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchMsrWrite (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchCrAccess (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 /**
@@ -191,7 +197,8 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )//Finished//same
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
@@ -244,7 +251,8 @@ static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
 	ULONG32 inst_len;
@@ -274,7 +282,8 @@ static BOOLEAN NTAPI VmxDispatchINVD (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
 	ULONG inst_len;
@@ -293,7 +302,8 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
 	LARGE_INTEGER MsrValue;
@@ -352,7 +362,8 @@ static BOOLEAN NTAPI VmxDispatchMsrWrite (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
   LARGE_INTEGER MsrValue;
@@ -411,7 +422,8 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
     ULONG32 exit_qualification;
