@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <windows.h>
-#include <dos.h>
+//#include <dos.h>
+#include <conio.h>
 
 #define SNPROTECTOR_VERIFY	1000 //Used to tell the hypervisor to start run the target program
 
@@ -39,10 +40,15 @@ BOOLEAN __declspec(naked) VerifySN (PParameter pParameter) {
 }
 int __cdecl main(int argc, char **argv) {
 	Parameter passin;
+	CHAR ch[10];
 	if (argc != 3) {
 		printf ("Crackme <UserName> <S/N Key>\n");
 		return 0;
 	}
+	
+	//Waiting for loading the Protector.
+	scanf("%s",ch);
+	printf ("Load the SNProtector\n");
 
 	//Construct Parameter struct
 	passin.sUserName = argv[1];

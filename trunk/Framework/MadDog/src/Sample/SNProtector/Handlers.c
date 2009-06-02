@@ -74,8 +74,6 @@ NTSTATUS HvmSetupVMControlBlock (
     VmxWrite (PAGE_FAULT_ERROR_CODE_MASK, 0);
     VmxWrite (PAGE_FAULT_ERROR_CODE_MATCH, 0xFFFFFFFF);
 
-    VmxWrite (CR3_TARGET_COUNT, 0);
-
     // VM-exit controls
     // bit 15, Acknowledge interrupt on exit
     VmxWrite (VM_EXIT_CONTROLS, 
@@ -124,11 +122,13 @@ NTSTATUS HvmSetupVMControlBlock (
     VmxWrite (CR4_GUEST_HOST_MASK, 0); 
     VmxWrite (CR4_READ_SHADOW, 0);
 
-    // CR3_TARGET_COUNT is 0, mov to CR3 always cause a vmexit
-    VmxWrite (CR3_TARGET_VALUE0, 0);      //no use
-    VmxWrite (CR3_TARGET_VALUE1, 0);      //no use                        
-    VmxWrite (CR3_TARGET_VALUE2, 0);      //no use
-    VmxWrite (CR3_TARGET_VALUE3, 0);      //no use
+	Status = PtVmxCR3AccessInterception(
+		Cpu,
+		0,
+		NULL,
+		FALSE,
+		VmxDispatchCR3Access
+		);
 
     /* NATURAL Read-only State Fields:need not setup. */
 

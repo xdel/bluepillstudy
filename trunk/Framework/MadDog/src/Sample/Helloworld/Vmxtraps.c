@@ -69,6 +69,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
     Status = HvInitializeGeneralTrap ( //<----------------4.1 Finish
         Cpu, 
         EXIT_REASON_CPUID, 
+        FALSE,
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
         VmxDispatchCpuid, //<----------------4.2 Finish
         &Trap,
@@ -82,7 +83,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
 
     Status = HvInitializeGeneralTrap (
         Cpu, 
-        EXIT_REASON_MSR_READ, 
+        EXIT_REASON_MSR_READ,
+        FALSE,
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
         VmxDispatchMsrRead, 
 		//VmxDispatchVmxInstrDummy,
@@ -98,6 +100,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_MSR_WRITE, 
+      FALSE,
       0,   // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchMsrWrite, 
 	  //VmxDispatchVmxInstrDummy,
@@ -112,7 +115,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
 
   Status = HvInitializeGeneralTrap (
       Cpu, 
-      EXIT_REASON_CR_ACCESS, 
+      EXIT_REASON_CR_ACCESS,
+      FALSE,
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchCrAccess, 
       &Trap,
@@ -127,6 +131,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_INVD, 
+      FALSE,
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchINVD, 
       &Trap,
@@ -140,7 +145,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
 
   Status = HvInitializeGeneralTrap (
       Cpu, 
-      EXIT_REASON_EXCEPTION_NMI, 
+      EXIT_REASON_EXCEPTION_NMI,
+      FALSE,
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchVmxInstrDummy,//VmxDispatchPageFault, 
       &Trap,
@@ -157,7 +163,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
   {
       Status = HvInitializeGeneralTrap (
           Cpu, 
-          TableOfVmxExits[i], 
+          TableOfVmxExits[i],
+          FALSE,
           0,    // length of the instruction, 0 means length need to be get from vmcs later. 
           VmxDispatchVmxInstrDummy, 
           &Trap,

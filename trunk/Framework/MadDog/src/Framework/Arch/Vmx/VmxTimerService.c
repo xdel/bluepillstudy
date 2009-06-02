@@ -1,16 +1,12 @@
 #include "Arch/Vmx/VTPlatform.h"
 #include "msr.h"
 #include "HvCoreAPIs.h"
+#include "Arch/Vmx/Vmx.h"
 
 #define PIN_BASED_VMX_TIMER_MASK				0x00000040  //bit 6
 #define VMCS_GUEST_VMX_PREEMPTION_TIMER_VALUE	0x0000482E	//VMCS Field Encoding
 #define VM_EXIT_SAVE_TIMER_VALUE_ON_EXIT		0x00400000  //bit 22
 #define EXIT_REASON_VMXTIMER_EXPIRED			52
-/*
- * Intel CPU  MSR
- */
-/* MSRs & bits used for VMX enabling */
-#define MSR_IA32_VMX_MISC	0x485
 
 /**
  * This function is used to set value safely according to MSR register.
@@ -79,6 +75,7 @@ HVSTATUS PtVmxSetTimerInterval(
 		Status = HvInitializeGeneralTrap(
 			Cpu, 
 			EXIT_REASON_VMXTIMER_EXPIRED, 
+			FALSE,
 			0, // length of the instruction, 0 means length need to be get from vmcs later. 
 			TrapCallback, 
 			&Trap,
@@ -86,7 +83,7 @@ HVSTATUS PtVmxSetTimerInterval(
 		);
 		if (!NT_SUCCESS (Status)) 
 		{
-			Print(("HvVMXSetTimerInterval(): Failed to register HvVMXSetTimerInterval Callback with status 0x%08hX\n", Status));
+			Print(("PtVmxSetTimerInterval(): Failed to register PtVmxSetTimerInterval Callback with status 0x%08hX\n", Status));
 			return Status;
 		}
 		MadDog_RegisterTrap (Cpu, Trap);

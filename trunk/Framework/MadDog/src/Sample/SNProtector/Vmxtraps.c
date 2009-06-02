@@ -4,42 +4,48 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchINVD (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchMsrRead (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchMsrWrite (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 static BOOLEAN NTAPI VmxDispatchCrAccess (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
 
 /**
@@ -68,7 +74,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
   };
     Status = HvInitializeGeneralTrap ( //<----------------4.1 Finish
         Cpu, 
-        EXIT_REASON_CPUID, 
+        EXIT_REASON_CPUID,
+        FALSE,
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
         VmxDispatchCpuid, //<----------------4.2 Finish
         &Trap,
@@ -83,6 +90,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
     Status = HvInitializeGeneralTrap (
         Cpu, 
         EXIT_REASON_MSR_READ, 
+        FALSE,
         0, // length of the instruction, 0 means length need to be get from vmcs later. 
         VmxDispatchMsrRead, 
 		//VmxDispatchVmxInstrDummy,
@@ -98,6 +106,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_MSR_WRITE, 
+      FALSE,
       0,   // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchMsrWrite, 
 	  //VmxDispatchVmxInstrDummy,
@@ -110,23 +119,26 @@ NTSTATUS NTAPI VmxRegisterTraps (
   }
   MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = HvInitializeGeneralTrap (
-      Cpu, 
-      EXIT_REASON_CR_ACCESS, 
-      0,  // length of the instruction, 0 means length need to be get from vmcs later. 
-      VmxDispatchCrAccess, 
-      &Trap,
-	  LAB_TAG);
-  if (!NT_SUCCESS (Status)) 
-  {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status));
-    return Status;
-  }
-  MadDog_RegisterTrap (Cpu, Trap);
+	//Status = HvInitializeGeneralTrap (
+	//	Cpu, 
+	//	EXIT_REASON_CR_ACCESS, 
+	//	FALSE,
+	//	0,  // length of the instruction, 0 means length need to be get from vmcs later. 
+	//	VmxDispatchCrAccess, 
+	//	&Trap,
+	//	LAB_TAG);
+
+	//if (!NT_SUCCESS (Status)) 
+	//{
+	//	Print(("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status));
+	//	return Status;
+	//}
+	//MadDog_RegisterTrap (Cpu, Trap);
 
   Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_INVD, 
+      FALSE,
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchINVD, 
       &Trap,
@@ -141,6 +153,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
   Status = HvInitializeGeneralTrap (
       Cpu, 
       EXIT_REASON_EXCEPTION_NMI, 
+      FALSE,
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
       VmxDispatchVmxInstrDummy,//VmxDispatchPageFault, 
       &Trap,
@@ -158,6 +171,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
       Status = HvInitializeGeneralTrap (
           Cpu, 
           TableOfVmxExits[i], 
+          FALSE,
           0,    // length of the instruction, 0 means length need to be get from vmcs later. 
           VmxDispatchVmxInstrDummy, 
           &Trap,
@@ -184,7 +198,8 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )//Finished//same
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
@@ -237,7 +252,8 @@ static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
 	ULONG32 inst_len;
@@ -267,7 +283,8 @@ static BOOLEAN NTAPI VmxDispatchINVD (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
 	ULONG inst_len;
@@ -286,7 +303,8 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
 	LARGE_INTEGER MsrValue;
@@ -345,7 +363,8 @@ static BOOLEAN NTAPI VmxDispatchMsrWrite (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
 	LARGE_INTEGER MsrValue;
@@ -404,7 +423,8 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
     ULONG32 exit_qualification;
@@ -552,7 +572,8 @@ BOOLEAN NTAPI VmxDispatchTimerExpired (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 )
 {
 	ULONG inst_len;
@@ -566,6 +587,82 @@ BOOLEAN NTAPI VmxDispatchTimerExpired (
 	
 	DbgPrint("Timer Bomb,HAHAHAHAHAHA!!");
 	return TRUE;
+}
+
+BOOLEAN NTAPI VmxDispatchCR3Access (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+)
+{
+	ULONG32 exit_qualification;
+    ULONG32 gp, cr;
+    ULONG value;
+    ULONG inst_len;
+
+    if (!Cpu || !GuestRegs)
+        return TRUE;
+
+    inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+    if (Trap->RipDelta == 0)
+        Trap->RipDelta = inst_len;
+
+    //For MOV CR, the general-purpose register:
+    //  0 = RAX
+    //  1 = RCX
+    //  2 = RDX
+    //  3 = RBX
+    //  4 = RSP
+    //  5 = RBP
+    //  6 = RSI
+    //  7 = RDI
+    //  8¨C15 represent R8-R15, respectively (used only on processors that support
+    //  Intel 64 architecture)
+    exit_qualification = (ULONG32) VmxRead (EXIT_QUALIFICATION);
+    gp = (exit_qualification & CONTROL_REG_ACCESS_REG) >> 8;
+    cr = exit_qualification & CONTROL_REG_ACCESS_NUM;
+
+#if DEBUG_LEVEL>1
+    Print(("VmxDispatchCrAccess(): gp: 0x%x cr: 0x%x exit_qualification: 0x%x\n", gp, cr, exit_qualification));
+#endif
+
+    //Access type:
+    //  0 = MOV to CR
+    //  1 = MOV from CR
+    //  2 = CLTS
+    //  3 = LMSW
+    switch (exit_qualification & CONTROL_REG_ACCESS_TYPE) 
+    {
+	case TYPE_MOV_TO_CR:
+
+        if (cr == 3) 
+        {
+            Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
+
+            if (Cpu->Vmx.GuestCR0 & X86_CR0_PG)       //enable paging
+            {
+                HvmPrint(("VmxDispatchCrAccess(): TYPE_MOV_TO_CR cr3:0x%x\n", *(((PULONG64) GuestRegs) + gp)));
+                VmxWrite (GUEST_CR3, Cpu->Vmx.GuestCR3);
+
+            }
+            return TRUE;
+        }
+        break;
+    case TYPE_MOV_FROM_CR:
+        if (cr == 3) 
+        {
+            value = Cpu->Vmx.GuestCR3;
+            HvmPrint(("VmxDispatchCrAccess(): TYPE_MOV_FROM_CR cr3:0x%x\n", value));
+
+            *(((PULONG32) GuestRegs) + gp) = (ULONG32) value;
+
+        }
+        break;
+    }
+
+    return TRUE;
 }
 
 

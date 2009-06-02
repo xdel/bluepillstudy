@@ -8,6 +8,7 @@
 NTSTATUS NTAPI TrInitializeGeneralTrap (
     PCPU Cpu,
     ULONG TrappedVmExit,
+    BOOLEAN ForwardTrap, /* True if need following traps to continue handling this event.*/
     UCHAR RipDelta,
     NBP_TRAP_CALLBACK TrapCallback,
     PNBP_TRAP *pInitializedTrap,
@@ -41,6 +42,7 @@ NTSTATUS NTAPI TrInitializeGeneralTrap (
     Trap->TrappedVmExit = TrappedVmExit;
     Trap->RipDelta = RipDelta;
     Trap->TrapCallback = TrapCallback;
+	Trap->bForwardTrap = ForwardTrap;
 
     *pInitializedTrap = Trap;
 
@@ -146,7 +148,7 @@ NTSTATUS NTAPI TrExecuteGeneralTrapHandler (
     PNBP_TRAP Trap,
     BOOLEAN WillBeAlsoHandledByGuestHv
 )
-{//Finished
+{
     //if (!Cpu || !GuestRegs || !Trap || (Trap->TrapType != TRAP_GENERAL))
 	if (!Cpu || !GuestRegs || !Trap)
         return STATUS_INVALID_PARAMETER;
@@ -213,6 +215,8 @@ NTSTATUS NTAPI TrFindRegisteredTrap (
 
 	PLIST_ENTRY TrapList;
     PNBP_TRAP Trap;
+	ULONG32 exit_qualification;
+    ULONG32 cr;
 
 	if (!Cpu || !GuestRegs || !pTrap)
 		return STATUS_INVALID_PARAMETER;
@@ -232,6 +236,17 @@ NTSTATUS NTAPI TrFindRegisteredTrap (
 			{
 				*pTrap = Trap;
 				return STATUS_SUCCESS;
+			}
+
+			if (Trap->TrapType == TRAP_CR) 
+			{
+				exit_qualification = (ULONG32) VmxRead (EXIT_QUALIFICATION);
+				cr = exit_qualification & CONTROL_REG_ACCESS_NUM;
+				if(cr == Trap->Cr.CRNo)
+				{
+					*pTrap = Trap;
+					return STATUS_SUCCESS;
+				}
 			}
 
 			else if (Trap->TrapType == TRAP_GENERAL)
