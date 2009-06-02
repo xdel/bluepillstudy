@@ -154,7 +154,8 @@ typedef enum
   TRAP_DISABLED = 0,
   TRAP_GENERAL = 1,
   TRAP_MSR = 2,
-  TRAP_IO = 3
+  TRAP_IO = 3,
+  TRAP_CR = 4
 } TRAP_TYPE;
 
 // The following three will be used as trap's data structure.
@@ -180,6 +181,13 @@ typedef struct _NBP_TRAP_DATA_IO
 	ULONG TrappedPort;
 } NBP_TRAP_DATA_IO,
  *PNBP_TRAP_DATA_IO;
+
+typedef struct _NBP_TRAP_CTL_CR
+{
+	ULONG CRNo; //The No. of intercepted CR
+} NBP_TRAP_CTL_CR,
+ *PNBP_TRAP_CTL_CR;
+
 // [Superymk 6/1/2009] End
 
 typedef struct _NBP_TRAP
@@ -195,15 +203,17 @@ typedef struct _NBP_TRAP
 	union
 	{
 		//NBP_TRAP_DATA_GENERAL General;
-		NBP_TRAP_DATA_MSR Msr;
-		NBP_TRAP_DATA_IO Io;
+		NBP_TRAP_DATA_MSR 	Msr;
+		NBP_TRAP_DATA_IO 	Io;
+		NBP_TRAP_CTL_CR 	Cr;
 	};
 
 	ULONG TrappedVmExit;
 	ULONG RipDelta; 
 	// [Superymk 6/1/2009] End
-
+	
 	NBP_TRAP_CALLBACK TrapCallback;
+	BOOLEAN bForwardTrap; //True if need following traps to continue handling this event.
 	BOOLEAN bForwardTrapToGuest;  // FALSE if guest hypervisor doesn't want to intercept this in its own guest.
 	// This will be TRUE for TRAP_MSR record when we're going to intercept MSR "rw"
 	// but the guest wants to intercept only "r" or "w". 

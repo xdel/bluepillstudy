@@ -35,7 +35,8 @@ typedef BOOLEAN (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ... //Pass in arguments
 );
 
 //+++++++++++++++++++++Other Definitions+++++++++++++++++++++++++++
@@ -45,6 +46,7 @@ typedef NTSTATUS (NTAPI * PCALLBACK_PROC) (PVOID Param);
 #define HVSTATUS 	ULONG64
 
 #define HVSTATUS_UNSUPPORTED_FEATURE 	0x1
+#define HVSTATUS_INVALID_PARAMETERS     STATUS_INVALID_PARAMETER
 #define HVSTATUS_SUCCESS				0x0
 #define HVSTATUS_NTSTATUS(x) (x==HVSTATUS_SUCCESS?STATUS_SUCCESS:STATUS_UNSUCCESSFUL)
 

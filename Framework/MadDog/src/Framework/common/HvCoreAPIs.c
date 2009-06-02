@@ -46,13 +46,14 @@ NTSTATUS NTAPI MadDog_HypervisorInit()
 NTSTATUS NTAPI HvInitializeGeneralTrap (
   PCPU Cpu,
   ULONG TrappedVmExit,
+  BOOLEAN ForwardTrap, /* True if need following traps to continue handling this event.*/
   UCHAR RipDelta,
   NBP_TRAP_CALLBACK TrapCallback,
   PNBP_TRAP *pInitializedTrap,
   ULONG uDebugTag //Pool Debug Tag
 )
 {
-	return TrInitializeGeneralTrap(Cpu,TrappedVmExit,RipDelta,TrapCallback,pInitializedTrap,uDebugTag);
+	return TrInitializeGeneralTrap(Cpu, TrappedVmExit, ForwardTrap, RipDelta,TrapCallback,pInitializedTrap,uDebugTag);
 }
 
 /**

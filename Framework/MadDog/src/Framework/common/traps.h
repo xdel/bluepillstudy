@@ -12,6 +12,7 @@
 NTSTATUS NTAPI TrInitializeGeneralTrap (
   PCPU Cpu,
   ULONG TrappedVmExit,
+  BOOLEAN ForwardTrap,
   UCHAR RipDelta,
   NBP_TRAP_CALLBACK TrapCallback,
   PNBP_TRAP * pInitializedTrap,

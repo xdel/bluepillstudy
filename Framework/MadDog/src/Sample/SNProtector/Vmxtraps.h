@@ -29,5 +29,15 @@ BOOLEAN NTAPI VmxDispatchTimerExpired (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
-  BOOLEAN WillBeAlsoHandledByGuestHv
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
 );
+
+BOOLEAN NTAPI VmxDispatchCR3Access (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+);
+
