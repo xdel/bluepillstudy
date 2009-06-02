@@ -589,7 +589,7 @@ BOOLEAN NTAPI VmxDispatchTimerExpired (
 	return TRUE;
 }
 
-BOOLEAN NTAPI VmxDispatchCR3Access (
+BOOLEAN NTAPI PtVmxDispatchCR3Access (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
