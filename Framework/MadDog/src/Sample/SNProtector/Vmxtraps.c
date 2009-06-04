@@ -1,5 +1,12 @@
 #include "vmxtraps.h"
 
+//Hide these variables' memory later. 
+BOOLEAN bRegState; //Hypervisor side software registration state.
+ULONG AppPid;
+ULONG AppCR3;
+PParameter AppParameter[2];
+BOOLEAN bInstallProc[2];
+
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
@@ -204,6 +211,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
 	ULONG inst_len;
+	
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
@@ -217,12 +225,17 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	if (Trap->RipDelta == 0)
 		Trap->RipDelta = inst_len;
 
-	if (fn == BP_KNOCK_EAX) 
+	if (fn == SNPROTECTOR_VERIFY) 
 	{
-		Print(("Helloworld:Magic knock received: %p\n", BP_KNOCK_EAX));
-		GuestRegs->eax = BP_KNOCK_EAX_ANSWER;
-		GuestRegs->ebx = BP_KNOCK_EBX_ANSWER;
-		GuestRegs->edx = BP_KNOCK_EDX_ANSWER;
+		Print(("SNPROTECTOR:Magic knock received: %p\n", SNPROTECTOR_VERIFY));
+		AppParameter[Cpu->ProcessorNumber] = (PParameter)(GuestRegs->edx);
+		bInstallProc[Cpu->ProcessorNumber] = TRUE;
+
+		//Mapping the <Parameter> guest page in the host CR3
+		MmMapGuestPages((PVOID)GuestRegs->edx,2);
+		//MmMapGuestPages(AppParameter[Cpu->ProcessorNumber]->sUserName,2);
+		//MmMapGuestPages(AppParameter[Cpu->ProcessorNumber]->sSerialNumber,2);
+
 		return TRUE;
 	}
 	//else if(fn == 1)
@@ -622,28 +635,30 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
     //  Intel 64 architecture)
     exit_qualification = (ULONG32) VmxRead (EXIT_QUALIFICATION);
     gp = (exit_qualification & CONTROL_REG_ACCESS_REG) >> 8;
-    cr = exit_qualification & CONTROL_REG_ACCESS_NUM;
-
-#if DEBUG_LEVEL>1
-    Print(("VmxDispatchCrAccess(): gp: 0x%x cr: 0x%x exit_qualification: 0x%x\n", gp, cr, exit_qualification));
-#endif
+    //cr = exit_qualification & CONTROL_REG_ACCESS_NUM;
 
     //Access type:
     //  0 = MOV to CR
     //  1 = MOV from CR
     //  2 = CLTS
     //  3 = LMSW
+	
+	//if(bInstallProc[Cpu->ProcessorNumber])
+	//{
+	//	HvmPrint(("PtVmxDispatchCR3Access(): sUserName: %s \n", AppParameter[Cpu->ProcessorNumber]->sUserName));
+	//	HvmPrint(("PtVmxDispatchCR3Access(): sSerialNumber: %s \n", AppParameter[Cpu->ProcessorNumber]->sSerialNumber));
+	//}
     switch (exit_qualification & CONTROL_REG_ACCESS_TYPE) 
     {
 	case TYPE_MOV_TO_CR:
 
-        if (cr == 3) 
+        //if (cr == 3) 
         {
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
             if (Cpu->Vmx.GuestCR0 & X86_CR0_PG)       //enable paging
             {
-                HvmPrint(("VmxDispatchCrAccess(): TYPE_MOV_TO_CR cr3:0x%x\n", *(((PULONG64) GuestRegs) + gp)));
+                //HvmPrint(("VmxDispatchCrAccess(): TYPE_MOV_TO_CR cr3:0x%x\n", *(((PULONG64) GuestRegs) + gp)));
                 VmxWrite (GUEST_CR3, Cpu->Vmx.GuestCR3);
 
             }
@@ -651,10 +666,10 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
         }
         break;
     case TYPE_MOV_FROM_CR:
-        if (cr == 3) 
+        //if (cr == 3) 
         {
             value = Cpu->Vmx.GuestCR3;
-            HvmPrint(("VmxDispatchCrAccess(): TYPE_MOV_FROM_CR cr3:0x%x\n", value));
+            //HvmPrint(("VmxDispatchCrAccess(): TYPE_MOV_FROM_CR cr3:0x%x\n", value));
 
             *(((PULONG32) GuestRegs) + gp) = (ULONG32) value;
 
