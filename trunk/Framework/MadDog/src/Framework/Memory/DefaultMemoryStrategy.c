@@ -57,7 +57,7 @@ PVOID NTAPI HvMmAllocatePages (
 			0,
 			&Alloced);
 
-		if(i==0)
+		if(i==0 && pAllocatedPage)
 			*pAllocatedPage = Alloced;
 		
 		PageVA = (PUCHAR) PageVA + PAGE_SIZE;

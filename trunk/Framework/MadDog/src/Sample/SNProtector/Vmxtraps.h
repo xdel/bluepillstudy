@@ -10,8 +10,8 @@
 //Verification Parameter
 typedef struct _Parameter
 {
-	CHAR UserName[256];
-	CHAR SerialNumber[256];
+	CHAR UserName[4];
+	CHAR SerialNumber[4];
 } Parameter,*PParameter;
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
