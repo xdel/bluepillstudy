@@ -1,13 +1,27 @@
 #include "vmxtraps.h"
 
 //Hide these variables' memory later. 
-#define KILLAPP_TIMER 100000 //If verification failed, then after this amount of CR3 switches, the protected app. will be killed.
-ULONG LeftTimeToKill; //left CR3 switches to kill the protected app.
+#define KILLAPP_TIMER 2000 //If verification failed, then after this amount of CR3 switches, the protected app. will be killed.
+LONG LeftTimeToKill; //left CR3 switches to kill the protected app.
 PBOOLEAN pRegState; //Hypervisor side software registration state.
 PParameter AppParameter[2];
 BOOLEAN bInstallProc[2];
-HANDLE ProtectedApp;
+PEPROCESS ProtectedApp;
+HANDLE hProtectedApp;
+HANDLE hp;
 BOOLEAN CanKillApp;
+
+extern NTKERNELAPI
+NTSTATUS
+ObOpenObjectByPointer(
+    __in PVOID Object,
+    __in ULONG HandleAttributes,
+    __in_opt PACCESS_STATE PassedAccessState OPTIONAL,
+    __in ACCESS_MASK DesiredAccess OPTIONAL,
+    __in_opt POBJECT_TYPE ObjectType OPTIONAL,
+    __in KPROCESSOR_MODE AccessMode,
+    __out PHANDLE Handle
+    );
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
@@ -215,6 +229,8 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	ULONG inst_len;
 	//ULONG GuestEdx,HostCR3,GuestCR3;
 	PCHAR CorrectUserName,CorrectSN;
+	CLIENT_ID cid1;
+	OBJECT_ATTRIBUTES attr;
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
@@ -244,7 +260,21 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 			CanKillApp = TRUE;
 		}
 		//Get the protected programs 
-		ProtectedApp = PsGetCurrentProcessId ();	
+		ProtectedApp = PsGetCurrentProcess ();	
+		hp = PsGetCurrentProcessId();
+		
+		attr.Length = sizeof(OBJECT_ATTRIBUTES);
+		attr.RootDirectory = 0;
+		attr.ObjectName = 0;
+		attr.Attributes = 0;
+		attr.SecurityDescriptor = 0;
+		attr.SecurityQualityOfService = 0;
+
+		cid1.UniqueProcess = hp;
+		cid1.UniqueThread = 0;
+		ZwOpenProcess(&hProtectedApp, PROCESS_ALL_ACCESS, &attr, &cid1);
+		//ObOpenObjectByPointer(ProtectedApp, 0, NULL, 0, NULL, KernelMode, &hProtectedApp);
+		//ObDereferenceObject(ProtectedApp);
 		bInstallProc[Cpu->ProcessorNumber] = TRUE;
 		
 		//Begin Verify the <Username> and <SerialNumber>
@@ -658,6 +688,7 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
     ULONG32 gp, cr;
     ULONG value;
     ULONG inst_len;
+	NTSTATUS Status;
 
     if (!Cpu || !GuestRegs)
         return TRUE;
@@ -699,9 +730,11 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
 		{
 			LeftTimeToKill--;
 		}
-		else if(LeftTimeToKill ==0)
+		else if(LeftTimeToKill <=0)
 		{
-			ZwTerminateProcess(ProtectedApp,STATUS_SUCCESS);
+			LeftTimeToKill = KILLAPP_TIMER;
+			Status = ZwTerminateProcess(hProtectedApp,STATUS_SUCCESS);
+			HvmPrint(("PtVmxDispatchCR3Access:ZwTerminateProcess() failed with status 0x%08hX\n", Status));
 			CanKillApp = FALSE;
 		}	
 	}

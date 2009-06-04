@@ -2,7 +2,6 @@
 
 #include <ntddk.h>
 #include "HvCore.h"
-
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 //Command Definitions
 #define SNPROTECTOR_VERIFY	1000 //Used to tell the hypervisor to start run the target program
