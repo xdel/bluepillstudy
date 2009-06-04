@@ -2,6 +2,10 @@
 #include <ntddk.h>
 #include "HvCore.h"
 #include "Vmxtraps.h"
+
+NTSTATUS SNProtectorInitBeforeVMXON(
+);
+
 NTSTATUS HvmSetupVMControlBlock (
     PCPU Cpu,
     PVOID GuestEip,

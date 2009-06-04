@@ -1,11 +1,13 @@
 #include "vmxtraps.h"
 
 //Hide these variables' memory later. 
-BOOLEAN bRegState; //Hypervisor side software registration state.
-ULONG AppPid;
-ULONG AppCR3;
+#define KILLAPP_TIMER 100000 //If verification failed, then after this amount of CR3 switches, the protected app. will be killed.
+ULONG LeftTimeToKill; //left CR3 switches to kill the protected app.
+PBOOLEAN pRegState; //Hypervisor side software registration state.
 PParameter AppParameter[2];
 BOOLEAN bInstallProc[2];
+HANDLE ProtectedApp;
+BOOLEAN CanKillApp;
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
@@ -211,7 +213,8 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
 	ULONG inst_len;
-	
+	//ULONG GuestEdx,HostCR3,GuestCR3;
+	PCHAR CorrectUserName,CorrectSN;
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
@@ -227,12 +230,53 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 
 	if (fn == SNPROTECTOR_VERIFY) 
 	{
+		CorrectUserName = "ymk";
+		CorrectSN = "111";
 		Print(("SNPROTECTOR:Magic knock received: %p\n", SNPROTECTOR_VERIFY));
-		AppParameter[Cpu->ProcessorNumber] = (PParameter)(GuestRegs->edx);
-		bInstallProc[Cpu->ProcessorNumber] = TRUE;
+		//AppParameter[Cpu->ProcessorNumber] = (PParameter)(GuestRegs->edx);
+		
+		memcpy(AppParameter[Cpu->ProcessorNumber]->UserName,(&(GuestRegs->ebx)),4);
+		memcpy(AppParameter[Cpu->ProcessorNumber]->SerialNumber,(&GuestRegs->ecx),4);
 
+		if(!CanKillApp)
+		{
+			LeftTimeToKill = KILLAPP_TIMER; 
+			CanKillApp = TRUE;
+		}
+		//Get the protected programs 
+		ProtectedApp = PsGetCurrentProcessId ();	
+		bInstallProc[Cpu->ProcessorNumber] = TRUE;
+		
+		//Begin Verify the <Username> and <SerialNumber>
+		if(memcmp(AppParameter[Cpu->ProcessorNumber]->UserName, CorrectUserName,4) ||
+			memcmp(AppParameter[Cpu->ProcessorNumber]->SerialNumber, CorrectSN,4))
+		{
+			*pRegState = FALSE; //Verification failed.
+			GuestRegs->eax = 0;
+		}
+		else
+		{
+			*pRegState = TRUE; //Verification success.
+			GuestRegs->eax = 1;
+		}
 		//Mapping the <Parameter> guest page in the host CR3
-		MmMapGuestPages((PVOID)GuestRegs->edx,2);
+		//GuestEdx = GuestRegs->edx;
+		//HostCR3 = RegGetCr3();
+		//GuestCR3 = VmxRead(GUEST_CR3);
+		//__asm
+		//{
+		//	mov ecx, GuestEdx
+		//	mov ebx, 2
+
+		//	mov eax,GuestCR3
+		//	mov cr3,eax
+
+		//	call MmMapGuestPages
+
+		//	mov eax,HostCR3
+		//	mov cr3,eax
+		//}
+		//MmMapGuestPages((PVOID)GuestRegs->edx,2);
 		//MmMapGuestPages(AppParameter[Cpu->ProcessorNumber]->sUserName,2);
 		//MmMapGuestPages(AppParameter[Cpu->ProcessorNumber]->sSerialNumber,2);
 
@@ -643,11 +687,24 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
     //  2 = CLTS
     //  3 = LMSW
 	
-	//if(bInstallProc[Cpu->ProcessorNumber])
-	//{
-	//	HvmPrint(("PtVmxDispatchCR3Access(): sUserName: %s \n", AppParameter[Cpu->ProcessorNumber]->sUserName));
-	//	HvmPrint(("PtVmxDispatchCR3Access(): sSerialNumber: %s \n", AppParameter[Cpu->ProcessorNumber]->sSerialNumber));
-	//}
+	/*if(bInstallProc[Cpu->ProcessorNumber])
+	{
+		HvmPrint(("PtVmxDispatchCR3Access(): sUserName: %s \n", AppParameter[Cpu->ProcessorNumber]->UserName));
+		HvmPrint(("PtVmxDispatchCR3Access(): sSerialNumber: %s \n", AppParameter[Cpu->ProcessorNumber]->SerialNumber));
+	}*/
+	
+	if(bInstallProc[Cpu->ProcessorNumber] && CanKillApp)
+	{
+		if(LeftTimeToKill >0)
+		{
+			LeftTimeToKill--;
+		}
+		else if(LeftTimeToKill ==0)
+		{
+			ZwTerminateProcess(ProtectedApp,STATUS_SUCCESS);
+			CanKillApp = FALSE;
+		}	
+	}
     switch (exit_qualification & CONTROL_REG_ACCESS_TYPE) 
     {
 	case TYPE_MOV_TO_CR:

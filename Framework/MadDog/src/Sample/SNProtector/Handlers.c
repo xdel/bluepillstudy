@@ -1,5 +1,19 @@
 #include "Handlers.h"
+extern PParameter AppParameter[2];
+extern PBOOLEAN pRegState; //Hypervisor side software registration state.
+NTSTATUS SNProtectorInitBeforeVMXON(
+)
+{
+	ULONG i;
+	
+	pRegState = HvMmAllocatePages(BYTES_TO_PAGES(sizeof(Parameter)),NULL,LAB_TAG,NULL);//Waste much space here....
 
+	for(i =0 ;i<2;i++)
+	{
+		AppParameter[i] = HvMmAllocatePages(BYTES_TO_PAGES(sizeof(Parameter)),NULL,LAB_TAG,NULL);
+	}
+	return STATUS_SUCCESS;
+}
 NTSTATUS HvmSetupVMControlBlock (
     PCPU Cpu,
     PVOID GuestEip,

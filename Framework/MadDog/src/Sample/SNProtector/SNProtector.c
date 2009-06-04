@@ -1,11 +1,10 @@
 #include "SNProtector.h"
 
 //extern PHYSICAL_ADDRESS g_PageMapBasePhysicalAddress;
-//extern BOOLEAN g_bDisableComOutput;
 
 static MadDog_Control md_Control = 
 {
-	NULL,
+	&SNProtectorInitBeforeVMXON,
 	NULL,
 	&HvmSetupVMControlBlock,
 	&VmxRegisterTraps

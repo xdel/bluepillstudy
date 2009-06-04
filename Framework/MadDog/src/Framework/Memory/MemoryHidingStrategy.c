@@ -396,7 +396,7 @@ PVOID NTAPI HvMmAllocatePages (
 			return NULL;
 		}
 		
-		if(i==0)
+		if(i==0 && pAllocatedPage)
 			*pAllocatedPage = Alloced;
 
 		//if(AllocatedPage.bMachineState == CURRENT_STATE_GUEST)//We only hide the memory allocated under guest OS
