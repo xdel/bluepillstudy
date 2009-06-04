@@ -24,4 +24,9 @@ VOID NTAPI MmHidingStrategyRevealHiddenPages (
  */
 VOID NTAPI MmHidingStrategyHideAllAllocatedGuestPages (
 );
+
+NTSTATUS NTAPI MmMapGuestPages (
+  PVOID FirstPage,
+  ULONG uNumberOfPages
+);
 #endif

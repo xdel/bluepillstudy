@@ -18,11 +18,6 @@ static NTSTATUS NTAPI MmCreateMapping (
   BOOLEAN bLargePage
 );
 
-static NTSTATUS NTAPI MmMapGuestPages (
-  PVOID FirstPage,
-  ULONG uNumberOfPages
-);
-
 static NTSTATUS NTAPI MmMapGuestKernelPages (
 );
 

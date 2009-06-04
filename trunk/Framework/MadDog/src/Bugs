@@ -1,1 +1,2 @@
-Memory-Hiding Strategy: Didn't hide the page table memory from guest OS, only hiding the page content currently.
+Bug #1:Memory-Hiding Strategy: Didn't hide the page table memory from guest OS, only hiding the page content currently.
+Bug #2:Not Enable trap chain handling currently.

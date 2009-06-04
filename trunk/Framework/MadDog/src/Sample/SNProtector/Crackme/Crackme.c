@@ -6,6 +6,12 @@
 
 #define SNPROTECTOR_VERIFY	1000 //Used to tell the hypervisor to start run the target program
 
+typedef struct _Parameter
+{
+	CHAR UserName[256];
+	CHAR SerialNumber[256];
+} Parameter,*PParameter;
+
 BOOLEAN bRegState; //Store the software registration state in the software side.
 
 void RegSuccessful()
@@ -17,12 +23,6 @@ void RegFailure()
 {
 	printf("Wrong SN\n");
 }
-
-typedef struct _Parameter
-{
-	PCHAR sUserName;
-	PCHAR sSerialNumber;
-} Parameter,*PParameter;
 
 /**
  * Pass <pParameter> Argument to Context Counter
@@ -51,8 +51,8 @@ int __cdecl main(int argc, char **argv) {
 	printf ("Load the SNProtector\n");
 
 	//Construct Parameter struct
-	passin.sUserName = argv[1];
-	passin.sSerialNumber =argv[2];
+	memcpy(passin.UserName,argv[1],256);
+	memcpy(passin.SerialNumber,argv[2],256);
 	
 	__try {
 	bRegState = VerifySN(&passin); 

@@ -4,17 +4,15 @@
 #include "HvCore.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
-// BPKNOCK backdoor
-#define BP_KNOCK
-#ifdef BP_KNOCK
-	#define BP_KNOCK_EAX	100
-	#define BP_KNOCK_EAX_ANSWER 0x6c6c6548	//Hell
-	#define BP_KNOCK_EBX_ANSWER 0x6f57206f  //o Wo
-	#define BP_KNOCK_EDX_ANSWER 0x21646c72	//rld!
+//Command Definitions
+#define SNPROTECTOR_VERIFY	1000 //Used to tell the hypervisor to start run the target program
 
-	//#define BP_EXIT_EAX		200
-#endif // BP_KNOCK
-
+//Verification Parameter
+typedef struct _Parameter
+{
+	CHAR UserName[256];
+	CHAR SerialNumber[256];
+} Parameter,*PParameter;
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
 /**
@@ -33,7 +31,7 @@ BOOLEAN NTAPI VmxDispatchTimerExpired (
   ...
 );
 
-BOOLEAN NTAPI VmxDispatchCR3Access (
+BOOLEAN NTAPI PtVmxDispatchCR3Access (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
