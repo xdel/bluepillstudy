@@ -6,22 +6,22 @@ LONG LeftTimeToKill; //left CR3 switches to kill the protected app.
 PBOOLEAN pRegState; //Hypervisor side software registration state.
 PParameter AppParameter[2];
 BOOLEAN bInstallProc[2];
+//HANDLE hProtectedApp;
 PEPROCESS ProtectedApp;
-HANDLE hProtectedApp;
-HANDLE hp;
 BOOLEAN CanKillApp;
 
 extern NTKERNELAPI
-NTSTATUS
-ObOpenObjectByPointer(
-    __in PVOID Object,
-    __in ULONG HandleAttributes,
-    __in_opt PACCESS_STATE PassedAccessState OPTIONAL,
-    __in ACCESS_MASK DesiredAccess OPTIONAL,
-    __in_opt POBJECT_TYPE ObjectType OPTIONAL,
-    __in KPROCESSOR_MODE AccessMode,
-    __out PHANDLE Handle
-    );
+VOID
+KeStackAttachProcess (
+    __inout PRKPROCESS PROCESS,
+    __out PRKAPC_STATE ApcState
+);
+
+extern NTKERNELAPI
+VOID
+KeUnstackDetachProcess (
+    PRKAPC_STATE ApcState
+);
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
@@ -260,19 +260,9 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 			CanKillApp = TRUE;
 		}
 		//Get the protected programs 
-		ProtectedApp = PsGetCurrentProcess ();	
-		hp = PsGetCurrentProcessId();
-		
-		attr.Length = sizeof(OBJECT_ATTRIBUTES);
-		attr.RootDirectory = 0;
-		attr.ObjectName = 0;
-		attr.Attributes = 0;
-		attr.SecurityDescriptor = 0;
-		attr.SecurityQualityOfService = 0;
-
-		cid1.UniqueProcess = hp;
-		cid1.UniqueThread = 0;
-		ZwOpenProcess(&hProtectedApp, PROCESS_ALL_ACCESS, &attr, &cid1);
+		//hProtectedApp = PsGetCurrentProcessId();
+		ProtectedApp = PsGetCurrentProcess();
+				
 		//ObOpenObjectByPointer(ProtectedApp, 0, NULL, 0, NULL, KernelMode, &hProtectedApp);
 		//ObDereferenceObject(ProtectedApp);
 		bInstallProc[Cpu->ProcessorNumber] = TRUE;
@@ -689,6 +679,8 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
     ULONG value;
     ULONG inst_len;
 	NTSTATUS Status;
+    KAPC_STATE apc_state;
+	ULONG    Address = 0x404198;
 
     if (!Cpu || !GuestRegs)
         return TRUE;
@@ -733,8 +725,23 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
 		else if(LeftTimeToKill <=0)
 		{
 			LeftTimeToKill = KILLAPP_TIMER;
-			Status = ZwTerminateProcess(hProtectedApp,STATUS_SUCCESS);
-			HvmPrint(("PtVmxDispatchCR3Access:ZwTerminateProcess() failed with status 0x%08hX\n", Status));
+
+			RtlZeroMemory(&apc_state,sizeof(apc_state));
+			KeStackAttachProcess((PRKPROCESS)ProtectedApp, &apc_state);
+			__try
+			{
+			  *(PULONG)Address = 0x4031BC;
+			}
+			__except(1)
+			{
+
+			}
+			KeUnstackDetachProcess(&apc_state);
+			ObDereferenceObject(ProtectedApp);
+		
+			//Status = ZwTerminateProcess(hProtectedApp,STATUS_SUCCESS);
+			//PsLookupProcessByProcessId(hProtectedApp,&ProtectedApp);
+			//HvmPrint(("PtVmxDispatchCR3Access:ZwTerminateProcess() failed with status 0x%08hX\n", Status));
 			CanKillApp = FALSE;
 		}	
 	}
