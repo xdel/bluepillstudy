@@ -75,6 +75,7 @@ ENDM
 
 
 HVM_SAVE_ALL_NOSEGREGS MACRO
+	;pushfd 
         push edi
         push esi
         push ebp
@@ -93,7 +94,8 @@ HVM_RESTORE_ALL_NOSEGREGS MACRO
         pop ebp ;        pop esp
         pop ebp
         pop esi
-        pop edi        
+        pop edi    
+        ;popfd
 ENDM
 
 

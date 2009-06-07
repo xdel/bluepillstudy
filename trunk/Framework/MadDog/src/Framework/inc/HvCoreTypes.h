@@ -144,6 +144,7 @@ typedef struct _GUEST_REGS
   ULONG32 ebp;
   ULONG32 esi;
   ULONG32 edi;
+ // ULONG32 eflags;
 } GUEST_REGS;
 
 //+++++++++++++++++++++Traps Structs++++++++++++++++++++++++++++++++

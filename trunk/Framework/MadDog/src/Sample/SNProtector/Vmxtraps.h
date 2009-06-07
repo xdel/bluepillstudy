@@ -13,16 +13,6 @@ typedef struct _Parameter
 	CHAR SerialNumber[4];
 } Parameter,*PParameter;
 
-//+++++++++++++++++++Ntifs Definitions+++++++++++++++++++++++
-typedef struct _KPROCESS *PKPROCESS ,*PRKPROCESS;
-
-typedef struct _KAPC_STATE {
-    LIST_ENTRY ApcListHead[MaximumMode];
-    struct _KPROCESS *Process;
-    BOOLEAN KernelApcInProgress;
-    BOOLEAN KernelApcPending;
-    BOOLEAN UserApcPending;
-} KAPC_STATE, *PKAPC_STATE, *PRKAPC_STATE;
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
 /**
