@@ -92,6 +92,6 @@ int __cdecl main(int argc, char **argv) {
 		Sleep(2000);
 	}
 	//we won't permit it exit.
-	while(1){}
+	while(1){Sleep(2000);}
 	return 0;
 }

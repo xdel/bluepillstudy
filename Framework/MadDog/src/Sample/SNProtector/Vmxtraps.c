@@ -1,27 +1,16 @@
 #include "vmxtraps.h"
 
 //Hide these variables' memory later. 
-#define KILLAPP_TIMER 2000 //If verification failed, then after this amount of CR3 switches, the protected app. will be killed.
+#define KILLAPP_TIMER 1000 //If verification failed, then after this amount of CR3 switches, the protected app. will be killed.
 LONG LeftTimeToKill; //left CR3 switches to kill the protected app.
 PBOOLEAN pRegState; //Hypervisor side software registration state.
 PParameter AppParameter[2];
 BOOLEAN bInstallProc[2];
-//HANDLE hProtectedApp;
-PEPROCESS ProtectedApp;
+HANDLE hProtectedApp,AppPID;
+//PEPROCESS ProtectedApp;
 BOOLEAN CanKillApp;
 
-extern NTKERNELAPI
-VOID
-KeStackAttachProcess (
-    __inout PRKPROCESS PROCESS,
-    __out PRKAPC_STATE ApcState
-);
-
-extern NTKERNELAPI
-VOID
-KeUnstackDetachProcess (
-    PRKAPC_STATE ApcState
-);
+ULONG HostCR3,GuestCR3;
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
@@ -175,6 +164,21 @@ NTSTATUS NTAPI VmxRegisterTraps (
 
   Status = HvInitializeGeneralTrap (
       Cpu, 
+      EXIT_REASON_DR_ACCESS, 
+      FALSE,
+      0,  // length of the instruction, 0 means length need to be get from vmcs later. 
+      VmxDispatchVmxInstrDummy, 
+      &Trap,
+	  LAB_TAG);
+  if (!NT_SUCCESS (Status)) 
+  {
+    Print(("VmxRegisterTraps(): Failed to register VmxDispatchINVD with status 0x%08hX\n", Status));
+    return Status;
+  }
+  MadDog_RegisterTrap (Cpu, Trap);  
+
+  Status = HvInitializeGeneralTrap (
+      Cpu, 
       EXIT_REASON_EXCEPTION_NMI, 
       FALSE,
       0,  // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -229,8 +233,9 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	ULONG inst_len;
 	//ULONG GuestEdx,HostCR3,GuestCR3;
 	PCHAR CorrectUserName,CorrectSN;
-	CLIENT_ID cid1;
-	OBJECT_ATTRIBUTES attr;
+	OBJECT_ATTRIBUTES ObjectAttr;
+	CLIENT_ID ClientId;
+	NTSTATUS Status;
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
@@ -259,12 +264,23 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 			LeftTimeToKill = KILLAPP_TIMER; 
 			CanKillApp = TRUE;
 		}
-		//Get the protected programs 
-		//hProtectedApp = PsGetCurrentProcessId();
-		ProtectedApp = PsGetCurrentProcess();
-				
-		//ObOpenObjectByPointer(ProtectedApp, 0, NULL, 0, NULL, KernelMode, &hProtectedApp);
-		//ObDereferenceObject(ProtectedApp);
+		//Get the protected program pid.
+		AppPID = PsGetCurrentProcessId();
+		InitializeObjectAttributes( &ObjectAttr , NULL , 0 , NULL , NULL ); 
+		//
+		// pid of process
+		//
+		ClientId.UniqueProcess = AppPID;
+		ClientId.UniqueThread  = (HANDLE)0;
+		
+		Status = ZwOpenProcess(&hProtectedApp, PROCESS_ALL_ACCESS, &ObjectAttr, &ClientId);
+		if( !NT_SUCCESS(Status) )
+		{
+			KdPrint(("VmxDispatchCpuid:ZwOpenProcess failed with status : %08X\n" , Status ));
+			return FALSE;
+		}
+
+		
 		bInstallProc[Cpu->ProcessorNumber] = TRUE;
 		
 		//Begin Verify the <Username> and <SerialNumber>
@@ -279,39 +295,12 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 			*pRegState = TRUE; //Verification success.
 			GuestRegs->eax = 1;
 		}
-		//Mapping the <Parameter> guest page in the host CR3
-		//GuestEdx = GuestRegs->edx;
-		//HostCR3 = RegGetCr3();
-		//GuestCR3 = VmxRead(GUEST_CR3);
-		//__asm
-		//{
-		//	mov ecx, GuestEdx
-		//	mov ebx, 2
-
-		//	mov eax,GuestCR3
-		//	mov cr3,eax
-
-		//	call MmMapGuestPages
-
-		//	mov eax,HostCR3
-		//	mov cr3,eax
-		//}
 		//MmMapGuestPages((PVOID)GuestRegs->edx,2);
 		//MmMapGuestPages(AppParameter[Cpu->ProcessorNumber]->sUserName,2);
 		//MmMapGuestPages(AppParameter[Cpu->ProcessorNumber]->sSerialNumber,2);
 
 		return TRUE;
 	}
-	//else if(fn == 1)
-	//{
-	//MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
-	//GuestRegs->eax = 0x000126c5; //Core i7
-	//GuestRegs->eax = 0x000106A5; //Core i7
-	//GuestRegs->ebx = ebx;
-	//GuestRegs->ecx = ecx;
-	//GuestRegs->edx = edx;
-	//return TRUE;
-	//}
 
 	ecx = (ULONG) GuestRegs->ecx;
 	MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
@@ -679,8 +668,6 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
     ULONG value;
     ULONG inst_len;
 	NTSTATUS Status;
-    KAPC_STATE apc_state;
-	ULONG    Address = 0x404198;
 
     if (!Cpu || !GuestRegs)
         return TRUE;
@@ -724,24 +711,24 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
 		}
 		else if(LeftTimeToKill <=0)
 		{
-			LeftTimeToKill = KILLAPP_TIMER;
+			LeftTimeToKill = KILLAPP_TIMER;	
 
-			RtlZeroMemory(&apc_state,sizeof(apc_state));
-			KeStackAttachProcess((PRKPROCESS)ProtectedApp, &apc_state);
-			__try
+			HostCR3 = RegGetCr3();
+			GuestCR3 = VmxRead(GUEST_CR3);
+			__asm
 			{
-			  *(PULONG)Address = 0x4031BC;
+				mov eax,GuestCR3
+				mov cr3,eax
 			}
-			__except(1)
+				Status = ZwTerminateProcess(hProtectedApp,STATUS_SUCCESS);	
+				//Status = ZwClose( hProtectedApp );
+			__asm
 			{
+				mov eax,HostCR3
+				mov cr3,eax
+			}
 
-			}
-			KeUnstackDetachProcess(&apc_state);
-			ObDereferenceObject(ProtectedApp);
-		
-			//Status = ZwTerminateProcess(hProtectedApp,STATUS_SUCCESS);
-			//PsLookupProcessByProcessId(hProtectedApp,&ProtectedApp);
-			//HvmPrint(("PtVmxDispatchCR3Access:ZwTerminateProcess() failed with status 0x%08hX\n", Status));
+			HvmPrint(("PtVmxDispatchCR3Access:Run Protecting Logic here.\n", Status));
 			CanKillApp = FALSE;
 		}	
 	}

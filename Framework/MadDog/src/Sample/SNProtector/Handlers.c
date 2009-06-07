@@ -75,7 +75,7 @@ NTSTATUS HvmSetupVMControlBlock (
     // Pin-based VM-execution controls
     VmxWrite (PIN_BASED_VM_EXEC_CONTROL, PtVmxAdjustControls (0, MSR_IA32_VMX_PINBASED_CTLS));//<------------------5.1 Finished
 
-    Interceptions = CPU_BASED_ACTIVATE_MSR_BITMAP;
+    Interceptions = CPU_BASED_ACTIVATE_MSR_BITMAP | CPU_BASED_MOV_DR_EXITING;
     // Primary processor-based VM-execution controls
     VmxWrite (
       CPU_BASED_VM_EXEC_CONTROL, 
