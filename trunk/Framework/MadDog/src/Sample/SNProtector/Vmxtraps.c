@@ -12,6 +12,7 @@ BOOLEAN CanKillApp;
 
 ULONG HostCR3,GuestCR3;
 PALLOCATED_PAGE HypervisorDrvObjPage;
+ULONG OpLock;
 
 extern PDRIVER_OBJECT g_HypervisorDrvObj;
 static BOOLEAN NTAPI VmxDispatchCpuid (
@@ -71,6 +72,20 @@ extern NTSTATUS NTAPI MmAPMSavePage (
   ULONG Flags,
   PALLOCATED_PAGE *pAllocatedPage
 );
+
+//Forward Function Lookup
+extern VOID NTAPI CmInitSpinLock (
+  PULONG BpSpinLock
+);
+
+extern VOID NTAPI CmAcquireSpinLock (
+  PULONG BpSpinLock
+);
+
+extern VOID NTAPI CmReleaseSpinLock (
+  PULONG BpSpinLock
+);
+
 
 VOID NTAPI MmAPMSaveMultiPage (
   PVOID GuestAddress, //Guest Virtual Address
@@ -346,8 +361,12 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	}
 	else if(fn == SNPROTECTOR_HIDEDRV)
 	{
+		
 		HostCR3 = RegGetCr3();
 		GuestCR3 = VmxRead(GUEST_CR3);
+
+		CmInitSpinLock(&OpLock);
+		CmAcquireSpinLock(&OpLock);
 		__asm
 		{
 			mov eax,GuestCR3
@@ -366,12 +385,17 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 			mov eax,HostCR3
 			mov cr3,eax
 		}
+		CmReleaseSpinLock(&OpLock);
+		
 		return TRUE;
 	}
 	else if(fn == SNPROTECTOR_UNHIDEDRV)
 	{
 		HostCR3 = RegGetCr3();
 		GuestCR3 = VmxRead(GUEST_CR3);
+
+		CmInitSpinLock(&OpLock);
+		CmAcquireSpinLock(&OpLock);
 		__asm
 		{
 			mov eax,GuestCR3
@@ -386,6 +410,8 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 			mov eax,HostCR3
 			mov cr3,eax
 		}
+		CmReleaseSpinLock(&OpLock);
+		
 		return TRUE;
 	}
 
