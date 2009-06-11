@@ -95,7 +95,12 @@ typedef struct _VMX
 typedef struct _WORMHOLE
 {
 	ULONG ProcessorNumber;
+	
+	PVOID DriverObjectStartADDR;//Used to hide the hypervisor itself from the kernel space
+	ULONG DriverObjectSize;
+	
 	UCHAR Trampoline[0x600];
+	
 } WORMHOLE,*PWORMHOLE;
 
 typedef struct _CPU

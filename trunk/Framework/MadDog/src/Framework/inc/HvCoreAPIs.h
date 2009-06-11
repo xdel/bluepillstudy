@@ -35,7 +35,7 @@ typedef struct _MadDog_Control
 /**
  * effects: Install HelloWorld VMM hypervisor.
  */
-NTSTATUS NTAPI MadDog_InstallHypervisor(PMadDog_Control mdCtl);
+NTSTATUS NTAPI MadDog_InstallHypervisor(PMadDog_Control mdCtl,PDRIVER_OBJECT DriverObject);
 
 /**
  * effects: Uninstall HelloWorld VMM Hypervisor

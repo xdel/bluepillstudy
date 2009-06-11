@@ -4,6 +4,7 @@
 
 static KMUTEX g_HvmMutex;
 extern PMadDog_Control g_HvmControl;
+extern PDRIVER_OBJECT g_HypervisorDrvObj;
 
 ULONG g_uSubvertedCPUs = 0;
 PHVM_DEPENDENT Hvm;
@@ -215,7 +216,8 @@ NTSTATUS NTAPI HvmSubvertCpu (
 
     Cpu->ProcessorNumber = KeGetCurrentProcessorNumber();
 	HvGuestPipe.ProcessorNumber = Cpu->ProcessorNumber;
-
+	HvGuestPipe.DriverObjectStartADDR = g_HypervisorDrvObj->DriverStart;
+	HvGuestPipe.DriverObjectSize = g_HypervisorDrvObj->DriverSize;
    // Cpu->Nested = FALSE;
 
    // InitializeListHead (&Cpu->GeneralTrapsList);

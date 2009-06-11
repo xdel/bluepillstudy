@@ -6,7 +6,7 @@
 
 typedef VOID (NTAPI * MmAPMCALLBACK_PROC) (
 	PALLOCATED_PAGE Param,
-	... //Pass in arguments
+	va_list argp //Pass in arguments
 );
 
 //+++++++++++++++Public Functions+++++++++++++++++

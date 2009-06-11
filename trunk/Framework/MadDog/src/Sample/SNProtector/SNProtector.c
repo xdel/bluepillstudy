@@ -77,7 +77,7 @@ NTSTATUS DriverEntry (
 	Print(("HELLOWORLD: Successful in execute HvmInit()"));
 
 
-    if (!NT_SUCCESS (Status = MadDog_InstallHypervisor(&md_Control))) //<------------------1 Finish
+    if (!NT_SUCCESS (Status = MadDog_InstallHypervisor(&md_Control,DriverObject))) //<------------------1 Finish
     {
         Print(("HELLOWORLD: InstallHypervisor() failed with status 0x%08hX\n", Status));
 		Finalize();

@@ -4,15 +4,17 @@
 
 //+++++++++++++++++++++Global Variables Definition+++++++++++++++
 PMadDog_Control g_HvmControl;		//Global handlers, include how to setep VMCB etc.
+PDRIVER_OBJECT g_HypervisorDrvObj;	//Global ref to the 3rd party hypervisor driver object, can be used when retrieving driver info from it.
 //BOOLEAN bCurrentMachineState = CURRENT_STATE_GUEST; 	//true means it is in guest OS now, otherwise in hypervisor
 
 
 /**
  * effects: Install HelloWorld VMM hypervisor.
  */
-NTSTATUS NTAPI MadDog_InstallHypervisor(PMadDog_Control mdCtl)
+NTSTATUS NTAPI MadDog_InstallHypervisor(PMadDog_Control mdCtl,PDRIVER_OBJECT DriverObject)
 {
 	g_HvmControl = mdCtl;
+	g_HypervisorDrvObj = DriverObject;
 	return HvmSwallowBluepill();
 }
 
