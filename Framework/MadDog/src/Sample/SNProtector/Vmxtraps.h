@@ -2,10 +2,12 @@
 
 #include <ntddk.h>
 #include "HvCore.h"
+
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 //Command Definitions
-#define SNPROTECTOR_VERIFY	1000 //Used to tell the hypervisor to start run the target program
-
+#define SNPROTECTOR_VERIFY		1000 //Used to tell the hypervisor to start run the target program
+#define SNPROTECTOR_HIDEDRV 	2000 //Used to hide the hypervisor code in the kernel space
+#define SNPROTECTOR_UNHIDEDRV 	2500 //Used to reveal the hypervisor code in the kernel space
 //Verification Parameter
 typedef struct _Parameter
 {

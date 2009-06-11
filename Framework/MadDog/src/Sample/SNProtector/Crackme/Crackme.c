@@ -5,6 +5,8 @@
 #include <conio.h>
 
 #define SNPROTECTOR_VERIFY	1000 //Used to tell the hypervisor to start run the target program
+#define SNPROTECTOR_HIDEDRV 	2000 //Used to hide the hypervisor code in the kernel space
+#define SNPROTECTOR_UNHIDEDRV 	2500 //Used to reveal the hypervisor code in the kernel space
 
 typedef struct _Parameter
 {
@@ -48,11 +50,31 @@ BOOLEAN __stdcall VerifySN (ULONG UserName,ULONG SN) {
 	}
 	return;
 }
+
+VOID __stdcall HideHypervisor(){
+	__asm{
+		mov eax,SNPROTECTOR_HIDEDRV
+		cpuid
+	}
+}
+VOID __stdcall RevealHypervisor(){
+	__asm{
+		mov eax,SNPROTECTOR_UNHIDEDRV
+		cpuid
+	}
+}
+
 int __cdecl main(int argc, char **argv) {
 	Parameter passin;
 	CHAR ch[10];
-	if (argc != 3) {
+	if (argc != 3 && argc !=1) {
 		printf ("Crackme <UserName> <S/N Key>\n");
+		printf ("Crackme\n Reveal the hypervisor in the kernel space\n");
+		return 0;
+	}
+	else if(argc == 1)
+	{
+		RevealHypervisor();
 		return 0;
 	}
 	
@@ -65,7 +87,7 @@ int __cdecl main(int argc, char **argv) {
 	memcpy(passin.SerialNumber,argv[2],4);
 	
 	__try {
-	//bRegState = VerifySN(&passin); 
+		HideHypervisor();
 		bRegState = VerifySN((ULONG)(*((PULONG)passin.UserName)),(ULONG)(*((PULONG)passin.SerialNumber))); 
 	} __except (EXCEPTION_EXECUTE_HANDLER) {
 		printf ("CPUDID caused exception");

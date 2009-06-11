@@ -1,7 +1,7 @@
-#include "MemoryHidingStrategyDef.h"
 #include "HvCore.h"
+#include "MemoryHidingStrategyDef.h"
 #include "AllocPageMgr.h"
-
+#include <stdarg.h>
 
 #ifdef USE_MEMORY_MEMORYHIDING_STRATEGY 
 
@@ -40,7 +40,7 @@ static void NTAPI MmCoverHostVA(
  */ 
 static VOID NTAPI MmShutdownMgrRestoreMappingCallback(
 	PALLOCATED_PAGE AllocatedPage,
-	...
+	va_list argp
 );
 
 /*
@@ -48,7 +48,7 @@ static VOID NTAPI MmShutdownMgrRestoreMappingCallback(
  */ 
 static VOID NTAPI MmShutdownMgrDeallocateHidedPagesCallback(
 	PALLOCATED_PAGE AllocatedPage,
-	...
+	va_list argp
 );
 
 /*
@@ -56,7 +56,7 @@ static VOID NTAPI MmShutdownMgrDeallocateHidedPagesCallback(
  */ 
 static VOID NTAPI MmHidingStrategyHideAllAllocatedGuestPagesCallback (
 	PALLOCATED_PAGE AllocatedPage,
-	...
+	va_list argp
 );
 
 /*
@@ -64,10 +64,11 @@ static VOID NTAPI MmHidingStrategyHideAllAllocatedGuestPagesCallback (
  */ 
 static VOID NTAPI MmHidingStrategyRevealHiddenPagesCallback (
 	PALLOCATED_PAGE AllocatedPage,
-	PVOID GuestAddress,
-	ULONG uNumberOfPages,
-	PULONG RemainUnswappedPages,
-	...
+	va_list argp
+	//PVOID GuestAddress,
+	//ULONG uNumberOfPages,
+	//PULONG RemainUnswappedPages,
+	//...
 );
 
 /*
@@ -75,10 +76,11 @@ static VOID NTAPI MmHidingStrategyRevealHiddenPagesCallback (
  */ 
 static VOID NTAPI MmHidingStrategyHideGuestPagesCallback (
 	PALLOCATED_PAGE AllocatedPage,
-	PVOID GuestAddress,
-	ULONG uNumberOfPages,
-	PULONG RemainUnswappedPages,
-	...
+	va_list argp
+	//PVOID GuestAddress,
+	//ULONG uNumberOfPages,
+	//PULONG RemainUnswappedPages,
+	//...
 );
 
 //++++++++++Global Variables++++++++++++++
@@ -799,7 +801,7 @@ NTSTATUS NTAPI HvMmInitManager (
  */ 
 VOID NTAPI MmShutdownMgrRestoreMappingCallback(
 	PALLOCATED_PAGE AllocatedPage,
-	...
+	va_list argp
 )
 {
 	if(AllocatedPage->Flags == 0)
@@ -813,7 +815,7 @@ VOID NTAPI MmShutdownMgrRestoreMappingCallback(
  */ 
 VOID NTAPI MmShutdownMgrDeallocateHidedPagesCallback(
 	PALLOCATED_PAGE AllocatedPage,
-	...
+	va_list argp
 )
 {
 	ULONG i;
@@ -958,13 +960,21 @@ NTSTATUS NTAPI MmInitIdentityPageTable (
  */ 
 VOID NTAPI MmHidingStrategyRevealHiddenPagesCallback (
 	PALLOCATED_PAGE AllocatedPage,
-	PVOID GuestAddress,
-	ULONG uNumberOfPages,
-	PULONG RemainUnswappedPages,
-	...
+	va_list argp
+	//PVOID GuestAddress,
+	//ULONG uNumberOfPages,
+	//PULONG RemainUnswappedPages,
 )
 {
+	PVOID GuestAddress;
+	ULONG uNumberOfPages;
+	PULONG RemainUnswappedPages;
 	ULONG GuestCR3,CurrentCR3;
+
+	GuestAddress = va_arg(argp,PVOID);
+	uNumberOfPages = va_arg(argp,ULONG);
+	RemainUnswappedPages = va_arg(argp,PULONG);
+	
 	if (*RemainUnswappedPages <= 0)
 		return;
 
@@ -1018,13 +1028,21 @@ VOID NTAPI MmHidingStrategyRevealHiddenPages (
  */ 
 VOID NTAPI MmHidingStrategyHideGuestPagesCallback (
 	PALLOCATED_PAGE AllocatedPage,
-	PVOID GuestAddress,
-	ULONG uNumberOfPages,
-	PULONG RemainUnswappedPages,
-	...
+	va_list argp
+	//PVOID GuestAddress,
+	//ULONG uNumberOfPages,
+	//PULONG RemainUnswappedPages,
+	//...
 )
 {
+	PVOID GuestAddress;
+	ULONG uNumberOfPages;
+	PULONG RemainUnswappedPages;
 	ULONG GuestCR3,CurrentCR3;
+
+	GuestAddress = va_arg(argp,PVOID);
+	uNumberOfPages = va_arg(argp,ULONG);
+	RemainUnswappedPages = va_arg(argp,PULONG);
 
 	if (*RemainUnswappedPages <= 0)
 		return;
@@ -1039,6 +1057,7 @@ VOID NTAPI MmHidingStrategyHideGuestPagesCallback (
 		{
 			CurrentCR3 = RegGetCr3(); //Save the current CR3
 			GuestCR3 = AllocatedPage->FromCR3;
+			//GuestCR3 = CurrentCR3;
 			__asm{ 
 				mov ebx, AllocatedPage
 				mov ecx, RemainUnswappedPages ;Store the params 
@@ -1083,7 +1102,7 @@ VOID NTAPI MmHidingStrategyHideGuestPages (
  */ 
 VOID NTAPI MmHidingStrategyHideAllAllocatedGuestPagesCallback (
 	PALLOCATED_PAGE AllocatedPage,
-	...
+	va_list argp
 )
 {
 	if( RegGetCr3()== (ULONG)g_PageMapBasePhysicalAddress.QuadPart)//We only hide the memory allocated under guest OS

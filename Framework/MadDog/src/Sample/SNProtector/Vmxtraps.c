@@ -11,7 +11,9 @@ HANDLE hProtectedApp,AppPID;
 BOOLEAN CanKillApp;
 
 ULONG HostCR3,GuestCR3;
+PALLOCATED_PAGE HypervisorDrvObjPage;
 
+extern PDRIVER_OBJECT g_HypervisorDrvObj;
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
@@ -59,6 +61,47 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
   BOOLEAN WillBeAlsoHandledByGuestHv,
   ...
 );
+
+extern NTSTATUS NTAPI MmAPMSavePage (
+  PHYSICAL_ADDRESS PhysicalAddress, //Machine Physical Address
+  PVOID HostAddress, //Guest Physical Address
+  PVOID GuestAddress, //Guest Virtual Address
+  PAGE_ALLOCATION_TYPE AllocationType, 
+  ULONG uNumberOfPages,
+  ULONG Flags,
+  PALLOCATED_PAGE *pAllocatedPage
+);
+
+VOID NTAPI MmAPMSaveMultiPage (
+  PVOID GuestAddress, //Guest Virtual Address
+  ULONG uNumberOfPages,
+  PALLOCATED_PAGE *pAllocatedPage
+)
+{
+	ULONG i;
+	PALLOCATED_PAGE Alloced = NULL;
+	PHYSICAL_ADDRESS PagePA;
+
+	for (i = 0; i < uNumberOfPages; i++) 
+	{
+		// save pages
+		PagePA = MmGetPhysicalAddress (GuestAddress);
+		MmAPMSavePage (
+			PagePA, 
+			GuestAddress, 
+			GuestAddress, 
+			i == 0 ? PAT_POOL : PAT_DONT_FREE, 
+			uNumberOfPages, 
+			0,
+			&Alloced);
+
+		if(i==0 && pAllocatedPage)
+			*pAllocatedPage = Alloced;
+		
+		GuestAddress = (PUCHAR) GuestAddress + PAGE_SIZE;
+	}
+
+}
 
 /**
  * effects: Register traps in this function
@@ -301,6 +344,52 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 
 		return TRUE;
 	}
+	else if(fn == SNPROTECTOR_HIDEDRV)
+	{
+		HostCR3 = RegGetCr3();
+		GuestCR3 = VmxRead(GUEST_CR3);
+		__asm
+		{
+			mov eax,GuestCR3
+			mov cr3,eax
+		}
+
+		MmAPMSaveMultiPage(g_HypervisorDrvObj->DriverStart,
+			BYTES_TO_PAGES(g_HypervisorDrvObj->DriverSize),
+			&HypervisorDrvObjPage);
+		
+		MmHidingStrategyHideGuestPages(g_HypervisorDrvObj->DriverStart,
+			BYTES_TO_PAGES(g_HypervisorDrvObj->DriverSize));
+
+		__asm
+		{
+			mov eax,HostCR3
+			mov cr3,eax
+		}
+		return TRUE;
+	}
+	else if(fn == SNPROTECTOR_UNHIDEDRV)
+	{
+		HostCR3 = RegGetCr3();
+		GuestCR3 = VmxRead(GUEST_CR3);
+		__asm
+		{
+			mov eax,GuestCR3
+			mov cr3,eax
+		}
+		
+		MmHidingStrategyRevealHiddenPages(g_HypervisorDrvObj->DriverStart,
+			BYTES_TO_PAGES(g_HypervisorDrvObj->DriverSize));
+
+		__asm
+		{
+			mov eax,HostCR3
+			mov cr3,eax
+		}
+		return TRUE;
+	}
+
+
 
 	ecx = (ULONG) GuestRegs->ecx;
 	MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
@@ -310,7 +399,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	GuestRegs->edx = edx;
 
 	//VmxDumpVmcs()();
-	Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
+	Print(("SNProtector:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
 	return TRUE;
 }
 
@@ -713,22 +802,22 @@ BOOLEAN NTAPI PtVmxDispatchCR3Access (
 		{
 			LeftTimeToKill = KILLAPP_TIMER;	
 
-			HostCR3 = RegGetCr3();
-			GuestCR3 = VmxRead(GUEST_CR3);
-			__asm
-			{
-				mov eax,GuestCR3
-				mov cr3,eax
-			}
-				Status = ZwTerminateProcess(hProtectedApp,STATUS_SUCCESS);	
-				//Status = ZwClose( hProtectedApp );
-			__asm
-			{
-				mov eax,HostCR3
-				mov cr3,eax
-			}
+			//HostCR3 = RegGetCr3();
+			//GuestCR3 = VmxRead(GUEST_CR3);
+			//__asm
+			//{
+			//	mov eax,GuestCR3
+			//	mov cr3,eax
+			//}
+			//	Status = ZwTerminateProcess(hProtectedApp,STATUS_SUCCESS);	
+			//	//Status = ZwClose( hProtectedApp );
+			//__asm
+			//{
+			//	mov eax,HostCR3
+			//	mov cr3,eax
+			//}
 
-			HvmPrint(("PtVmxDispatchCR3Access:Run Protecting Logic here.\n", Status));
+			HvmPrint(("PtVmxDispatchCR3Access:Do sth. to protect the app.\n"));
 			CanKillApp = FALSE;
 		}	
 	}
