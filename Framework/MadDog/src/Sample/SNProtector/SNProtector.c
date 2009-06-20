@@ -49,7 +49,7 @@ NTSTATUS DriverEntry (
    // ULONG ulOldCR3;
 
     DbgInitComponent();
-    __asm { int 3 }
+    //__asm { int 3 }
 
     // test for our pagetabel
     //__asm 
