@@ -1,0 +1,128 @@
+valid,0
+Benchmark,"Base Ref Time","Est. Base Run Time","Est. Base Ratio","Base Selected","Base Status","Peak Ref Time","Est. Peak Run Time","Est. Peak Ratio","Peak Selected","Peak Status"
+410.bwaves,13590,713.828,19.0381996783539,0,S,13590,714.469,19.0211191808182,1,S
+410.bwaves,13590,714.406,19.0227965610591,1,S,13590,714.437,19.0219711465112,0,S
+410.bwaves,13590,714.531,19.0194687144435,0,S,13590,714.516,19.0198679945586,0,S
+416.gamess,19580,1929.578,10.1472964554944,0,S,19580,1909.906,10.2518134400332,1,S
+416.gamess,19580,1930.172,10.1441736798586,0,S,19580,1909.906,10.2518134400332,0,S
+416.gamess,19580,1929.61,10.1471281761599,1,S,19580,1909.719,10.252817299299,0,S
+433.milc,9180,1017.797,9.01948030894176,0,S,9180,1007.265,9.11378832779854,0,S
+433.milc,9180,1017.828,9.0192056025183,1,S,9180,1007.407,9.1125036852037,0,S
+433.milc,9180,1017.922,9.01837272403976,0,S,9180,1007.359,9.112937890067,1,S
+434.zeusmp,9100,787.422,11.5567002191963,0,S,9100,733.14,12.4123632594048,0,S
+434.zeusmp,9100,787.516,11.5553207807841,1,S,9100,733.062,12.4136839721606,0,S
+434.zeusmp,9100,787.578,11.5544111186448,0,S,9100,733.094,12.4131421072877,1,S
+435.gromacs,7140,660.5,10.8099924299773,0,S,7140,646,11.0526315789474,0,S
+435.gromacs,7140,660.531,10.8094850960818,1,S,7140,645.922,11.053966268373,0,S
+435.gromacs,7140,660.547,10.8092232649607,0,S,7140,645.922,11.053966268373,1,S
+436.cactusADM,11950,894.532,13.3589407645562,0,S,11950,894.532,13.3589407645562,0,S
+436.cactusADM,11950,894.312,13.3622270527512,0,S,11950,894.312,13.3622270527512,0,S
+436.cactusADM,11950,894.516,13.3591797128279,1,S,11950,894.516,13.3591797128279,1,S
+437.leslie3d,9400,824.719,11.3978215610408,0,S,9400,825.907,11.3814267223792,0,S
+437.leslie3d,9400,823.797,11.4105780914473,0,S,9400,825.672,11.3846660659439,1,S
+437.leslie3d,9400,824.438,11.4017063745242,1,S,9400,825.531,11.3866105573261,0,S
+444.namd,8020,826.204,9.70704571752255,1,S,8020,823.859,9.73467547238059,0,S
+444.namd,8020,826.219,9.70686948617739,0,S,8020,823.828,9.73504178056585,0,S
+444.namd,8020,826.203,9.70705746650642,0,S,8020,823.829,9.73502996374248,1,S
+447.dealII,11440,847.906,13.4920616200381,1,S,11440,757.734,15.0976464036192,0,S
+447.dealII,11440,847.797,13.493796274344,0,S,11440,757.641,15.0994996310918,0,S
+447.dealII,11440,847.922,13.4918070294202,0,S,11440,757.641,15.0994996310918,1,S
+450.soplex,8340,703.703,11.8515907989592,1,S,8340,706.359,11.8070273048124,0,S
+450.soplex,8340,703.547,11.8542186946999,0,S,8340,706.156,11.8104214932678,1,S
+450.soplex,8340,703.703,11.8515907989592,0,S,8340,705.953,11.8138176337518,0,S
+453.povray,5320,395.297,13.4582352003683,0,S,5320,307.938,17.2762049503472,0,S
+453.povray,5320,395.125,13.4640936412528,0,S,5320,307.891,17.2788421876573,0,S
+453.povray,5320,395.125,13.4640936412528,1,S,5320,307.906,17.2780004287023,1,S
+454.calculix,8250,951.36,8.6717961654894,0,S,8250,951.563,8.66994618327951,0,S
+454.calculix,8250,951.39,8.67152271938953,1,S,8250,951.39,8.67152271938953,1,S
+454.calculix,8250,951.406,8.67137688852078,0,S,8250,951.375,8.6716594402838,0,S
+459.GemsFDTD,10610,1078.985,9.83331556972525,0,S,10610,1078.985,9.83331556972525,0,S
+459.GemsFDTD,10610,1083.063,9.7962907051575,1,S,10610,1083.063,9.7962907051575,1,S
+459.GemsFDTD,10610,1083.313,9.79402998025501,0,S,10610,1083.313,9.79402998025501,0,S
+465.tonto,9840,925.125,10.6364004864208,0,S,9840,903.782,10.8875812972597,0,S
+465.tonto,9840,924.89,10.6391030284683,0,S,9840,903.656,10.889099391804,1,S
+465.tonto,9840,924.984,10.6380218468644,1,S,9840,903.61,10.8896537222917,0,S
+470.lbm,13740,1102.937,12.4576471729573,0,S,13740,1045.531,13.1416476412464,0,S
+470.lbm,13740,1103.5,12.4512913457182,0,S,13740,1045.641,13.1402651579271,1,S
+470.lbm,13740,1103.219,12.4544628038495,1,S,13740,1045.735,13.1390839935548,0,S
+481.wrf,11170,804.781,13.8795523254152,0,S,11170,805.75,13.8628606887993,0,S
+481.wrf,11170,804.547,13.8835891501677,0,S,11170,805.422,13.8685061992347,0,S
+481.wrf,11170,804.562,13.8833303089134,1,S,11170,805.531,13.8666295896744,1,S
+482.sphinx3,19490,1143.844,17.0390367917303,1,S,19490,1142.468,17.0595587797645,0,S
+482.sphinx3,19490,1142.625,17.0572147467454,0,S,19490,1142.25,17.062814620267,1,S
+482.sphinx3,19490,1143.86,17.0387984543563,0,S,19490,1142.235,17.0630386916878,0,S
+
+"Run number:",002
+
+SPECfp_base2006,11.8697765267193
+SPECfp2006,12.261146783258
+"Hardware Vendor:","Intel Corporation"
+"Hardware Model:","System Model Name"
+"Date tested:",Dec-9999
+"CPU2006 License:",13
+"Test sponsor:","Intel Corporation"
+"Tested by:","Intel Corporation"
+"Hardware avail:",Dec-9999
+"Software avail:",Dec-9999
+
+
+HARDWARE
+
+"CPU Name","Intel Core 2 Duo ______"
+"CPU Characteristics",____
+"CPU MHz",____
+FPU,Integrated
+"CPU(s) enabled","____ cores, ____ chips, ____ cores/chip"
+"CPU(s) orderable","____ chip"
+"Primary Cache","32 KB I + 32 KB D on chip per core"
+"Secondary Cache","4 MB I+D on chip per chip (shared)"
+"L3 Cache",None
+"Other Cache",None
+Memory,"____ GB"
+"Disk Subsystem","____ GB SATA, ____RPM"
+"Other Hardware",None
+
+SOFTWARE
+
+"Operating System","Windows Vista64 Ultimate"
+Compiler,"Intel C++ Compiler for IA32 version 10.0"
+,"Build 20070426 Package ID: W_CC_P_10.0.025"
+,"Intel Fortran Compiler for IA32 version 10.0"
+,"Build 20070426 Package ID: W_FC_P_10.0.025"
+,"Microsoft Visual Studio .Net 2003 (for libraries)"
+"Auto Parallel",No
+"File System",NTFS
+"System State",Default
+"Base Pointers",32-bit
+"Peak Pointers",32-bit
+"Other Software",None
+,"SmartHeap Library Version 8.0 from"
+,http://www.microquill.com/
+
+"General Notes"
+
+" Tested systems can be used with Shin-G ATX case, Antec NeoPower 480W power supply"
+" Product description located as of 5/2007:"
+" http://www.intel.com/products/motherboard/______/index.htm"
+" The system bus runs at _____ MHz"
+" System was configured with _______ discrete graphics card "
+" Binaries were built on Windows XP Professional SP2"
+
+ERRORS
+
+##############################################################################
+"#   INVALID RUN INVALID RUN INVALID RUN INVALID RUN INVALID RUN INVALID RUN  #"
+"#                                                                            #"
+"# Your run was marked invalid because it has one or more flags in the        #"
+"# ""unknown"" category. You might be able to resolve this problem without      #"
+"# re-running your test; see                                                  #"
+"#      http://www.spec.org/auto/cpu2006/Docs/runspec.html#flagsurl           #"
+"# for more information.                                                      #"
+"#                                                                            #"
+"#   INVALID RUN INVALID RUN INVALID RUN INVALID RUN INVALID RUN INVALID RUN  #"
+##############################################################################
+-----------------------------------------------------------------------------
+"For questions about this result, please contact the tester."
+"For other inquiries, please contact webmaster@spec.org."
+"Copyright 2006 Standard Performance Evaluation Corporation"
+"Generated on Sun Jun 21 07:45:15 2009 by SPEC CPU2006 CSV formatter v4607"
