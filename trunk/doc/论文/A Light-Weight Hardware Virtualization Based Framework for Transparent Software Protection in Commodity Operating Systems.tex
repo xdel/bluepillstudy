@@ -5,7 +5,7 @@
 \usepackage{cite}
 \usepackage{booktabs}
 \usepackage{listings}
-\lstset{language=C++,linewidth=0.5\textwidth,
+\lstset{language=C++,linewidth=0.4\textwidth,
 basicstyle=\ttfamily\small, commentstyle=\small\it}
 
 
@@ -519,54 +519,53 @@ find out which instruction exactly causes the timer trap into the
 SNProtector hypervisor and intercept it on a multi-task operating
 system like Windows.
 
-
-\begin{figure}[!htb]
-\centering
+\begin{figure}
 \begin{lstlisting}
-    main:
-    // if reqire Unload Hypervisor
-    // Reveal Hypervisor then exit
-    if( reqRevealHypervisor ) {
-        RevealHypervisor();
-        exit;
-    }
+main:
+  // if reqire Unload Hypervisor
+  // Reveal Hypervisor then exit
+  if( reqRevealHypervisor ) {
+      RevealHypervisor();
+      exit;
+  }
 
-    // Copy Registration Information
-    // into memory/register
-    memcpy(passin.UserName,argv[1],4);
-    memcpy(passin.SerialNumber,argv[2],4);
+  // Copy Registration Information
+  // into memory/register
+  memcpy(passin.UserName,argv[1],4);
+  memcpy(passin.SerialNumber,argv[2],4);
 
-    // Hide Hypervisor and send Hypercall
-    // pass the registration
-    // information into hypervisor
-    __try {
-        HideHypervisor();
-        bRegState = VerifySN(
-            (ULONG)(*((PULONG)passin.UserName)),
-            (ULONG)(*((PULONG)passin.SerialNumber))
-        );
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-        printf ("Exception!");
-        return 0;
-    }
+  // Hide Hypervisor and send Hypercall
+  // pass the registration
+  // information into hypervisor
+  __try {
+     HideHypervisor();
+     bRegState = VerifySN(
+       (ULONG)(*((PULONG)passin.UserName)),
+       (ULONG)(*((PULONG)passin.SerialNumber))
+     );
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+      printf ("Exception!");
+      return 0;
+  }
 
-    // I am Cracker!!!
-    // bRegState = TRUE;
+  // I am Cracker!!!
+  // bRegState = TRUE;
 
-    // Output proper information in the client side.
-    if( bRegState ) {
-        RegSuccessful();
-    } else {
-        RegFailure();
-    }
+  // Output proper information
+  // in the client side.
+  if( bRegState ) {
+      RegSuccessful();
+  } else {
+      RegFailure();
+  }
 
-    // To simulate a real commercial software
-    while( bRegState ) {
-        printf("Work Work!\n");
-        Sleep(2000);
-    }
+  // To simulate a real commercial software
+  while( bRegState ) {
+      printf("WorkWork!\n");
+      Sleep(2000);
+  }
 
-    return 0;
+  return 0;
 \end{lstlisting}
 \caption{{\bf The Protected Software Implementation}}
 \label{Figure 10.}
@@ -753,8 +752,8 @@ proven that our approach introduces little overhead to the existed
 environment. Still, a series of interesting research opportunities
 and topics remain for the future study, such as pre-OS Hypervisor
 Loading and enabling Self-Verification based on Intel TxT
-technology. We believe HBSP is a practical approach to protect
-software in commodity operating systems.
+technology. We believe that HBSP is a practical approach to
+protect software in commodity operating systems.
 \bigskip
 
 \begin{thebibliography}{99}
