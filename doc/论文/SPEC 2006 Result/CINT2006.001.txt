@@ -1,0 +1,309 @@
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# Your run was marked invalid because it has one or more flags in the        #
+# "unknown" category. You might be able to resolve this problem without      #
+# re-running your test; see                                                  #
+#      http://www.spec.org/auto/cpu2006/Docs/runspec.html#flagsurl           #
+# for more information.                                                      #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+                           SPEC(R) CINT2006 Summary
+                     Intel Corporation System Model Name
+                           Fri Jun 19 12:42:53 2009
+
+CPU2006 License #13    Test date: Dec-9999     Hardware availability: Dec-9999
+Test sponsor: Intel Corporation                Software availability: Dec-9999
+
+                                  Estimated                       Estimated
+                Base     Base       Base        Peak     Peak       Peak
+Benchmarks      Ref.   Run Time     Ratio       Ref.   Run Time     Ratio
+-------------- ------  ---------  ---------    ------  ---------  ---------
+400.perlbench    9770        719      13.6  S    9770        630      15.5  S  
+400.perlbench    9770        719      13.6  *    9770        630      15.5  S  
+400.perlbench    9770        718      13.6  S    9770        630      15.5  *  
+401.bzip2        9650        949      10.2  S    9650        911      10.6  S  
+401.bzip2        9650        953      10.1  *    9650        911      10.6  *  
+401.bzip2        9650        956      10.1  S    9650        913      10.6  S  
+403.gcc          8050        795      10.1  S    8050        634      12.7  S  
+403.gcc          8050        795      10.1  *    8050        635      12.7  *  
+403.gcc          8050        797      10.1  S    8050        635      12.7  S  
+429.mcf          9120        467      19.5  S    9120        467      19.5  S  
+429.mcf          9120        466      19.6  S    9120        466      19.6  S  
+429.mcf          9120        467      19.5  *    9120        467      19.5  *  
+445.gobmk       10490        832      12.6  S   10490        753      13.9  S  
+445.gobmk       10490        832      12.6  S   10490        753      13.9  *  
+445.gobmk       10490        832      12.6  *   10490        753      13.9  S  
+456.hmmer        9330        948       9.84 *    9330        938       9.94 S  
+456.hmmer        9330        948       9.84 S    9330        938       9.95 S  
+456.hmmer        9330        948       9.84 S    9330        938       9.95 *  
+458.sjeng       12100       1070      11.3  S   12100        952      12.7  S  
+458.sjeng       12100       1070      11.3  *   12100        952      12.7  S  
+458.sjeng       12100       1070      11.3  S   12100        952      12.7  *  
+462.libquantum  20720        977      21.2  *   20720        869      23.8  *  
+462.libquantum  20720        977      21.2  S   20720        870      23.8  S  
+462.libquantum  20720        977      21.2  S   20720        869      23.8  S  
+464.h264ref     22130       1150      19.3  S   22130       1080      20.5  S  
+464.h264ref     22130       1150      19.3  S   22130       1080      20.5  S  
+464.h264ref     22130       1150      19.3  *   22130       1080      20.5  *  
+471.omnetpp      6250        535      11.7  *    6250        480      13.0  S  
+471.omnetpp      6250        535      11.7  S    6250        480      13.0  *  
+471.omnetpp      6250        535      11.7  S    6250        481      13.0  S  
+473.astar        7020        724       9.70 S    7020        666      10.5  S  
+473.astar        7020        724       9.70 *    7020        665      10.5  S  
+473.astar        7020        724       9.70 S    7020        666      10.5  *  
+483.xalancbmk    6900        442      15.6  S    6900        439      15.7  *  
+483.xalancbmk    6900        442      15.6  *    6900        439      15.7  S  
+483.xalancbmk    6900        442      15.6  S    6900        439      15.7  S  
+==============================================================================
+400.perlbench    9770        719      13.6  *    9770        630      15.5  *  
+401.bzip2        9650        953      10.1  *    9650        911      10.6  *  
+403.gcc          8050        795      10.1  *    8050        635      12.7  *  
+429.mcf          9120        467      19.5  *    9120        467      19.5  *  
+445.gobmk       10490        832      12.6  *   10490        753      13.9  *  
+456.hmmer        9330        948       9.84 *    9330        938       9.95 *  
+458.sjeng       12100       1070      11.3  *   12100        952      12.7  *  
+462.libquantum  20720        977      21.2  *   20720        869      23.8  *  
+464.h264ref     22130       1150      19.3  *   22130       1080      20.5  *  
+471.omnetpp      6250        535      11.7  *    6250        480      13.0  *  
+473.astar        7020        724       9.70 *    7020        666      10.5  *  
+483.xalancbmk    6900        442      15.6  *    6900        439      15.7  *  
+ Est. SPECint(R)_base2006             13.2 
+ Est. SPECint2006                                                     14.3 
+
+
+                                   HARDWARE
+                                   --------
+            CPU Name: Intel Core 2 Duo ______
+ CPU Characteristics: ____
+             CPU MHz: ____
+                 FPU: Integrated
+      CPU(s) enabled: ____ cores, ____ chips, ____ cores/chip
+    CPU(s) orderable: ____ chip
+       Primary Cache: 32 KB I + 32 KB D on chip per core
+     Secondary Cache: 4 MB I+D on chip per chip (shared)
+            L3 Cache: None
+         Other Cache: None
+              Memory: ____ GB
+      Disk Subsystem: ____ GB SATA, ____RPM
+      Other Hardware: None
+
+
+                                   SOFTWARE
+                                   --------
+    Operating System: Windows Vista64 Ultimate
+            Compiler: Intel C++ Compiler for IA32 version 10.0
+                      Build 20070426 Package ID: W_CC_P_10.0.025
+                      Microsoft Visual Studio .Net 2003 (for libraries)
+       Auto Parallel: No
+         File System: NTFS
+        System State: Default
+       Base Pointers: 32-bit
+       Peak Pointers: 32-bit
+      Other Software: None
+                      SmartHeap Library Version 8.0 from
+                      http://www.microquill.com/
+
+
+                                General Notes
+                                -------------
+     Tested systems can be used with Shin-G ATX case, Antec NeoPower 480W power supply
+     Product description located as of 5/2007:
+     http://www.intel.com/products/motherboard/______/index.htm
+     The system bus runs at _____ MHz
+     System was configured with _______ discrete graphics card 
+     Binaries were built on Windows XP Professional SP2
+
+                              Base Unknown Flags
+                              ------------------
+  400.perlbench: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+      401.bzip2: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+        403.gcc: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+        429.mcf: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+      445.gobmk: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+      456.hmmer: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+      458.sjeng: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+ 462.libquantum: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+    464.h264ref: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+    471.omnetpp: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "-Qcxx_features" (in CXXOPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+      473.astar: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "-Qcxx_features" (in CXXOPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+  483.xalancbmk: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                 "-Qcxx_features" (in CXXOPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+
+
+                              Peak Unknown Flags
+                              ------------------
+  400.perlbench: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CFLAGS)
+                 "-fast -Qansi-alias -Qprefetch" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS) "-Qprof_use" (in PASS2_CFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+      401.bzip2: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CFLAGS) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS) "-Qprof_use" (in PASS2_CFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+        403.gcc: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CFLAGS) "-fast" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "-Qprof_use" (in PASS2_CFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+      445.gobmk: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CFLAGS)
+                 "-QxT -O2 -Qipo -Qprec_div- -Qansi-alias" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "-Qprof_use" (in PASS2_CFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+      456.hmmer: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CFLAGS)
+                 "-fast -Qunroll2 -Qansi-alias" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS) "-Qprof_use" (in PASS2_CFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+      458.sjeng: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CFLAGS)
+                 "-fast -Qunroll4" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS) "-Qprof_use" (in PASS2_CFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+ 462.libquantum: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CFLAGS)
+                 "-fast -Qunroll4 -Ob0 -Qprefetch -Qopt-streaming-stores:always" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS) "-Qprof_use" (in PASS2_CFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+    464.h264ref: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CFLAGS)
+                 "-fast -Qunroll2 -Qansi-alias" (in OPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS) "-Qprof_use" (in PASS2_CFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+    471.omnetpp: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CXXFLAGS)
+                 "-fast -Qansi-alias" (in OPTIMIZE)
+                 "-Qcxx_features" (in CXXOPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+                 "-Qprof_use" (in PASS2_CXXFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+      473.astar: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CXXFLAGS)
+                 "-fast -Qansi-alias" (in OPTIMIZE)
+                 "-Qcxx_features" (in CXXOPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+                 "-Qprof_use" (in PASS2_CXXFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+  483.xalancbmk: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                 "-link /FORCE:MULTIPLE" (in LDOUT)
+                 "-Qprof_gen" (in PASS1_CXXFLAGS)
+                 "-fast -Qansi-alias" (in OPTIMIZE)
+                 "-Qcxx_features" (in CXXOPTIMIZE)
+                 "/F512000000" (in EXTRA_LDFLAGS)
+                 "-Qprof_gen" (in PASS1_LDFLAGS)
+                 "shlw32m.lib" (in EXTRA_LIBS)
+                 "-Qprof_use" (in PASS2_CXXFLAGS)
+                 "-Qprof_use" (in PASS2_LDFLAGS)
+
+
+    SPEC and SPECint are registered trademarks of the Standard Performance
+    Evaluation Corporation.  All other brand and product names appearing
+    in this result are trademarks or registered trademarks of their
+    respective holders.
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# Your run was marked invalid because it has one or more flags in the        #
+# "unknown" category. You might be able to resolve this problem without      #
+# re-running your test; see                                                  #
+#      http://www.spec.org/auto/cpu2006/Docs/runspec.html#flagsurl           #
+# for more information.                                                      #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+-----------------------------------------------------------------------------
+For questions about this result, please contact the tester.
+For other inquiries, please contact webmaster@spec.org.
+Copyright 2006 Standard Performance Evaluation Corporation
+Generated on Sat Jun 20 04:50:09 2009 by SPEC CPU2006 ASCII formatter v4626

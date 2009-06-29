@@ -1,0 +1,349 @@
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# Your run was marked invalid because it has one or more flags in the        #
+# "unknown" category. You might be able to resolve this problem without      #
+# re-running your test; see                                                  #
+#      http://www.spec.org/auto/cpu2006/Docs/runspec.html#flagsurl           #
+# for more information.                                                      #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+                           SPEC(R) CFP2006 Summary
+                     Intel Corporation System Model Name
+                           Tue Jun 23 08:26:48 2009
+
+CPU2006 License #13    Test date: Dec-9999     Hardware availability: Dec-9999
+Test sponsor: Intel Corporation                Software availability: Dec-9999
+
+                                  Estimated                       Estimated
+                Base     Base       Base        Peak     Peak       Peak
+Benchmarks      Ref.   Run Time     Ratio       Ref.   Run Time     Ratio
+-------------- ------  ---------  ---------    ------  ---------  ---------
+410.bwaves      13590        714      19.0  S   13590        715      19.0  S  
+410.bwaves      13590        715      19.0  *   13590        715      19.0  *  
+410.bwaves      13590        715      19.0  S   13590        715      19.0  S  
+416.gamess      19580       1930      10.1  *   19580       1910      10.2  S  
+416.gamess      19580       1930      10.1  S   19580       1910      10.2  S  
+416.gamess      19580       1930      10.1  S   19580       1910      10.2  *  
+433.milc         9180       1020       9.01 S    9180       1010       9.10 S  
+433.milc         9180       1020       9.00 *    9180       1010       9.10 *  
+433.milc         9180       1020       9.00 S    9180       1010       9.09 S  
+434.zeusmp       9100        789      11.5  S    9100        734      12.4  S  
+434.zeusmp       9100        789      11.5  *    9100        734      12.4  *  
+434.zeusmp       9100        788      11.5  S    9100        734      12.4  S  
+435.gromacs      7140        661      10.8  S    7140        647      11.0  S  
+435.gromacs      7140        661      10.8  S    7140        647      11.0  S  
+435.gromacs      7140        661      10.8  *    7140        647      11.0  *  
+436.cactusADM   11950        896      13.3  *   11950        896      13.3  *  
+436.cactusADM   11950        896      13.3  S   11950        896      13.3  S  
+436.cactusADM   11950        896      13.3  S   11950        896      13.3  S  
+437.leslie3d     9400        826      11.4  S    9400        827      11.4  S  
+437.leslie3d     9400        826      11.4  S    9400        827      11.4  *  
+437.leslie3d     9400        826      11.4  *    9400        827      11.4  S  
+444.namd         8020        827       9.70 *    8020        824       9.73 S  
+444.namd         8020        827       9.70 S    8020        824       9.73 *  
+444.namd         8020        827       9.70 S    8020        824       9.73 S  
+447.dealII      11440        849      13.5  S   11440        758      15.1  S  
+447.dealII      11440        848      13.5  S   11440        758      15.1  *  
+447.dealII      11440        848      13.5  *   11440        758      15.1  S  
+450.soplex       8340        705      11.8  S    8340        707      11.8  S  
+450.soplex       8340        705      11.8  *    8340        707      11.8  *  
+450.soplex       8340        705      11.8  S    8340        707      11.8  S  
+453.povray       5320        396      13.4  S    5320        308      17.3  S  
+453.povray       5320        395      13.5  *    5320        308      17.3  S  
+453.povray       5320        395      13.5  S    5320        308      17.3  *  
+454.calculix     8250        952       8.66 *    8250        953       8.66 S  
+454.calculix     8250        952       8.66 S    8250        953       8.66 *  
+454.calculix     8250        952       8.66 S    8250        952       8.66 S  
+459.GemsFDTD    10610       1080       9.82 S   10610       1080       9.82 S  
+459.GemsFDTD    10610       1080       9.79 *   10610       1080       9.79 *  
+459.GemsFDTD    10610       1080       9.79 S   10610       1080       9.79 S  
+465.tonto        9840        926      10.6  S    9840        904      10.9  S  
+465.tonto        9840        926      10.6  *    9840        904      10.9  *  
+465.tonto        9840        926      10.6  S    9840        905      10.9  S  
+470.lbm         13740       1100      12.4  S   13740       1050      13.1  *  
+470.lbm         13740       1100      12.4  *   13740       1050      13.1  S  
+470.lbm         13740       1100      12.4  S   13740       1050      13.1  S  
+481.wrf         11170        806      13.9  S   11170        807      13.8  *  
+481.wrf         11170        805      13.9  S   11170        806      13.9  S  
+481.wrf         11170        806      13.9  *   11170        807      13.8  S  
+482.sphinx3     19490       1150      17.0  *   19490       1140      17.0  S  
+482.sphinx3     19490       1140      17.0  S   19490       1140      17.0  S  
+482.sphinx3     19490       1150      17.0  S   19490       1140      17.0  *  
+==============================================================================
+410.bwaves      13590        715      19.0  *   13590        715      19.0  *  
+416.gamess      19580       1930      10.1  *   19580       1910      10.2  *  
+433.milc         9180       1020       9.00 *    9180       1010       9.10 *  
+434.zeusmp       9100        789      11.5  *    9100        734      12.4  *  
+435.gromacs      7140        661      10.8  *    7140        647      11.0  *  
+436.cactusADM   11950        896      13.3  *   11950        896      13.3  *  
+437.leslie3d     9400        826      11.4  *    9400        827      11.4  *  
+444.namd         8020        827       9.70 *    8020        824       9.73 *  
+447.dealII      11440        848      13.5  *   11440        758      15.1  *  
+450.soplex       8340        705      11.8  *    8340        707      11.8  *  
+453.povray       5320        395      13.5  *    5320        308      17.3  *  
+454.calculix     8250        952       8.66 *    8250        953       8.66 *  
+459.GemsFDTD    10610       1080       9.79 *   10610       1080       9.79 *  
+465.tonto        9840        926      10.6  *    9840        904      10.9  *  
+470.lbm         13740       1100      12.4  *   13740       1050      13.1  *  
+481.wrf         11170        806      13.9  *   11170        807      13.8  *  
+482.sphinx3     19490       1150      17.0  *   19490       1140      17.0  *  
+ Est. SPECfp(R)_base2006              11.9 
+ Est. SPECfp2006                                                      12.2 
+
+
+                                   HARDWARE
+                                   --------
+            CPU Name: Intel Core 2 Duo ______
+ CPU Characteristics: ____
+             CPU MHz: ____
+                 FPU: Integrated
+      CPU(s) enabled: ____ cores, ____ chips, ____ cores/chip
+    CPU(s) orderable: ____ chip
+       Primary Cache: 32 KB I + 32 KB D on chip per core
+     Secondary Cache: 4 MB I+D on chip per chip (shared)
+            L3 Cache: None
+         Other Cache: None
+              Memory: ____ GB
+      Disk Subsystem: ____ GB SATA, ____RPM
+      Other Hardware: None
+
+
+                                   SOFTWARE
+                                   --------
+    Operating System: Windows Vista64 Ultimate
+            Compiler: Intel C++ Compiler for IA32 version 10.0
+                      Build 20070426 Package ID: W_CC_P_10.0.025
+                      Intel Fortran Compiler for IA32 version 10.0
+                      Build 20070426 Package ID: W_FC_P_10.0.025
+                      Microsoft Visual Studio .Net 2003 (for libraries)
+       Auto Parallel: No
+         File System: NTFS
+        System State: Default
+       Base Pointers: 32-bit
+       Peak Pointers: 32-bit
+      Other Software: None
+                      SmartHeap Library Version 8.0 from
+                      http://www.microquill.com/
+
+
+                                General Notes
+                                -------------
+     Tested systems can be used with Shin-G ATX case, Antec NeoPower 480W power supply
+     Product description located as of 5/2007:
+     http://www.intel.com/products/motherboard/______/index.htm
+     The system bus runs at _____ MHz
+     System was configured with _______ discrete graphics card 
+     Binaries were built on Windows XP Professional SP2
+
+                              Base Unknown Flags
+                              ------------------
+    410.bwaves: "ifort" (in FC) "ifort" (in LD) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+    416.gamess: "ifort" (in FC) "ifort" (in LD) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+      433.milc: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "shlw32m.lib" (in EXTRA_LIBS)
+
+    434.zeusmp: "ifort" (in FC) "ifort" (in LD) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+   435.gromacs: "ifort" (in FC) "icl -Qvc7.1 -Qc99" (in CC) "ifort" (in LD)
+                "-fast" (in OPTIMIZE) "/F950000000" (in EXTRA_LDFLAGS)
+
+ 436.cactusADM: "ifort" (in FC) "icl -Qvc7.1 -Qc99" (in CC) "ifort" (in LD)
+                "-Qlowercase /assume:underscore" (in FPORTABILITY)
+                "-fast" (in OPTIMIZE) "/F950000000" (in EXTRA_LDFLAGS)
+
+  437.leslie3d: "ifort" (in FC) "ifort" (in LD) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+      444.namd: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT) "-TP" (in CXXPORTABILITY)
+                "-fast" (in OPTIMIZE) "-Qcxx_features" (in CXXOPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "shlw32m.lib" (in EXTRA_LIBS)
+
+    447.dealII: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                "-Qcxx_features" (in CXXOPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "shlw32m.lib" (in EXTRA_LIBS)
+
+    450.soplex: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                "-Qcxx_features" (in CXXOPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "shlw32m.lib" (in EXTRA_LIBS)
+
+    453.povray: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                "-Qcxx_features" (in CXXOPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "shlw32m.lib" (in EXTRA_LIBS)
+
+  454.calculix: "ifort" (in FC) "icl -Qvc7.1 -Qc99" (in CC) "ifort" (in LD)
+                "-Qlowercase" (in PORTABILITY) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+  459.GemsFDTD: "ifort" (in FC) "ifort" (in LD) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+     465.tonto: "ifort" (in FC) "ifort" (in LD) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+       470.lbm: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "shlw32m.lib" (in EXTRA_LIBS)
+
+       481.wrf: "ifort" (in FC) "icl -Qvc7.1 -Qc99" (in CC) "ifort" (in LD)
+                "-fast" (in OPTIMIZE) "/F950000000" (in EXTRA_LDFLAGS)
+
+   482.sphinx3: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "shlw32m.lib" (in EXTRA_LIBS)
+
+
+                              Peak Unknown Flags
+                              ------------------
+    410.bwaves: "ifort" (in FC) "ifort" (in LD) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+    416.gamess: "ifort" (in FC) "ifort" (in LD)
+                "-Qprof_gen" (in PASS1_FFLAGS)
+                "-fast -Qunroll2 -Ob0 -Qansi-alias -Qscalar-rep-" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS)
+                "-Qprof_use" (in PASS2_FFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+      433.milc: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT)
+                "-Qprof_gen" (in PASS1_CFLAGS)
+                "-fast -Qunroll2 -Oa" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS) "shlw32m.lib" (in EXTRA_LIBS)
+                "-Qprof_use" (in PASS2_CFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+    434.zeusmp: "ifort" (in FC) "ifort" (in LD)
+                "-Qprof_gen" (in PASS1_FFLAGS)
+                "-QxT -O2 -Qprec_div- -Qunroll0 -Qscalar-rep-" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS)
+                "-Qprof_use" (in PASS2_FFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+   435.gromacs: "ifort" (in FC) "icl -Qvc7.1 -Qc99" (in CC) "ifort" (in LD)
+                "-Qprof_gen" (in PASS1_FFLAGS) "-fast -Oa" (in OPTIMIZE)
+                "-Qprof_gen" (in PASS1_CFLAGS)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS)
+                "-Qprof_use" (in PASS2_FFLAGS) "-Qprof_use" (in PASS2_CFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+  437.leslie3d: "ifort" (in FC) "ifort" (in LD)
+                "-Qprof_gen" (in PASS1_FFLAGS) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS)
+                "-Qprof_use" (in PASS2_FFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+      444.namd: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT) "-TP" (in CXXPORTABILITY)
+                "-Qprof_gen" (in PASS1_CXXFLAGS) "-fast -Oa" (in OPTIMIZE)
+                "-Qcxx_features" (in CXXOPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS) "shlw32m.lib" (in EXTRA_LIBS)
+                "-Qprof_use" (in PASS2_CXXFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+    447.dealII: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT)
+                "-Qprof_gen" (in PASS1_CXXFLAGS)
+                "-fast -Qprefetch" (in OPTIMIZE)
+                "-Qcxx_features" (in CXXOPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS) "shlw32m.lib" (in EXTRA_LIBS)
+                "-Qprof_use" (in PASS2_CXXFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+    450.soplex: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT)
+                "-Qprof_gen" (in PASS1_CXXFLAGS) "-fast" (in OPTIMIZE)
+                "-Qcxx_features" (in CXXOPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS) "shlw32m.lib" (in EXTRA_LIBS)
+                "-Qprof_use" (in PASS2_CXXFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+    453.povray: "icl -Qvc7.1" (in CXX) "icl -Qvc7.1" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT)
+                "-Qprof_gen" (in PASS1_CXXFLAGS)
+                "-fast -Qansi-alias" (in OPTIMIZE)
+                "-Qcxx_features" (in CXXOPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS) "shlw32m.lib" (in EXTRA_LIBS)
+                "-Qprof_use" (in PASS2_CXXFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+  454.calculix: "ifort" (in FC) "icl -Qvc7.1 -Qc99" (in CC) "ifort" (in LD)
+                "-Qlowercase" (in PORTABILITY) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+
+     465.tonto: "ifort" (in FC) "ifort" (in LD)
+                "-Qprof_gen" (in PASS1_FFLAGS) "-fast" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS)
+                "-Qprof_use" (in PASS2_FFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+       470.lbm: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT)
+                "-Qprof_gen" (in PASS1_CFLAGS)
+                "-fast -Qunroll2 -Qscalar-rep- -Qprefetch" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS) "shlw32m.lib" (in EXTRA_LIBS)
+                "-Qprof_use" (in PASS2_CFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+       481.wrf: "ifort" (in FC) "icl -Qvc7.1 -Qc99" (in CC) "ifort" (in LD)
+                "-fast" (in OPTIMIZE) "/F950000000" (in EXTRA_LDFLAGS)
+
+   482.sphinx3: "icl -Qvc7.1 -Qc99" (in CC) "icl -Qvc7.1 -Qc99" (in LD)
+                "-link /FORCE:MULTIPLE" (in LDOUT)
+                "-Qprof_gen" (in PASS1_CFLAGS)
+                "-fast -Qunroll2" (in OPTIMIZE)
+                "/F950000000" (in EXTRA_LDFLAGS)
+                "-Qprof_gen" (in PASS1_LDFLAGS) "shlw32m.lib" (in EXTRA_LIBS)
+                "-Qprof_use" (in PASS2_CFLAGS)
+                "-Qprof_use" (in PASS2_LDFLAGS)
+
+
+    SPEC and SPECfp are registered trademarks of the Standard Performance
+    Evaluation Corporation.  All other brand and product names appearing
+    in this result are trademarks or registered trademarks of their
+    respective holders.
+##############################################################################
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+#                                                                            #
+# Your run was marked invalid because it has one or more flags in the        #
+# "unknown" category. You might be able to resolve this problem without      #
+# re-running your test; see                                                  #
+#      http://www.spec.org/auto/cpu2006/Docs/runspec.html#flagsurl           #
+# for more information.                                                      #
+#                                                                            #
+#   INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN -- INVALID RUN  #
+##############################################################################
+-----------------------------------------------------------------------------
+For questions about this result, please contact the tester.
+For other inquiries, please contact webmaster@spec.org.
+Copyright 2006 Standard Performance Evaluation Corporation
+Generated on Wed Jun 24 11:23:24 2009 by SPEC CPU2006 ASCII formatter v4626

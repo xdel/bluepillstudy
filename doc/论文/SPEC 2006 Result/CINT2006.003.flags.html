@@ -1,0 +1,1185 @@
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta name="generator" content="SPEC CPU2006 Tools 4662 (flags v4553)" />
+<style type="text/css" id="internalScreen" media="screen">
+<!--
+body {
+  margin:  1em;
+  border:  0;
+  padding: 0;
+  background: white;
+  color:      black;
+  font-family: "Times Roman", times, serif;
+}
+
+.tt {
+  font-family: monospace;
+}
+
+div.flagClass > h2 {
+  border-bottom: 1px dotted black;
+  width: 80%;
+  font-family: sans-serif;
+}
+
+div.flagDesc {
+  clear: both;
+  background-color: rgb(255, 245, 220);
+  border: 1px solid blue; /* XXX This is for debugging */ 
+  margin: 0 auto;
+  width: 90%;
+}
+
+li.flagName {
+  font-weight: bold;
+  width: 100%;
+  border-bottom: 1px solid black;
+  display: block;
+  margin: 0.5em 0 0.5em 0;
+  font-size: 125%;
+}
+
+/* (presumably short) informationals all get grouped together near the top
+ * of the flag description block.
+ */
+.flagOrigin, .flagDescClass, .flagDescCompiler, .flagDescRE, .flagVar {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  float: left;
+  padding: 0.25em;
+  margin: 0 0 0.25em 0;
+}
+
+.flagDescClass::before {
+  content: "Flag Class: ";
+}
+.flagDescCompiler::before {
+  content: "Compilers that recognize this flag: ";
+}
+.flagDescRE::before {
+  content: "Regular Expression: ";
+}
+.flagVar::before {
+  content: "Found In: ";
+}
+
+span.flagDescInc {
+  border-bottom: 1px solid black;
+}
+
+/* The description text stands alone. */
+.descText {
+  clear: both;
+  padding: 0.5em 1em 0.5em 1em;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  margin: 0.5em 0 0.5em 0;
+}
+
+/* This is a separate class so that in the print style sheet it can
+ * be ignored.
+ * Also, 'style="clear:both;"' is longer than 'class="clear"'
+ */
+.clear {
+  clear: both;
+}
+
+/* This is really for the link _to_ the flag report */
+li.unknown > a:link, a:visited { text-decoration: none; }
+
+.monospace {
+  font-family: Courier, "Courier New", monospace;
+}
+
+ul.flagDescList {
+  clear: both;
+  list-style-type: none;
+}
+
+/* Arrange for each flag description to have some headroom. */
+ul.flagDescList > li {
+  margin: 2em 0 0 0;
+}
+
+ul.flagDesc {
+  list-style-type: none;
+}
+
+div.flagTOC {
+  border: 1px solid white;
+  padding: 0.5em 1em;
+  margin: 0 auto;
+  width: 80%;
+}
+
+ul.flagTOC {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.flagTOC > li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+  margin: 0;
+  padding: 0.25em 0 0.25em 0;
+  float: left;
+  display: inline-block; /* Fix IE bug; compliant browsers will ignore this */
+  width: 24.3%;
+  min-height: 1.5em;
+  overflow: hidden; /* If the table gets squeezed too much, don't let the
+                     * text overlap
+                     */
+}
+
+ul.SubMenu li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+}
+
+ul.SubMenu {
+  display: none;
+  position: absolute;
+  list-style-type: none;
+  border: 1px solid black;
+  background-color: white;
+  margin: 0 0 0 2em;
+  padding: 0.25em 5em 0.25em 0.5em;
+  white-space: nowrap;
+}
+
+li:hover > ul.SubMenu, ul.SubMenu:hover {
+  display: block;
+}
+
+ul.SubMenu > li:hover, ul.flagTOC > li:hover {
+  background-color: rgb(176, 196, 238); /* lightsteelgray... almost */
+  border: 1px solid rgb(128, 128, 128);
+}
+
+
+.resultpage a:link, .resultpage a:visited {
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+  color: inherit;
+}
+
+.resultpage {
+  margin: auto;
+  padding: 0;
+  width: 800px;
+}
+
+.logo {
+  float: left;
+}
+
+.titlebarcontainer, .resultstable {
+  border: solid 1px;
+  width: 100%;
+  float: left;
+}
+
+div.logo > img {
+  vertical-align: 50%;
+  margin: auto;
+}
+
+.titlebar {
+  float: left;
+  padding: 0em 1em 0em 1em;
+  text-align: center;
+  width: 92%;
+}
+
+div.titlebar > h1, div.titlebar > p {
+  margin: 0 1em 0 1em;
+}
+
+.systembar {
+  float: left;
+  width: 65%;
+  font-size: 150%;
+  margin: 0;
+  padding: 0.1em;
+  border-right: solid 1px black;
+}
+
+.metricbar {
+  padding: 0.1em;
+  margin: 0;
+  float: right;
+  width: 33%;
+  height: 50%;
+  font-size: 120%;
+}
+
+.metricbar#base {
+  background-color: #c8c8c8;
+  color: black;
+}
+
+.metricbar#peak {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+}
+
+.metricbar p {
+  margin: 0;
+  padding: 0.2em;
+}
+
+.datebar p, .systembar p {
+  margin: 0;
+  padding: 0;
+}
+
+.datebar p {
+  float: left;
+  border-left: solid 1px black;
+}
+
+span.item {
+  float: left;
+  margin: 0;
+  padding: 0 0 0 0.1em;
+}
+
+span.value {
+  float: right;
+  padding: 0 0.1em 0 0;
+}
+
+.datebar {
+  width: 100%;
+  float: left;
+  font-size: 50%;
+  min-height: 100%;
+  border: solid 1px black;
+}
+
+p#test_sponsor {
+  width: 31%;
+}
+
+p#license_num {
+  width: 16%;
+}
+
+p#test_date {
+  width: 15%;
+}
+
+p#hw_avail, p#sw_avail {
+  width: 18%;
+}
+
+div.graph {
+  margin: auto;
+}
+
+div.infobox {
+  float: left;
+  width: 100%;
+  padding: 0;
+  border: solid 1px black;
+}
+
+div.infobox table {
+  width: 49%;
+  float: left;
+}
+
+div.infobox table tr {
+  vertical-align: top;
+}
+
+div.infobox table#Hardware {
+  width: 50%;
+  border-right: 1px solid black;
+}
+
+div.infobox thead th {
+  font-size: 200%;
+}
+
+div.infobox tbody th {
+  text-align: left;
+}
+
+.resultstable h2, div.notes h2 {
+  text-align: center;
+  margin: 0.1em;
+}
+
+div.notes h3 {
+  margin: 0.1em;
+}
+
+div.notes dd {
+  margin-bottom: 1em;
+}
+
+.resultstable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resultstable th.basecol, .resultstable th.peakcol {
+  padding: 0.1em;
+  font-size: 90%;
+}
+
+.resultstable th {
+  border: solid 2px black;
+}
+
+.resultstable td {
+  border: solid 1px #b8b8b8;
+}
+
+td.bm, th.bm { 
+  border-right: solid 2px black;
+  border-left: solid 2px black;
+}
+
+td.secs { 
+  border-left: solid 2px black;
+}
+
+td.ratio { 
+  border-right: solid 2px black;
+}
+
+.resultstable tfoot td {
+  text-align: center;
+  border: solid 2px black;
+}
+
+th.basecol {
+  background-color: #c8c8c8;
+  color: black;
+}
+td.basecol {
+  text-align: right;
+  background-color: transparent;
+  color: black;
+}
+
+th.peakcol {
+  text-align: center;
+}
+
+.peakcol {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+  text-align: right;
+}
+
+td.bm {
+  /* Basically, the benchmark name and copies columns */
+  background-color: #c8c8c8;
+  color: black;
+}
+
+span.selected {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+div.notes {
+  width: 100%;
+  float: left;
+  border: solid 1px black;
+}
+
+div.flagfooter {
+  text-align: center;
+}
+
+div.errors {
+  border: solid 2px red;
+}
+div.errors h2 {
+  background-color: transparent;
+  color: red;
+}
+
+div.footer {
+  border: none;
+}
+
+/* People find the "double underline" confusing.  And Safari 1.3 doesn't deal
+ * well with attempting to disable the border for userflag links.  So just
+ * give up and don't decorate user flags specially.
+********************
+span.userflag {
+  text-decoration: underline;
+}
+
+.userflag a:link {
+  border-bottom: 0;
+}
+********************
+*/
+/* Most of the screen-specific CSS is also the common CSS */
+
+/* Style for the non-image W3C marking at the bottom of the page, courtesy of
+ * Marek Prokop (http://www.sovavsiti.cz/css/w3c_buttons.html)
+ */
+.w3cbutton3 {
+  margin: 1em 1em 0 0;
+  width: 9em;
+  border: 1px solid #ccc;
+  font-family: helvetica,arial,sans-serif;
+  font-size: 70%;
+  font-weight: bold;
+  float: left;
+}
+.w3cbutton3 a {
+  display: block;
+  width: 100%;
+}
+.w3cbutton3 a:link,
+.w3cbutton3 a:visited,
+.w3cbutton3 a:hover {
+  background-color: #fc6;
+  color: #000;
+  text-decoration: none;
+  border-bottom: none;
+}
+.w3cbutton3 span.w3c {
+  padding: 0 0.4em;
+  background-color: #fff;
+  color: #0c479d;
+}
+
+-->
+</style>
+<style type="text/css" id="internalPrint" media="print">
+<!--
+body {
+  margin:  1em;
+  border:  0;
+  padding: 0;
+  background: white;
+  color:      black;
+  font-family: "Times Roman", times, serif;
+}
+
+.tt {
+  font-family: monospace;
+}
+
+div.flagClass > h2 {
+  border-bottom: 1px dotted black;
+  width: 80%;
+  font-family: sans-serif;
+}
+
+div.flagDesc {
+  clear: both;
+  background-color: rgb(255, 245, 220);
+  border: 1px solid blue; /* XXX This is for debugging */ 
+  margin: 0 auto;
+  width: 90%;
+}
+
+li.flagName {
+  font-weight: bold;
+  width: 100%;
+  border-bottom: 1px solid black;
+  display: block;
+  margin: 0.5em 0 0.5em 0;
+  font-size: 125%;
+}
+
+/* (presumably short) informationals all get grouped together near the top
+ * of the flag description block.
+ */
+.flagOrigin, .flagDescClass, .flagDescCompiler, .flagDescRE, .flagVar {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  float: left;
+  padding: 0.25em;
+  margin: 0 0 0.25em 0;
+}
+
+.flagDescClass::before {
+  content: "Flag Class: ";
+}
+.flagDescCompiler::before {
+  content: "Compilers that recognize this flag: ";
+}
+.flagDescRE::before {
+  content: "Regular Expression: ";
+}
+.flagVar::before {
+  content: "Found In: ";
+}
+
+span.flagDescInc {
+  border-bottom: 1px solid black;
+}
+
+/* The description text stands alone. */
+.descText {
+  clear: both;
+  padding: 0.5em 1em 0.5em 1em;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  margin: 0.5em 0 0.5em 0;
+}
+
+/* This is a separate class so that in the print style sheet it can
+ * be ignored.
+ * Also, 'style="clear:both;"' is longer than 'class="clear"'
+ */
+.clear {
+  clear: both;
+}
+
+/* This is really for the link _to_ the flag report */
+li.unknown > a:link, a:visited { text-decoration: none; }
+
+.monospace {
+  font-family: Courier, "Courier New", monospace;
+}
+
+ul.flagDescList {
+  clear: both;
+  list-style-type: none;
+}
+
+/* Arrange for each flag description to have some headroom. */
+ul.flagDescList > li {
+  margin: 2em 0 0 0;
+}
+
+ul.flagDesc {
+  list-style-type: none;
+}
+
+div.flagTOC {
+  border: 1px solid white;
+  padding: 0.5em 1em;
+  margin: 0 auto;
+  width: 80%;
+}
+
+ul.flagTOC {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.flagTOC > li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+  margin: 0;
+  padding: 0.25em 0 0.25em 0;
+  float: left;
+  display: inline-block; /* Fix IE bug; compliant browsers will ignore this */
+  width: 24.3%;
+  min-height: 1.5em;
+  overflow: hidden; /* If the table gets squeezed too much, don't let the
+                     * text overlap
+                     */
+}
+
+ul.SubMenu li {
+  border: 1px solid white; /* rgb(211, 211, 211); */
+}
+
+ul.SubMenu {
+  display: none;
+  position: absolute;
+  list-style-type: none;
+  border: 1px solid black;
+  background-color: white;
+  margin: 0 0 0 2em;
+  padding: 0.25em 5em 0.25em 0.5em;
+  white-space: nowrap;
+}
+
+li:hover > ul.SubMenu, ul.SubMenu:hover {
+  display: block;
+}
+
+ul.SubMenu > li:hover, ul.flagTOC > li:hover {
+  background-color: rgb(176, 196, 238); /* lightsteelgray... almost */
+  border: 1px solid rgb(128, 128, 128);
+}
+
+
+.resultpage a:link, .resultpage a:visited {
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+  color: inherit;
+}
+
+.resultpage {
+  margin: auto;
+  padding: 0;
+  width: 800px;
+}
+
+.logo {
+  float: left;
+}
+
+.titlebarcontainer, .resultstable {
+  border: solid 1px;
+  width: 100%;
+  float: left;
+}
+
+div.logo > img {
+  vertical-align: 50%;
+  margin: auto;
+}
+
+.titlebar {
+  float: left;
+  padding: 0em 1em 0em 1em;
+  text-align: center;
+  width: 92%;
+}
+
+div.titlebar > h1, div.titlebar > p {
+  margin: 0 1em 0 1em;
+}
+
+.systembar {
+  float: left;
+  width: 65%;
+  font-size: 150%;
+  margin: 0;
+  padding: 0.1em;
+  border-right: solid 1px black;
+}
+
+.metricbar {
+  padding: 0.1em;
+  margin: 0;
+  float: right;
+  width: 33%;
+  height: 50%;
+  font-size: 120%;
+}
+
+.metricbar#base {
+  background-color: #c8c8c8;
+  color: black;
+}
+
+.metricbar#peak {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+}
+
+.metricbar p {
+  margin: 0;
+  padding: 0.2em;
+}
+
+.datebar p, .systembar p {
+  margin: 0;
+  padding: 0;
+}
+
+.datebar p {
+  float: left;
+  border-left: solid 1px black;
+}
+
+span.item {
+  float: left;
+  margin: 0;
+  padding: 0 0 0 0.1em;
+}
+
+span.value {
+  float: right;
+  padding: 0 0.1em 0 0;
+}
+
+.datebar {
+  width: 100%;
+  float: left;
+  font-size: 50%;
+  min-height: 100%;
+  border: solid 1px black;
+}
+
+p#test_sponsor {
+  width: 31%;
+}
+
+p#license_num {
+  width: 16%;
+}
+
+p#test_date {
+  width: 15%;
+}
+
+p#hw_avail, p#sw_avail {
+  width: 18%;
+}
+
+div.graph {
+  margin: auto;
+}
+
+div.infobox {
+  float: left;
+  width: 100%;
+  padding: 0;
+  border: solid 1px black;
+}
+
+div.infobox table {
+  width: 49%;
+  float: left;
+}
+
+div.infobox table tr {
+  vertical-align: top;
+}
+
+div.infobox table#Hardware {
+  width: 50%;
+  border-right: 1px solid black;
+}
+
+div.infobox thead th {
+  font-size: 200%;
+}
+
+div.infobox tbody th {
+  text-align: left;
+}
+
+.resultstable h2, div.notes h2 {
+  text-align: center;
+  margin: 0.1em;
+}
+
+div.notes h3 {
+  margin: 0.1em;
+}
+
+div.notes dd {
+  margin-bottom: 1em;
+}
+
+.resultstable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resultstable th.basecol, .resultstable th.peakcol {
+  padding: 0.1em;
+  font-size: 90%;
+}
+
+.resultstable th {
+  border: solid 2px black;
+}
+
+.resultstable td {
+  border: solid 1px #b8b8b8;
+}
+
+td.bm, th.bm { 
+  border-right: solid 2px black;
+  border-left: solid 2px black;
+}
+
+td.secs { 
+  border-left: solid 2px black;
+}
+
+td.ratio { 
+  border-right: solid 2px black;
+}
+
+.resultstable tfoot td {
+  text-align: center;
+  border: solid 2px black;
+}
+
+th.basecol {
+  background-color: #c8c8c8;
+  color: black;
+}
+td.basecol {
+  text-align: right;
+  background-color: transparent;
+  color: black;
+}
+
+th.peakcol {
+  text-align: center;
+}
+
+.peakcol {
+  background-color: transparent;
+  color: #2626b3;       /* peak blue */
+  text-align: right;
+}
+
+td.bm {
+  /* Basically, the benchmark name and copies columns */
+  background-color: #c8c8c8;
+  color: black;
+}
+
+span.selected {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+div.notes {
+  width: 100%;
+  float: left;
+  border: solid 1px black;
+}
+
+div.flagfooter {
+  text-align: center;
+}
+
+div.errors {
+  border: solid 2px red;
+}
+div.errors h2 {
+  background-color: transparent;
+  color: red;
+}
+
+div.footer {
+  border: none;
+}
+
+/* People find the "double underline" confusing.  And Safari 1.3 doesn't deal
+ * well with attempting to disable the border for userflag links.  So just
+ * give up and don't decorate user flags specially.
+********************
+span.userflag {
+  text-decoration: underline;
+}
+
+.userflag a:link {
+  border-bottom: 0;
+}
+********************
+*/
+/* Classes that contain links - useless on paper */
+.flagTOC, .SubMenu, .NoPrint {
+  display: none;
+}
+
+/* Don't decorate links - they're not clickable */
+a {
+  text-decoration: none;
+  background: inherit;
+  color: inherit;
+}
+
+.resultpage {
+  width: 100%;
+}
+
+.w3cbutton3 {
+  display: none;
+}
+-->
+</style>
+<title>CPU2006 Result Flag Description</title>
+</head>
+<body>
+<h1>CPU2006 Flag Description<br />Intel Corporation System Model Name</h1>
+<hr />
+<div class="unknownflags">
+<h2>Base Unknown Flags</h2>
+<h3><a name="unknown400.perlbenchbase">400.perlbench (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC400.perlbenchbase">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD400.perlbenchbase">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT400.perlbenchbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE400.perlbenchbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS400.perlbenchbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS400.perlbenchbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown401.bzip2base">401.bzip2 (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC401.bzip2base">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD401.bzip2base">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT401.bzip2base">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE401.bzip2base">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS401.bzip2base">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS401.bzip2base">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown403.gccbase">403.gcc (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC403.gccbase">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD403.gccbase">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT403.gccbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE403.gccbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS403.gccbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS403.gccbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown429.mcfbase">429.mcf (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC429.mcfbase">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD429.mcfbase">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT429.mcfbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE429.mcfbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS429.mcfbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS429.mcfbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown445.gobmkbase">445.gobmk (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC445.gobmkbase">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD445.gobmkbase">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT445.gobmkbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE445.gobmkbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS445.gobmkbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS445.gobmkbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown456.hmmerbase">456.hmmer (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC456.hmmerbase">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD456.hmmerbase">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT456.hmmerbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE456.hmmerbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS456.hmmerbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS456.hmmerbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown458.sjengbase">458.sjeng (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC458.sjengbase">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD458.sjengbase">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT458.sjengbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE458.sjengbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS458.sjengbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS458.sjengbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown462.libquantumbase">462.libquantum (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC462.libquantumbase">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD462.libquantumbase">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT462.libquantumbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE462.libquantumbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS462.libquantumbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS462.libquantumbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown464.h264refbase">464.h264ref (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC464.h264refbase">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD464.h264refbase">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT464.h264refbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE464.h264refbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS464.h264refbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS464.h264refbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown471.omnetppbase">471.omnetpp (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CXX471.omnetppbase">CXX</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LD471.omnetppbase">LD</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LDOUT471.omnetppbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE471.omnetppbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="CXXOPTIMIZE471.omnetppbase">CXXOPTIMIZE</a>: <span class="monospace">-Qcxx_features</span></li>
+<li><a name="EXTRA_LDFLAGS471.omnetppbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS471.omnetppbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown473.astarbase">473.astar (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CXX473.astarbase">CXX</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LD473.astarbase">LD</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LDOUT473.astarbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE473.astarbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="CXXOPTIMIZE473.astarbase">CXXOPTIMIZE</a>: <span class="monospace">-Qcxx_features</span></li>
+<li><a name="EXTRA_LDFLAGS473.astarbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS473.astarbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+<h3><a name="unknown483.xalancbmkbase">483.xalancbmk (base)</a></h3>
+<ul class="flagDescList">
+<li><a name="CXX483.xalancbmkbase">CXX</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LD483.xalancbmkbase">LD</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LDOUT483.xalancbmkbase">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="OPTIMIZE483.xalancbmkbase">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="CXXOPTIMIZE483.xalancbmkbase">CXXOPTIMIZE</a>: <span class="monospace">-Qcxx_features</span></li>
+<li><a name="EXTRA_LDFLAGS483.xalancbmkbase">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="EXTRA_LIBS483.xalancbmkbase">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+</ul>
+</div>
+<hr />
+<div class="unknownflags">
+<h2>Peak Unknown Flags</h2>
+<h3><a name="unknown400.perlbenchpeak">400.perlbench (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC400.perlbenchpeak">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD400.perlbenchpeak">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT400.perlbenchpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CFLAGS400.perlbenchpeak">PASS1_CFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE400.perlbenchpeak">OPTIMIZE</a>: <span class="monospace">-fast -Qansi-alias -Qprefetch</span></li>
+<li><a name="EXTRA_LDFLAGS400.perlbenchpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS400.perlbenchpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS400.perlbenchpeak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CFLAGS400.perlbenchpeak">PASS2_CFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS400.perlbenchpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown401.bzip2peak">401.bzip2 (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC401.bzip2peak">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD401.bzip2peak">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT401.bzip2peak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CFLAGS401.bzip2peak">PASS1_CFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE401.bzip2peak">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS401.bzip2peak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS401.bzip2peak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS401.bzip2peak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CFLAGS401.bzip2peak">PASS2_CFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS401.bzip2peak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown403.gccpeak">403.gcc (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC403.gccpeak">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD403.gccpeak">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT403.gccpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CFLAGS403.gccpeak">PASS1_CFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE403.gccpeak">OPTIMIZE</a>: <span class="monospace">-fast</span></li>
+<li><a name="EXTRA_LDFLAGS403.gccpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS403.gccpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="PASS2_CFLAGS403.gccpeak">PASS2_CFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS403.gccpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown445.gobmkpeak">445.gobmk (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC445.gobmkpeak">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD445.gobmkpeak">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT445.gobmkpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CFLAGS445.gobmkpeak">PASS1_CFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE445.gobmkpeak">OPTIMIZE</a>: <span class="monospace">-QxT -O2 -Qipo -Qprec_div- -Qansi-alias</span></li>
+<li><a name="EXTRA_LDFLAGS445.gobmkpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS445.gobmkpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="PASS2_CFLAGS445.gobmkpeak">PASS2_CFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS445.gobmkpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown456.hmmerpeak">456.hmmer (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC456.hmmerpeak">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD456.hmmerpeak">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT456.hmmerpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CFLAGS456.hmmerpeak">PASS1_CFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE456.hmmerpeak">OPTIMIZE</a>: <span class="monospace">-fast -Qunroll2 -Qansi-alias</span></li>
+<li><a name="EXTRA_LDFLAGS456.hmmerpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS456.hmmerpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS456.hmmerpeak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CFLAGS456.hmmerpeak">PASS2_CFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS456.hmmerpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown458.sjengpeak">458.sjeng (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC458.sjengpeak">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD458.sjengpeak">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT458.sjengpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CFLAGS458.sjengpeak">PASS1_CFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE458.sjengpeak">OPTIMIZE</a>: <span class="monospace">-fast -Qunroll4</span></li>
+<li><a name="EXTRA_LDFLAGS458.sjengpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS458.sjengpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS458.sjengpeak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CFLAGS458.sjengpeak">PASS2_CFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS458.sjengpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown462.libquantumpeak">462.libquantum (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC462.libquantumpeak">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD462.libquantumpeak">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT462.libquantumpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CFLAGS462.libquantumpeak">PASS1_CFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE462.libquantumpeak">OPTIMIZE</a>: <span class="monospace">-fast -Qunroll4 -Ob0 -Qprefetch -Qopt-streaming-stores:always</span></li>
+<li><a name="EXTRA_LDFLAGS462.libquantumpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS462.libquantumpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS462.libquantumpeak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CFLAGS462.libquantumpeak">PASS2_CFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS462.libquantumpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown464.h264refpeak">464.h264ref (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CC464.h264refpeak">CC</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LD464.h264refpeak">LD</a>: <span class="monospace">icl -Qvc7.1 -Qc99</span></li>
+<li><a name="LDOUT464.h264refpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CFLAGS464.h264refpeak">PASS1_CFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE464.h264refpeak">OPTIMIZE</a>: <span class="monospace">-fast -Qunroll2 -Qansi-alias</span></li>
+<li><a name="EXTRA_LDFLAGS464.h264refpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS464.h264refpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS464.h264refpeak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CFLAGS464.h264refpeak">PASS2_CFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS464.h264refpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown471.omnetpppeak">471.omnetpp (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CXX471.omnetpppeak">CXX</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LD471.omnetpppeak">LD</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LDOUT471.omnetpppeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CXXFLAGS471.omnetpppeak">PASS1_CXXFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE471.omnetpppeak">OPTIMIZE</a>: <span class="monospace">-fast -Qansi-alias</span></li>
+<li><a name="CXXOPTIMIZE471.omnetpppeak">CXXOPTIMIZE</a>: <span class="monospace">-Qcxx_features</span></li>
+<li><a name="EXTRA_LDFLAGS471.omnetpppeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS471.omnetpppeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS471.omnetpppeak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CXXFLAGS471.omnetpppeak">PASS2_CXXFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS471.omnetpppeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown473.astarpeak">473.astar (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CXX473.astarpeak">CXX</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LD473.astarpeak">LD</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LDOUT473.astarpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CXXFLAGS473.astarpeak">PASS1_CXXFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE473.astarpeak">OPTIMIZE</a>: <span class="monospace">-fast -Qansi-alias</span></li>
+<li><a name="CXXOPTIMIZE473.astarpeak">CXXOPTIMIZE</a>: <span class="monospace">-Qcxx_features</span></li>
+<li><a name="EXTRA_LDFLAGS473.astarpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS473.astarpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS473.astarpeak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CXXFLAGS473.astarpeak">PASS2_CXXFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS473.astarpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+<h3><a name="unknown483.xalancbmkpeak">483.xalancbmk (peak)</a></h3>
+<ul class="flagDescList">
+<li><a name="CXX483.xalancbmkpeak">CXX</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LD483.xalancbmkpeak">LD</a>: <span class="monospace">icl -Qvc7.1</span></li>
+<li><a name="LDOUT483.xalancbmkpeak">LDOUT</a>: <span class="monospace">-link /FORCE:MULTIPLE</span></li>
+<li><a name="PASS1_CXXFLAGS483.xalancbmkpeak">PASS1_CXXFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="OPTIMIZE483.xalancbmkpeak">OPTIMIZE</a>: <span class="monospace">-fast -Qansi-alias</span></li>
+<li><a name="CXXOPTIMIZE483.xalancbmkpeak">CXXOPTIMIZE</a>: <span class="monospace">-Qcxx_features</span></li>
+<li><a name="EXTRA_LDFLAGS483.xalancbmkpeak">EXTRA_LDFLAGS</a>: <span class="monospace">/F512000000</span></li>
+<li><a name="PASS1_LDFLAGS483.xalancbmkpeak">PASS1_LDFLAGS</a>: <span class="monospace">-Qprof_gen</span></li>
+<li><a name="EXTRA_LIBS483.xalancbmkpeak">EXTRA_LIBS</a>: <span class="monospace">shlw32m.lib</span></li>
+<li><a name="PASS2_CXXFLAGS483.xalancbmkpeak">PASS2_CXXFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+<li><a name="PASS2_LDFLAGS483.xalancbmkpeak">PASS2_LDFLAGS</a>: <span class="monospace">-Qprof_use</span></li>
+</ul>
+</div>
+<hr />
+<div class="flagorigins">
+ <p>Flag description origin markings:</p>
+ <dl>
+  <dt><a name="userOrigin"><img src="http://www.spec.org/auto/cpu2006/flags/user.png" alt="[user]" /></a></dt>
+  <dd>Indicates that the flag description came from the user flags file.</dd>
+  <dt><a name="suiteOrigin"><img src="http://www.spec.org/auto/cpu2006/flags/suite.png" alt="[suite]" /></a></dt>
+  <dd>Indicates that the flag description came from the suite-wide flags file.</dd>
+  <dt><a name="benchmarkOrigin"><img src="http://www.spec.org/auto/cpu2006/flags/benchmark.png" alt="[benchmark]" /></a></dt>
+  <dd>Indicates that the flag description came from a per-benchmark flags file.</dd>
+ </dl>
+</div>
+<hr />
+<p style="text-align: left">For questions about the meanings of these flags, please contact the tester.<br />
+For other inquiries, please contact <a href="mailto:webmaster@spec.org">webmaster@spec.org</a><br />
+Copyright &copy; 2006 Standard Performance Evaluation Corporation<br />
+Generated on Tue Jun 23 08:26:42 2009 by SPEC CPU2006 flag formatter v4553</p>
+</body>
+</html>

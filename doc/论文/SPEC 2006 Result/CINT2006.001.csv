@@ -1,0 +1,111 @@
+valid,0
+Benchmark,"Base Ref Time","Est. Base Run Time","Est. Base Ratio","Base Selected","Base Status","Peak Ref Time","Est. Peak Run Time","Est. Peak Ratio","Peak Selected","Peak Status"
+400.perlbench,9770,718.812,13.5918710316467,0,S,9770,630.203,15.5029411157992,0,S
+400.perlbench,9770,718.5,13.597773138483,1,S,9770,629.64,15.5168032526523,0,S
+400.perlbench,9770,718.453,13.5986626821796,0,S,9770,629.672,15.5160146870117,1,S
+401.bzip2,9650,949.187,10.1665952019992,0,S,9650,910.703,10.5962097412658,0,S
+401.bzip2,9650,953.047,10.1254187883704,1,S,9650,911.468,10.587316285377,1,S
+401.bzip2,9650,956.047,10.0936460236788,0,S,9650,913.438,10.5644827563557,0,S
+403.gcc,8050,795.407,10.1206049230143,0,S,8050,634.203,12.6930966898611,0,S
+403.gcc,8050,795.453,10.1200196617525,1,S,8050,634.735,12.6824580336676,1,S
+403.gcc,8050,797.453,10.0946388062996,0,S,8050,634.843,12.6803004837417,0,S
+429.mcf,9120,466.812,19.5367728336032,0,S,9120,466.812,19.5367728336032,0,S
+429.mcf,9120,466.375,19.5550790672742,0,S,9120,466.375,19.5550790672742,0,S
+429.mcf,9120,466.531,19.5485401827531,1,S,9120,466.531,19.5485401827531,1,S
+445.gobmk,10490,832.469,12.6010698296273,0,S,10490,752.797,13.9346995272298,0,S
+445.gobmk,10490,832.203,12.6050975543227,0,S,10490,752.594,13.9384581859542,1,S
+445.gobmk,10490,832.234,12.604628025291,1,S,10490,752.5,13.9401993355482,0,S
+456.hmmer,9330,947.907,9.84273773692989,1,S,9330,938.187,9.94471251466925,0,S
+456.hmmer,9330,947.813,9.8437138971506,0,S,9330,938.141,9.94520013516092,0,S
+456.hmmer,9330,948.047,9.84128424012733,0,S,9330,938.157,9.94503052260976,1,S
+458.sjeng,12100,1066.812,11.3422046246199,0,S,12100,951.578,12.7157206240581,0,S
+458.sjeng,12100,1066.782,11.3425235896369,1,S,12100,951.703,12.7140504968462,0,S
+458.sjeng,12100,1066.656,11.3438634386344,0,S,12100,951.656,12.7146784132081,1,S
+462.libquantum,20720,976.906,21.209819573224,1,S,20720,869.266,23.836202037121,1,S
+462.libquantum,20720,976.734,21.2135545604023,0,S,20720,869.593,23.8272387197229,0,S
+462.libquantum,20720,977.437,21.1982971792555,0,S,20720,869.125,23.8400690349489,0,S
+464.h264ref,22130,1149.172,19.2573435482243,0,S,22130,1081.547,20.4614316345013,0,S
+464.h264ref,22130,1148.562,19.2675711019518,0,S,22130,1080.89,20.4738687563027,0,S
+464.h264ref,22130,1148.562,19.2675711019518,1,S,22130,1080.953,20.4726755002299,1,S
+471.omnetpp,6250,535.36,11.674387328153,1,S,6250,480.359,13.0111021132112,0,S
+471.omnetpp,6250,535.281,11.6761103046811,0,S,6250,480.406,13.0098291861467,1,S
+471.omnetpp,6250,535.375,11.6740602381508,0,S,6250,480.547,13.0060118989402,0,S
+473.astar,7020,724.031,9.69571744856229,0,S,7020,665.578,10.5472236161652,0,S
+473.astar,7020,723.859,9.69802129972826,1,S,7020,665.485,10.5486975664365,0,S
+473.astar,7020,723.797,9.69885202618966,0,S,7020,665.5,10.5484598046582,1,S
+483.xalancbmk,6900,441.766,15.6191286789839,0,S,6900,439.328,15.7058052298055,1,S
+483.xalancbmk,6900,441.843,15.6164067327082,1,S,6900,439.328,15.7058052298055,0,S
+483.xalancbmk,6900,441.89,15.6147457512051,0,S,6900,439.297,15.7069135459609,0,S
+
+"Run number:",001
+
+SPECint_base2006,13.1886254077672
+SPECint2006,14.3382192013544
+"Hardware Vendor:","Intel Corporation"
+"Hardware Model:","System Model Name"
+"Date tested:",Dec-9999
+"CPU2006 License:",13
+"Test sponsor:","Intel Corporation"
+"Tested by:","Intel Corporation"
+"Hardware avail:",Dec-9999
+"Software avail:",Dec-9999
+
+
+HARDWARE
+
+"CPU Name","Intel Core 2 Duo ______"
+"CPU Characteristics",____
+"CPU MHz",____
+FPU,Integrated
+"CPU(s) enabled","____ cores, ____ chips, ____ cores/chip"
+"CPU(s) orderable","____ chip"
+"Primary Cache","32 KB I + 32 KB D on chip per core"
+"Secondary Cache","4 MB I+D on chip per chip (shared)"
+"L3 Cache",None
+"Other Cache",None
+Memory,"____ GB"
+"Disk Subsystem","____ GB SATA, ____RPM"
+"Other Hardware",None
+
+SOFTWARE
+
+"Operating System","Windows Vista64 Ultimate"
+Compiler,"Intel C++ Compiler for IA32 version 10.0"
+,"Build 20070426 Package ID: W_CC_P_10.0.025"
+,"Microsoft Visual Studio .Net 2003 (for libraries)"
+"Auto Parallel",No
+"File System",NTFS
+"System State",Default
+"Base Pointers",32-bit
+"Peak Pointers",32-bit
+"Other Software",None
+,"SmartHeap Library Version 8.0 from"
+,http://www.microquill.com/
+
+"General Notes"
+
+" Tested systems can be used with Shin-G ATX case, Antec NeoPower 480W power supply"
+" Product description located as of 5/2007:"
+" http://www.intel.com/products/motherboard/______/index.htm"
+" The system bus runs at _____ MHz"
+" System was configured with _______ discrete graphics card "
+" Binaries were built on Windows XP Professional SP2"
+
+ERRORS
+
+##############################################################################
+"#   INVALID RUN INVALID RUN INVALID RUN INVALID RUN INVALID RUN INVALID RUN  #"
+"#                                                                            #"
+"# Your run was marked invalid because it has one or more flags in the        #"
+"# ""unknown"" category. You might be able to resolve this problem without      #"
+"# re-running your test; see                                                  #"
+"#      http://www.spec.org/auto/cpu2006/Docs/runspec.html#flagsurl           #"
+"# for more information.                                                      #"
+"#                                                                            #"
+"#   INVALID RUN INVALID RUN INVALID RUN INVALID RUN INVALID RUN INVALID RUN  #"
+##############################################################################
+-----------------------------------------------------------------------------
+"For questions about this result, please contact the tester."
+"For other inquiries, please contact webmaster@spec.org."
+"Copyright 2006 Standard Performance Evaluation Corporation"
+"Generated on Sat Jun 20 04:50:09 2009 by SPEC CPU2006 CSV formatter v4607"
