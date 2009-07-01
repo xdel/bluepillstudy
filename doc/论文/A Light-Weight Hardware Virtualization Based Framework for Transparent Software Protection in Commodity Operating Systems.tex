@@ -239,7 +239,7 @@ section.
 \subsection{HBSP Architecture}
 \begin{figure}[!htb]
 \begin{center}
-\includegraphics[width=0.45\textwidth]{paper1.png}
+\includegraphics[width=0.45\textwidth]{fig1.png}
 \end{center}
 \caption{{\bf HBSP Architecture} \hskip 1em plus 0.5em minus
 0.4em\relax HBSP consists of three layers. User defined hypervisor
@@ -491,7 +491,7 @@ hypervisor is running actively.
 
 \begin{figure}[!htb]
 \begin{center}
-\includegraphics[width=0.45\textwidth]{fig5.png}
+\includegraphics[width=0.45\textwidth]{fig5.jpg}
 \end{center}
 \caption{{\bf SNProtector Design and Usage Model.}} \label{Figure
 5.}
@@ -611,6 +611,19 @@ Execution Cycle & 268 & 2660\\
 \end{tabular}
 \end{table}
 
+\begin{figure*}
+\begin{center}
+\includegraphics[width=0.77\textwidth]{fig7.png}
+\end{center}
+\caption{{\bf SPEC CINT 2006 Benchmarks.}} \label{Figure 6.}
+\end{figure*}
+
+\begin{figure*}[!htb]
+\begin{center}
+\includegraphics[width=0.77\textwidth]{fig8.png}
+\end{center}
+\caption{{\bf SPEC CFP 2006 Benchmarks.}} \label{Figure 7.}
+\end{figure*}
 
 \emph{Microbenchmarks} \hskip 1em plus 0.5em minus 0.4em\relax
 Table 2 highlights the results of microbenchmarks that measure the
@@ -647,29 +660,12 @@ SNProtector is 0.55\%. Combined with the overall SPEC benchmarks,
 as shown in Figure 9, the total overhead to the guest machine is
 0.29\% on average.
 
-\begin{figure}[!htb]
-\begin{center}
-\includegraphics[width=0.45\textwidth]{untitled2.png}
-\end{center}
-\caption{{\bf SPEC CINT 2006 Benchmarks.}} \label{Figure 6.}
-\end{figure}
 
 \begin{figure}[!htb]
-\begin{center}
-\includegraphics[width=0.45\textwidth]{untitled3.png}
-\end{center}
-\caption{{\bf SPEC CFP 2006 Benchmarks.}} \label{Figure 7.}
-\end{figure}
-
-\begin{figure}[!htb]
-\begin{center}
-\includegraphics[width=0.45\textwidth]{untitled.png}
-\end{center}
+\centering
+\includegraphics[width=0.45\textwidth]{fig9.png}
 \caption{{\bf Application Benchmark Summary.}} \label{Figure 8.}
 \end{figure}
-
-
-
 
 
 \bigskip
@@ -754,6 +750,15 @@ and topics remain for the future study, such as pre-OS Hypervisor
 Loading and enabling Self-Verification based on Intel TxT
 technology. We believe that HBSP is a practical approach to
 protect software in commodity operating systems.
+\bigskip
+
+\section*{Acknowledgment}
+This work was supported by National Natural Science Foundation of
+China (Grant No.60773093 and 60873209 ),the Key  Program for
+Basic Research of Shanghai (Grant No.08JC1411800) , the Ministry
+of Education and Intel joint research foundation (Grant
+No.MOE-INTEL-08-11),and IBM SUR Funding.
+
 \bigskip
 
 \begin{thebibliography}{99}
