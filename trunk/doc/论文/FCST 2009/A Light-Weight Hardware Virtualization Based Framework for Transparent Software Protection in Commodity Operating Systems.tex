@@ -209,14 +209,14 @@ well as the user experience.
 
 
 {\bf\emph {Flexible Configuration}} \hskip 1em plus 0.5em minus
-0.4em\relax IIn order to support various ways to protect software,
-for example, using \emph{Hardware-Virtual-Machine (HVM)} to
-protect the application data  and OS kernel , HBSP supplies a rich
-set of interfaces to configure VMCS (Virtual Machine Control
-Structure) struct and memory strategy. When comes to the high
-level it offers interfaces to initialize/start/shutdown the
-hypervisor. However, it's not advised to keep all sensitive data
-or code in hypervisor for performance reasons.
+0.4em\relax In order to support various ways to protect software,
+for example, using \emph{Hardware-Virtual-Machine (HVM)} to protect
+the application data  and OS kernel , HBSP supplies a rich set of
+interfaces to configure VMCS (Virtual Machine Control Structure)
+struct and memory strategy. When comes to the high level it offers
+interfaces to initialize/start/shutdown the hypervisor. However,
+it's not advised to keep all sensitive data or code in hypervisor
+for performance reasons.
 
 {\bf\emph {Support for other HEV technology}} \hskip 1em plus
 0.5em minus 0.4em\relax Currently HBSP supports Intel VT
@@ -332,7 +332,8 @@ proper functions declared in this set of interfaces. If Memory
 Hiding Strategy is used as the definition of the current memory
 strategy, HBSP always uses its private page table to allocate
 memory for the caller. While using the Default Memory Strategy as
-the current memory strategy.
+the current memory strategy, all the memory management tasks will
+be delegated to Windows system.
 
 {\bf\emph{$\text3^\text{rd}$ Hypervisor Layer}} \hskip 1em plus
 0.5em minus 0.4em\relax This layer is concentrated on implementing
@@ -366,12 +367,12 @@ total time spending in the hypervisor for limiting the length of
 the chain.
 \end{itemize}
 
-Currently, HBSP framework is designed to support only one guest
-machine at the moment, though a typical hypervisor can support
-more virtual machines as a nature. Regardless the guest VM amount,
-HBSP offers a new approach in protecting software. It brings in a
-valuable layer of protection, and requires no change to the
-hardware and the operating system.
+Currently, HBSP is designed to support only one guest machine at the
+moment, though a typical hypervisor can support more virtual
+machines as a nature. Regardless the guest VM amount, HBSP offers a
+new approach in protecting software. It brings in a valuable layer
+of protection, and requires no change to the hardware and the
+operating system.
 
 \subsection{HBSP Control Flow}
 Since HBSP is based on HEV technology, it plays a role as guest
@@ -411,11 +412,11 @@ monitoring RDMSR instructions with the help of HBSP. Then the
 hypervisor does the same handling process as that with application
 (Transition 3, 4).
 
-HSBP also supports intercepting the guest machine on accessing
+HBSP also supports intercepting the guest machine on accessing
 physical resources such as I/O related instructions. A hypervisor
 mediating between guest machine and physical hardware can always
-perform additional operations on the I/O accesses (Transition 5,
-6) before resuming to the guest machine. With such approach, a
+perform additional operations on the I/O accesses (Transition 5, 6)
+before resuming to the guest machine. With such approach, a
 hypervisor can cheat a malicious kernel and software to protect
 applications.
 
