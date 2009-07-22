@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NtQueryInfoProc_hook_detection", "NtQueryInfoProc_hook_detection.vcproj", "{A0A5E733-8CDE-48CA-A9F2-B265755536DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A0A5E733-8CDE-48CA-A9F2-B265755536DF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A0A5E733-8CDE-48CA-A9F2-B265755536DF}.Debug|Win32.Build.0 = Debug|Win32
+		{A0A5E733-8CDE-48CA-A9F2-B265755536DF}.Release|Win32.ActiveCfg = Release|Win32
+		{A0A5E733-8CDE-48CA-A9F2-B265755536DF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

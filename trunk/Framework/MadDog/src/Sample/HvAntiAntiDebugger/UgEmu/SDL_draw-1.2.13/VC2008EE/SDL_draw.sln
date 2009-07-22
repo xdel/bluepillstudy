@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL_draw_static", "SDL_draw_static.vcproj", "{F4D4F391-0FD9-4EB4-91F5-E5B673B7DF6D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL_draw_dynamic", "SDL_draw_dynamic.vcproj", "{D8F58DF6-8DED-4C04-8DE0-7CF0C17CEC13}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sdldrawtest", "sdldrawtest.vcproj", "{EC966A6F-D879-47C9-B72A-FC6D71B2804E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F4D4F391-0FD9-4EB4-91F5-E5B673B7DF6D} = {F4D4F391-0FD9-4EB4-91F5-E5B673B7DF6D}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4D4F391-0FD9-4EB4-91F5-E5B673B7DF6D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F4D4F391-0FD9-4EB4-91F5-E5B673B7DF6D}.Debug|Win32.Build.0 = Debug|Win32
+		{F4D4F391-0FD9-4EB4-91F5-E5B673B7DF6D}.Release|Win32.ActiveCfg = Release|Win32
+		{F4D4F391-0FD9-4EB4-91F5-E5B673B7DF6D}.Release|Win32.Build.0 = Release|Win32
+		{D8F58DF6-8DED-4C04-8DE0-7CF0C17CEC13}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D8F58DF6-8DED-4C04-8DE0-7CF0C17CEC13}.Debug|Win32.Build.0 = Debug|Win32
+		{D8F58DF6-8DED-4C04-8DE0-7CF0C17CEC13}.Release|Win32.ActiveCfg = Release|Win32
+		{D8F58DF6-8DED-4C04-8DE0-7CF0C17CEC13}.Release|Win32.Build.0 = Release|Win32
+		{EC966A6F-D879-47C9-B72A-FC6D71B2804E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EC966A6F-D879-47C9-B72A-FC6D71B2804E}.Debug|Win32.Build.0 = Debug|Win32
+		{EC966A6F-D879-47C9-B72A-FC6D71B2804E}.Release|Win32.ActiveCfg = Release|Win32
+		{EC966A6F-D879-47C9-B72A-FC6D71B2804E}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
