@@ -24,7 +24,7 @@ Boot_start:
 	mov 	ax, 0x0000			; to address 0000:8000 in memory.
 	mov 	bx, 0x7c00
 	call 	Read_one_sector
-	jc 		ERR_Load_MBR		; Branch if not succeed.
+	jc 		ERR_Read_sector_fail; Branch if not succeed.
 
 	mov 	ax, Msg_OK			; String: "OK!"
 	mov 	cx, MsgLen_OK
@@ -33,7 +33,7 @@ Boot_start:
 	
 	jmp		0x7c00				; Jump to MBR.
 
-ERR_Load_MBR:					; Read sector error disposal.
+ERR_Read_sector_fail:			; Read sector error disposal.
 	mov 	ax, Msg_FAIL		; String: "Fail!"
 	mov 	cx, MsgLen_FAIL
 	mov 	dx, 0x0a23			; Position: row 10, column 35.

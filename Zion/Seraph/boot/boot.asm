@@ -11,6 +11,7 @@ org		0x7c00
 	jmp 	Boot_start
 
 BOOT2_ADDR 		equ 	0x8000		; Memory address where boot2 will be loaded.
+BOOT_ZION_ADDR	equ 	0x8200		; Memory address where boot_Zion will be loaded.
 
 Boot_start:
 	mov		ax, cs
@@ -45,6 +46,25 @@ Boot_start:
 	mov 	dx, 0x0604				; Position: row 6, column 4.
 	call	Display_string
 
+	mov 	ax, Msg_LoadBootZion	; String: "Loading Zion boot loader..."
+	mov 	cx, MsgLen_LoadBootZion	
+	mov 	dx, 0x0804				; Position: row 8, column 4.
+	call 	Display_string
+	
+	mov 	cx, 0x002b				; Start from HDD0 track 0, sector 43,
+	mov 	al, 6 					; read 6 sectors
+	mov 	dx, 0x0000				; to address 0000:8200 in memory.
+	mov 	bx, BOOT_ZION_ADDR
+	call 	Read_sector
+	jc 		ERR_Read_sector_fail	; Branch if not succeed.
+	
+	mov 	ax, Msg_OK				; String: "OK!"
+	mov 	cx, MsgLen_OK	
+	mov 	dx, 0x0820				; Position: row 8, column 32.
+	call 	Display_string
+
+	jmp		BOOT_ZION_ADDR			; Jump to boot-Zion.
+
 	jmp 	$						; Spin here forever.
 									; FUTURE WORK: Some code for Zion should be added here, inclding:
 									; 		(1) Load Zion image into memory.
@@ -66,11 +86,12 @@ Normal_boot:
 	mov 	dx, 0x0804				; Position: row 8, column 4.
 	call 	Display_string
 	
-	mov 	cx, 0x002a				; Read HDD0 track 0, sector 42
-	mov 	ax, 0x0000				; to address 0000:8000 in memory.
+	mov 	cx, 0x002a				; Start from HDD0 track 0, sector 42,
+	mov 	al, 1 					; read 1 sector
+	mov 	dx, 0x0000				; to address 0000:8000 in memory.
 	mov 	bx, BOOT2_ADDR
-	call 	Read_one_sector
-	jc 		ERR_Load_boot2			; Branch if not succeed.
+	call 	Read_sector
+	jc 		ERR_Read_sector_fail	; Branch if not succeed.
 	
 	mov 	ax, Msg_OK				; String: "OK!"
 	mov 	cx, MsgLen_OK	
@@ -79,7 +100,7 @@ Normal_boot:
 
 	jmp		BOOT2_ADDR				; Jump to boot-stage2.
 
-ERR_Load_boot2:						; Read sector error disposal.
+ERR_Read_sector_fail:				; Read sector error disposal.
 	mov 	ax, Msg_FAIL			; String: "Fail!"
 	mov 	cx, MsgLen_FAIL	
 	mov 	dx, 0x081b				; Position: row 8, column 27.
@@ -120,7 +141,7 @@ Display_string:
 
 
 ;----------------------------------------
-;	Function: 		Read_one_sector
+;	Function: 		Read_sector
 ; 	Description:	Read one sector from hard disk.
 ; 	NOTE:			Using BIOS interrupt service 13H, function 02H.
 ;		INT 13H，AH=02H 读扇区:
@@ -135,9 +156,9 @@ Display_string:
 ;		返回参数：
 ;			如果CF=1，AX中存放出错状态。读出后的数据在ES:BX区域依次排列。
 ;----------------------------------------
-Read_one_sector:
-	mov 	es, ax
-	mov 	ax, 0x0201
+Read_sector:
+	mov 	es, dx
+	mov 	ah, 0x02
 	mov 	dx, 0x0080
 	int 	0x13
 	ret
@@ -159,24 +180,26 @@ Wait_key:
 ;----------------------------------------
 ;	Message strings
 ;----------------------------------------
-MsgLen_Logo 		equ 	25
-Msg_Logo: 			db 		"@@@ Seraph MBR Loader @@@"
-MsgLen_Branch 		equ 	17
-Msg_Branch:			db 		"Enter Zion? [No] "
-MsgLen_ZionBoot		equ 	21
-Msg_ZionBoot:		db		"Now, entering Zion..."
-MsgLen_NormalBoot 	equ 	17
-Msg_NormalBoot:		db 		"Normal Booting..."
-MsgLen_Yes 			equ 	3
-Msg_Yes: 			db 		"Yes"
-MsgLen_No 			equ 	2
-Msg_No:				db 		"No"
-MsgLen_LoadBoot2 	equ 	22
-Msg_LoadBoot2:		db 		"Loading boot-stage2..."
-MsgLen_OK 			equ 	3
-Msg_OK:				db 		"OK!"
-MsgLen_FAIL 		equ 	5
-Msg_FAIL:			db 		"Fail!"
+MsgLen_Logo 			equ 	25
+Msg_Logo: 				db 		"@@@ Seraph MBR Loader @@@"
+MsgLen_Branch 			equ 	17
+Msg_Branch:				db 		"Enter Zion? [No] "
+MsgLen_ZionBoot			equ 	21
+Msg_ZionBoot:			db		"Now, entering Zion..."
+MsgLen_NormalBoot 		equ 	17
+Msg_NormalBoot:			db 		"Normal Booting..."
+MsgLen_Yes 				equ 	3
+Msg_Yes: 				db 		"Yes"
+MsgLen_No 				equ 	2
+Msg_No:					db 		"No"
+MsgLen_LoadBoot2 		equ 	22
+Msg_LoadBoot2:			db 		"Loading boot-stage2..."
+MsgLen_OK 				equ 	3
+Msg_OK:					db 		"OK!"
+MsgLen_FAIL 			equ 	5
+Msg_FAIL:				db 		"Fail!"
+MsgLen_LoadBootZion 	equ 	27
+Msg_LoadBootZion: 		db 		"Loading Zion boot loader..."
 
 
 
