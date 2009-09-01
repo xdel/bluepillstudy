@@ -8,6 +8,8 @@
 
 org		0x7c00
 
+%include	"include/hdd.inc"		; Constance and macros
+
 	jmp 	Boot_start
 
 BOOT2_ADDR 		equ 	0x8000		; Memory address where boot2 will be loaded.
@@ -35,7 +37,7 @@ Boot_start:
 	and 	al, 0xdf				; Trun all char into uppercase.
 	cmp 	al, 'Y'
 	jne 	Normal_boot				; Branch if choose normal booting.
-	
+
 	mov 	ax, Msg_Yes				; String: "Yes"
 	mov 	cx, MsgLen_Yes
 	mov 	dx, 0x0415				; Position: row 4, column 21.
@@ -51,13 +53,13 @@ Boot_start:
 	mov 	dx, 0x0804				; Position: row 8, column 4.
 	call 	Display_string
 	
-	mov 	cx, 0x002b				; Start from HDD0 track 0, sector 43,
-	mov 	al, 6 					; read 6 sectors
-	mov 	dx, 0x0000				; to address 0000:8200 in memory.
+	mov 	ax, 43 						; Start sector 43,
+	mov 	cl, 6 							; read 6 sectors
+	mov 	dx, 0x0000				; to address 0000:BOOT_ZION_ADDR in memory.
 	mov 	bx, BOOT_ZION_ADDR
-	call 	Read_sector
+	call 		ReadSector
 	jc 		ERR_Read_sector_fail	; Branch if not succeed.
-	
+
 	mov 	ax, Msg_OK				; String: "OK!"
 	mov 	cx, MsgLen_OK	
 	mov 	dx, 0x0820				; Position: row 8, column 32.
@@ -86,11 +88,11 @@ Normal_boot:
 	mov 	dx, 0x0804				; Position: row 8, column 4.
 	call 	Display_string
 	
-	mov 	cx, 0x002a				; Start from HDD0 track 0, sector 42,
-	mov 	al, 1 					; read 1 sector
-	mov 	dx, 0x0000				; to address 0000:8000 in memory.
+	mov 	ax, 42 						; Start sector 43,
+	mov 	cl, 1 							; read 6 sectors
+	mov 	dx, 0x0000				; to address 0000:BOOT2_ADDR in memory.
 	mov 	bx, BOOT2_ADDR
-	call 	Read_sector
+	call 		ReadSector
 	jc 		ERR_Read_sector_fail	; Branch if not succeed.
 	
 	mov 	ax, Msg_OK				; String: "OK!"
@@ -141,8 +143,8 @@ Display_string:
 
 
 ;----------------------------------------
-;	Function: 		Read_sector
-; 	Description:	Read one sector from hard disk.
+;	Function: 		ReadSector
+; 	Description:	Read sectors from hard disk.
 ; 	NOTE:			Using BIOS interrupt service 13H, function 02H.
 ;		INT 13H，AH=02H 读扇区:
 ;		入口参数：
@@ -151,16 +153,51 @@ Display_string:
 ;			DL 需要进行读操作的驱动器号。
 ;			DH 所读磁盘的磁头号。
 ;			CH 磁道号的低8位数。
-;			CL 低5位放入所读起始扇区号，位7-6表示磁道号的高2位。
+;			CL 低6位放入所读起始扇区号，位7-6表示磁道号的高2位。
 ;			ES:BX 读出数据的缓冲区地址。
 ;		返回参数：
 ;			如果CF=1，AX中存放出错状态。读出后的数据在ES:BX区域依次排列。
+;
+; -----------------------------------------------------------------------
+; 怎样由扇区号求扇区在磁盘中的位置 (扇区号 -> 柱面号, 起始扇区, 磁头号)
+; -----------------------------------------------------------------------
+; 设扇区号为 x
+;                          ┌ 柱面号 = y >> 1
+;       x           ┌ 商 y ┤
+; -------------- => ┤      └ 磁头号 = y & 1
+;  每磁道扇区数     │
+;                   └ 余 z => 起始扇区号 = z
+; 注：有效扇区号为1～63。
 ;----------------------------------------
-Read_sector:
-	mov 	es, dx
-	mov 	ah, 0x02
-	mov 	dx, 0x0080
-	int 	0x13
+ReadSector:
+	mov 	es, dx			; es的值存放在dx中
+
+	push	bp
+	mov		bp, sp
+	sub		esp, 2			; 辟出两个字节的堆栈区域保存要读的扇区数: byte [bp-2]
+
+	mov		byte [bp-2], cl
+	push	bx					; 保存 bx
+	mov		bl, SecPerTrk		; bl: 除数
+	div		bl					; y 在 al 中, z 在 ah 中
+	mov		cl, ah				; cl <- 起始扇区号
+	xor 		ah, ah
+	mov 	bl, HeadsNum		; 磁头数
+	div 		bl 				; y/HeadsNum
+	mov 	ch, al 			; ch <- 柱面号
+	mov 	dh, ah 			; dh <- 磁头号
+	pop		bx					; 恢复 bx
+	; 至此, "柱面号, 起始扇区, 磁头号" 全部得到 ^^^^^^^^^^^^^^^^^^^^^^^^
+	mov		dl, DrvNum			; 驱动器号
+.GoOnReading:
+	mov		ah, 0x02				; 读
+	mov		al, byte [bp-2]		; 读 al 个扇区
+	int		0x13
+	jc		.GoOnReading		; 如果读取错误 CF 会被置为 1, 这时就不停地读, 直到正确为止
+
+	add	esp, 2
+	pop	bp
+
 	ret
 
 
@@ -205,4 +242,3 @@ Msg_LoadBootZion: 		db 		"Loading Zion boot loader..."
 
 	times 	510-($-$$)	db	0	; Fullfile the rest space, making binary file to be 512 bytes exactly.
 	dw 		0xaa55				; MBR magic number.
-

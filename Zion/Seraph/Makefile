@@ -3,7 +3,12 @@ DASMDIR = DASM
 
 AS		= nasm
 DAS 	= ndisasm
+CC 		= gcc
+LD 		= ld
+
 ASFLAGS	= -O0 
+CFLAGS 	= -c
+LDFLAGS = -s
 
 # All Phony Targets
 .PHONY : all clean image $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion
@@ -15,6 +20,7 @@ image: $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion
 	dd if=$(OBJDIR)/boot of=Seraph_boot.img bs=512 count=1 conv=notrunc
 	dd if=$(OBJDIR)/boot2 of=Seraph_boot.img bs=512 seek=41 count=1 conv=notrunc
 	dd if=$(OBJDIR)/boot_Zion of=Seraph_boot.img bs=512 seek=42 count=6 conv=notrunc
+	dd if=kernel of=Seraph_boot.img bs=512 seek=189 count=512 conv=notrunc
 	dd if=$(OBJDIR)/boot of=Seraph_boot.img bs=512 seek=40 count=1 conv=notrunc
 
 $(OBJDIR)/boot: boot/boot.asm 
