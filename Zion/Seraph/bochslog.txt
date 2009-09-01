@@ -33,12 +33,12 @@
 00000000000i[     ]   SB16 support: no
 00000000000i[     ]   USB support: no
 00000000000i[     ]   VGA extension support: vbe 
-00000000000i[MEM0 ] allocated memory at 0xa6e29008. after alignment, vector=0xa6e2a000
+00000000000i[MEM0 ] allocated memory at 0xa6eb2008. after alignment, vector=0xa6eb3000
 00000000000i[MEM0 ] 256.00MB
 00000000000i[MEM0 ] rom at 0xfffe0000/131072 ('/usr/local/share/bochs/BIOS-bochs-latest')
 00000000000i[MEM0 ] rom at 0xc0000/40448 ('/usr/local/share/bochs/VGABIOS-lgpl-latest')
 00000000000i[CMOS ] Using local time for initial clock
-00000000000i[CMOS ] Setting initial clock to: Tue Sep  1 20:00:13 2009 (time0=1251806413)
+00000000000i[CMOS ] Setting initial clock to: Tue Sep  1 22:09:09 2009 (time0=1251814149)
 00000000000i[DMA  ] channel 4 used by cascade
 00000000000i[DMA  ] channel 2 used by Floppy Drive
 00000000000i[FDD  ] tried to open 'boot_sector.img' read/write: No such file or directory
@@ -107,56 +107,24 @@
 00000809163i[BIOS ] ata0-0: PCHS=20/16/63 translation=none LCHS=20/16/63
 00004689391i[BIOS ] IDE time out
 00016726733i[BIOS ] Booting from 0000:7c00
-00051131401e[CPU0 ] MOV_CdRd: #UD - control register 3 index out of range
-00051131401e[CPU0 ] interrupt(): gate descriptor is not valid sys seg (vector=0x06)
-00051131401e[CPU0 ] interrupt(): gate descriptor is not valid sys seg (vector=0x0d)
-00051131401e[CPU0 ] interrupt(): gate descriptor is not valid sys seg (vector=0x08)
-00051131401i[CPU0 ] CPU is in protected mode (active)
-00051131401i[CPU0 ] CS.d_b = 32 bit
-00051131401i[CPU0 ] SS.d_b = 32 bit
-00051131401i[CPU0 ] | EAX=03fff000  EBX=f3fff004  ECX=00000410  EDX=f3fff000
-00051131401i[CPU0 ] | ESP=f0108f90  EBP=f0108fd8  ESI=f013dfe0  EDI=f013dff0
-00051131401i[CPU0 ] | IOPL=0 id vip vif ac vm RF nt of df if tf sf zf af PF CF
-00051131401i[CPU0 ] | SEG selector     base    limit G D
-00051131401i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
-00051131401i[CPU0 ] |  CS:0008( 0001| 0|  0) 10000000 ffffffff 1 1
-00051131401i[CPU0 ] |  DS:0010( 0002| 0|  0) 10000000 ffffffff 1 1
-00051131401i[CPU0 ] |  SS:0010( 0002| 0|  0) 10000000 ffffffff 1 1
-00051131401i[CPU0 ] |  ES:0010( 0002| 0|  0) 10000000 ffffffff 1 1
-00051131401i[CPU0 ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00051131401i[CPU0 ] |  GS:0018( 0003| 0|  0) 000b8000 0000ffff 0 0
-00051131401i[CPU0 ] | EIP=f010b9ab (f010b9ab)
-00051131401i[CPU0 ] | CR0=0x60000011 CR2=0x00000000
-00051131401i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
-00051131401e[CPU0 ] exception(): 3rd (13) exception with no resolution, shutdown status is 00h, resetting
-00051131401i[SYS  ] bx_pc_system_c::Reset(HARDWARE) called
-00051131401i[CPU0 ] cpu hardware reset
-00051131401i[     ] reset of 'unmapped' plugin device by virtual method
-00051131401i[     ] reset of 'biosdev' plugin device by virtual method
-00051131401i[     ] reset of 'speaker' plugin device by virtual method
-00051131401i[     ] reset of 'extfpuirq' plugin device by virtual method
-00051131401i[     ] reset of 'keyboard' plugin device by virtual method
-00051131401i[     ] reset of 'harddrv' plugin device by virtual method
-00051131401i[     ] reset of 'serial' plugin device by virtual method
-00051131401i[     ] reset of 'parallel' plugin device by virtual method
-00051131402i[     ] dbg: Quit
-00051131402i[CPU0 ] CPU is in real mode (active)
-00051131402i[CPU0 ] CS.d_b = 16 bit
-00051131402i[CPU0 ] SS.d_b = 16 bit
-00051131402i[CPU0 ] | EAX=00000000  EBX=00000000  ECX=00000000  EDX=00000543
-00051131402i[CPU0 ] | ESP=00000000  EBP=00000000  ESI=00000000  EDI=00000000
-00051131402i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf zf af pf cf
-00051131402i[CPU0 ] | SEG selector     base    limit G D
-00051131402i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
-00051131402i[CPU0 ] |  CS:f000( 1e00| 0|  0) ffff0000 0000ffff 0 0
-00051131402i[CPU0 ] |  DS:0000( 0000| 0|  0) 00000000 0000ffff 0 0
-00051131402i[CPU0 ] |  SS:0000( 0000| 0|  0) 00000000 0000ffff 0 0
-00051131402i[CPU0 ] |  ES:0000( 0000| 0|  0) 00000000 0000ffff 0 0
-00051131402i[CPU0 ] |  FS:0000( 0000| 0|  0) 00000000 0000ffff 0 0
-00051131402i[CPU0 ] |  GS:0000( 0000| 0|  0) 00000000 0000ffff 0 0
-00051131402i[CPU0 ] | EIP=0000fff0 (0000fff0)
-00051131402i[CPU0 ] | CR0=0x60000010 CR2=0x00000000
-00051131402i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
-00051131402i[CMOS ] Last time is 1251806425 (Tue Sep  1 20:00:25 2009)
-00051131402i[XGUI ] Exit
-00051131402i[CTRL ] quit_sim called with exit code 0
+00077800000p[XGUI ] >>PANIC<< POWER button turned off.
+00077800000i[CPU0 ] CPU is in protected mode (active)
+00077800000i[CPU0 ] CS.d_b = 32 bit
+00077800000i[CPU0 ] SS.d_b = 32 bit
+00077800000i[CPU0 ] | EAX=00000000  EBX=00000000  ECX=00000000  EDX=00000064
+00077800000i[CPU0 ] | ESP=f0108f50  EBP=f0108f58  ESI=00000000  EDI=00000001
+00077800000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
+00077800000i[CPU0 ] | SEG selector     base    limit G D
+00077800000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
+00077800000i[CPU0 ] |  CS:0008( 0001| 0|  0) 10000000 ffffffff 1 1
+00077800000i[CPU0 ] |  DS:0010( 0002| 0|  0) 10000000 ffffffff 1 1
+00077800000i[CPU0 ] |  SS:0010( 0002| 0|  0) 10000000 ffffffff 1 1
+00077800000i[CPU0 ] |  ES:0010( 0002| 0|  0) 10000000 ffffffff 1 1
+00077800000i[CPU0 ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00077800000i[CPU0 ] |  GS:0018( 0003| 0|  0) 000b8000 0000ffff 0 0
+00077800000i[CPU0 ] | EIP=f01092a6 (f01092a6)
+00077800000i[CPU0 ] | CR0=0x60000011 CR2=0x00000000
+00077800000i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
+00077800000i[CMOS ] Last time is 1251814168 (Tue Sep  1 22:09:28 2009)
+00077800000i[XGUI ] Exit
+00077800000i[CTRL ] quit_sim called with exit code 1

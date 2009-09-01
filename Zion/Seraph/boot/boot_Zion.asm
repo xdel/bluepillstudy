@@ -55,29 +55,29 @@ LABEL_START:
 	mov		dword [_dwMCRNumber], 0
 .MemChkOK:
 
-
-; Load kernel file (origin ELF file) ----------------------------------------
-	push 	es
-	mov 	ax, 189					; Start from sector 190,
-	mov 	dx, 0x1000				; to memory.
-	mov 	bx, 0x0
-.loop_ReadSec:
-	push 	ax
-	push 	dx
-	call 		ReadSector
-	pop 	dx
-	pop 	ax
 	
-	inc 		ax
-	add 		bx, 0x200 				; 内存地址偏移512字节
+; Load kernel file (origin ELF file) -------------------------------
+; NOTE: 调用int 13h, ah=0x42，每次读入64 个扇区；填充内存0x10000~0x7ffff。
+	mov 	si, DAP_struct
+	mov 	ecx, 189					; Start from logic sector 189
+	mov 	dx, 0x1000				; 起始内存段地址
+	mov 	bx, 0x0 					; 起始内存偏移地址
+.loop_load_kernel:
+	push 	dx
+	mov 	[DAP_SecStart], ecx
+	mov 	[DAP_Mem_seg], dx
+	mov 	[DAP_Mem_off], bx
+	call 		ReadSector_LBA
+	pop 	dx
+	
+	add 		ecx, 64 					; 硬盘偏移64 个扇区
+	add 		bx, 0x8000 				; 内存偏移地址递增32KB
 	cmp 	bx, 0x0000
-	jne 		.loop_ReadSec
+	jne 		.loop_load_kernel
 
-	add 		dx, 0x1000				; 段地址递增
+	add 		dx, 0x1000				; 内存段地址递增
 	cmp 	dx, 0x8000
-	jne 		.loop_ReadSec
-
-	pop 	es
+	jne 		.loop_load_kernel
 
 	
 ; 准备跳入保护模式 -------------------------------------------
@@ -97,59 +97,16 @@ LABEL_START:
 
 
 
-;----------------------------------------
-;	Function: 		ReadSector
-; 	Description:	Read sectors from hard disk.
-; 	NOTE:			Using BIOS interrupt service 13H, function 02H.
-;		INT 13H，AH=02H 读扇区:
-;		入口参数：
-;			AH=02H 指明调用读扇区功能。
-;			AL 置要读的扇区数目，不允许使用读磁道末端以外的数值，也不允许使该寄存器为0。
-;			DL 需要进行读操作的驱动器号。
-;			DH 所读磁盘的磁头号。
-;			CH 磁道号的低8位数。
-;			CL 低6位放入所读起始扇区号，位7-6表示磁道号的高2位。
-;			ES:BX 读出数据的缓冲区地址。
-;		返回参数：
-;			如果CF=1，AX中存放出错状态。读出后的数据在ES:BX区域依次排列。
-;
-; -----------------------------------------------------------------------
-; 怎样由扇区号求扇区在磁盘中的位置 (扇区号 -> 柱面号, 起始扇区, 磁头号)
-; -----------------------------------------------------------------------
-; 设扇区号为 x （起始扇区号为0）
-;                                          ┌ 柱面号 = y / 磁头数
-;       x                      ┌ 商 y ┤
-; ------------------- => ┤         └ 磁头号 = y / 磁头数 的余数
-;  每磁道扇区数      │
-;                               └ 余 z => 起始扇区号 = z + 1
-;----------------------------------------
-ReadSector:
-	mov 	es, dx				; es的值存放在dx中
-
-	push	bx					; 保存 bx
-	mov		bl, SecPerTrk	; bl: 除数
-	div		bl						; y 在 al 中, z 在 ah 中
-	inc 		ah
-	mov		cl, ah				; cl <- 起始扇区号
-	xor 		ah, ah
-	mov 	bl, HeadsNum	; 磁头数
-	div 		bl 					; y/HeadsNum
-	mov 	ch, al 				; ch <- 柱面号
-	mov 	dh, ah 				; dh <- 磁头号
-	pop		bx					; 恢复 bx
-	; 至此, "柱面号, 起始扇区, 磁头号" 全部得到 ^^^^^^^^^^^^^^^^^^^^^^^^
-	mov		dl, DrvNum		; 驱动器号
-.GoOnReading:
-	mov		ah, 0x02			; 读
-	mov		al, 1					; 读 1 个扇区
-	int		0x13				; int 13h
-	jc			.GoOnReading	; 如果读取错误 CF 会被置为 1, 这时就不停地读, 直到正确为止
-
+ReadSector_LBA:
+	mov 	dl, DrvNum
+	mov 	ah, 0x42
+	int 		0x13
+	
 	ret
 
 
 
-; 32-bit 保护模式代码段
+; 32-bit 保护模式代码段 --------------------------------------------------
 [SECTION .s32]
 ALIGN	32
 [BITS	32]
@@ -164,22 +121,22 @@ LABEL_PM_START:
 	mov		ss, ax
 	mov		esp, TopOfStack
 
-	push	szMemChkTitle				; 显示内存信息标题
+	push	szMemChkTitle							; 显示内存信息标题
 	call		DispStr
 	add		esp, 4
 
-	call		DispMemInfo 				; 显示内存信息
+	call		DispMemInfo 							; 显示内存信息
 
-	mov 	eax, [dwMemSize] 		; 将内存大小写入到指定地址
+	mov 	eax, [dwMemSize] 					; 将内存大小写入到指定地址
 	mov 	[MemSizeInfo_PhyAddr], eax
 
-	call		InitKernel 						; 解析kernel 的ELF 格式，将kernel 代码在内存中重定位
+	call		InitKernel 									; 解析kernel 的ELF 格式，将kernel 代码在内存中重定位
 
 	jmp		SelectorFlatC:KernelEntryPoint_PhyAddr		; 进入内核
 
 
 
-%include "include/asm_pm_display_lib.inc"
+%include "include/asm_pm_lib.inc"
 
 
 ; ------------------------------------------------------------------------
@@ -230,14 +187,14 @@ DispMemInfo:
 
 	mov			esi, MemChkBuf
 	mov			ecx, [dwMCRNumber]		;for(int i=0;i<[MCRNumber];i++) 
-.loop:												;{// 每次得到一个ARDS(Address Range Descriptor Structure)结构
+.loop:													;{// 每次得到一个ARDS(Address Range Descriptor Structure)结构
 	mov			edx, 5								;	for(int j=0;j<5;j++)	// 每次得到一个ARDS中的成员，共5个成员
 	mov			edi, ARDStruct					;	{	// 依次显示：BaseAddrLow，BaseAddrHigh，LengthLow，LengthHigh，Type
-.1:													;
+.1:														;
 	push		dword [esi]						;
 	call			DispInt								;		DispInt(MemChkBuf[j*4]); // 显示一个成员
 	pop			eax									;
-	stosd											;		ARDStruct[j*4] = MemChkBuf[j*4];
+	stosd												;		ARDStruct[j*4] = MemChkBuf[j*4];
 	add			esi, 4								;
 	dec			edx									;
 	cmp			edx, 0								;
@@ -250,14 +207,14 @@ DispMemInfo:
 	cmp			eax, [dwMemSize]			;		if(BaseAddrLow + LengthLow > MemSize)
 	jb				.2										;
 	mov			[dwMemSize], eax			;			MemSize = BaseAddrLow + LengthLow;
-.2:													;	}
+.2:														;	}
 	loop			.loop								;}
-														;
+															;
 	call			DispReturn						;printf("\n");
 	push		szRAMSize						;
 	call			DispStr								;printf("RAM size:");
 	add			esp, 4								;
-														;
+															;
 	push		dword [dwMemSize]		;
 	call			DispInt								;DispInt(MemSize);
 	add			esp, 4								;
@@ -325,6 +282,16 @@ _ARDStruct:		; Address Range Descriptor Structure
 	_dwLengthHigh:		dd	0
 	_dwType:					dd	0
 _MemChkBuf:				times	MEM_INFO_LEN	db	0
+
+DAP_struct:
+	DAP_Size: 				db 	16
+	DAP_unused_1:		db 	0
+	DAP_SecNum: 			db 	64
+	DAP_unused_2: 		db 	0
+	DAP_Mem_off: 		dw 	0
+	DAP_Mem_seg: 			dw 	0
+	DAP_SecStart: 			dd 	0, 0
+	
 ;
 ;; 保护模式下使用这些符号
 szMemChkTitle				equ		BaseOfLoader_PhyAddr + _szMemChkTitle
