@@ -20,5 +20,7 @@ int	memcmp(const void *s1, const void *s2, size_t len);
 void *	memfind(const void *s, int c, size_t len);
 
 long	strtol(const char *s, char **endptr, int base);
+int str2num(char *str);
+int str2addr(char *str);
 
 #endif 

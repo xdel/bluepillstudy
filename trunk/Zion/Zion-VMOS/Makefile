@@ -57,7 +57,9 @@ $(OBJDIR)/Zion-VMOS: $(OBJDIR)/kernel
 	$(V)$(OBJCOPY) --adjust-vma=0x10000000 $^ $@
 
 install: $(OBJDIR)/Zion-VMOS
-	sudo cp $(OBJDIR)/Zion-VMOS /boot
+	sudo cp $< /boot
+	sudo cp $< ~/VM_project/Seraph
+	sudo dd if=$< of=/dev/sda bs=512 count=512 seek=61431000 
 
 clean:
 	rm -rf $(OBJDIR) 

@@ -215,3 +215,50 @@ strtol(const char *s, char **endptr, int base)
 	return (neg ? -val : val);
 }
 
+
+
+int 
+str2num(char *str)
+{ 
+	int 	n = 0;
+	int 	i = 0;
+	while ( str[i] != '\0' ) {
+		n = n * 10 + ((int)str[i] - '0');
+		i++;
+	}//while
+	
+	return n; 
+}//str2num()
+
+
+
+int 
+str2addr(char *str)
+{
+	int 	i = 2;
+	int 	addr = 0;
+	
+	if ( str[0] != '0' || str[1] != 'x') {
+		return 0;
+	}//if
+
+	while ( str[i] != '\0' ) {
+		switch(str[i]) {
+			case 'f':
+			case 'e':
+			case 'd':
+			case 'c':
+			case 'b':
+			case 'a':
+				addr = addr * 16 + ((int)str[i]-'a' + 10);
+				i++;
+				break;
+			default:
+				addr = addr * 16 + ((int)str[i]-'0');
+				i++;
+				break;
+		}//switch
+	}//while
+	
+	return addr;
+}//str2addr

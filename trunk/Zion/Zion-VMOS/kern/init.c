@@ -15,7 +15,6 @@ void i386_init(void)
 	extern char edata[], end[];
 	extern const uint32_t sctors[], ectors[];
 	const uint32_t *ctorva;
-
 	// Initialize the console.
 	// Can't call cprintf until after we do this!
 	cons_init();
@@ -32,7 +31,7 @@ void i386_init(void)
 	cprintf("    -----------------------------------------------------------------\n");
 	cprintf("    | ***** Zion Virtual Machine Operating System (Zion VMOS) ***** |\n");
 	cprintf("    | COPYRIGHT @ School of Software, Shanghai Jiao Tong University |\n");
-	cprintf("    | Version: 9.07.15                                              |\n");
+	cprintf("    | Version: 9.09.05-2                                              |\n");
 	cprintf("    -----------------------------------------------------------------\n");
 	cprintf("\n");
 
@@ -42,6 +41,8 @@ void i386_init(void)
 
 	// Interrupt and gate descriptor initialization.
 	idt_init();
+	
+//	__asm__ __volatile__("int3");
 
 	// Drop into the kernel monitor.
 	while (1)
