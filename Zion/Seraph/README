@@ -1,0 +1,46 @@
+！！ 首次安装Seraph 前，必须备份MBR，否则后果很严重！！
+备份MBR 的方法：打开终端，在Seraph 目录下运行以下命令
+$ make backupMBR
+
+
+[ Seraph 调试、编译及安装说明 ]
+1、用winhex 等工具，查找硬盘中空闲的、1024个连续的扇区，记录起始扇区的逻辑扇区号，将其填入以下两个地方：
+(1) Makefile 中install 分支的最有一行
+	install:
+		……
+		sudo dd if=Zion-VMOS of=/dev/sda bs=512 count=512 seek=####
+	“####”即为所要填写的扇区号。
+
+(2) include/load.inc 文件中条件编译语句的else 分支
+	%ifdef __BOCHS_DEBUG__
+	StartSecOfKernalFile 				equ 		189				; kernle ELF 文件在硬盘中的起始扇区号
+	%else
+	StartSecOfKernalFile 				equ 		####			; kernle ELF 文件在硬盘中的起始扇区号
+	%endif
+	“####”即为所要填写的扇区号。
+
+完成后，分别保存文件。
+
+
+2、Bochs 调试：将include/load.inc 文件中第一行的注释去掉
+	%define 	__BOCHS_DEBUG__
+	……
+	然后，在Seraph 目录下运行脚本
+$ ./remake
+
+
+3、安装到硬盘：将include/load.inc 文件中第一行屏蔽（用分号“;”）
+	;%define 	__BOCHS_DEBUG__
+	……
+	然后，在Seraph 目录下运行脚本
+$ ./reinstall
+	最后重启系统。
+	
+	
+4、卸载：在Seraph 目录下运行命令
+$ make uninstall
+
+
+[ NOTE ]
+Qian Lin 的空闲硬盘扇区号：71682500
+Peijie Yu 的空闲硬盘扇区号：61431000
