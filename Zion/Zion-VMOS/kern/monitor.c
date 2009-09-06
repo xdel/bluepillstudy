@@ -12,6 +12,9 @@
 
 #define CMDBUF_SIZE	80	// enough for one VGA text line
 
+//extern char 	cmdrec[][];
+//extern int 		cmdcnt, cmdlen[];
+
 struct Command {
 	const char *name;
 	const char *desc;
@@ -27,6 +30,7 @@ static struct Command commands[] = {
 	{ "reboot", "Restart the system.", mon_reboot },
 	{ "cpuid", "Display processor identification values.", mon_cpuid },
 	{ "cpuinfo", "Display CPU feature information.", mon_cpuinfo },
+	{ "x", "check the memory ", mon_memcheck},
 };
 #define NCOMMANDS (int) (sizeof(commands)/sizeof(commands[0]))
 
@@ -59,7 +63,7 @@ mon_cpuid( int argc, char **argv, struct Trapframe *tf )
 int 
 mon_cpuinfo(int argc, char **argv, struct Trapframe *tf)
 {
-	if( !cpuinfo() ) {
+	if( cpuinfo() ) {
 		return -1;
 	}
 
@@ -76,12 +80,14 @@ mon_help(int argc, char **argv, struct Trapframe *tf)
 
 	for (i = 0; i < NCOMMANDS; i++)
 		cprintf("%s - %s\n", commands[i].name, commands[i].desc);
+		cprintf("try UP-ARROW key for last command\n");
 	return 0;
 }
 
 
 
-int mon_kerninfo(int argc, char **argv, struct Trapframe *tf)
+int 
+mon_kerninfo(int argc, char **argv, struct Trapframe *tf)
 {
 	extern char _start[], etext[], edata[], end[];
 
@@ -145,7 +151,8 @@ int mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 /* 
  * Monitor exit
  */
-int mon_exit(int argc, char **argv, struct Trapframe *tf)
+int 
+mon_exit(int argc, char **argv, struct Trapframe *tf)
 {
 	if( tf==NULL )	// Skip if this function runs in normal monitor.
 		return 0;
@@ -163,13 +170,46 @@ int mon_exit(int argc, char **argv, struct Trapframe *tf)
 
 
 
-int mon_reboot( int argc, char** argv, struct Trapframe* tf )
+int 
+mon_reboot( int argc, char** argv, struct Trapframe* tf )
 {
 	cprintf("\n[ System Restarting! ]\n");
 	outb(0x92, 0x3);
 
 	return 0;
 }//mon_reboot()
+
+
+
+int
+mon_memcheck( int argc, char **argv, struct Trapframe *tf )
+{
+	uint32_t		i, j, n, addr, mem, *paddr;
+    
+	if ( argc < 2 || argc > 3 ) {
+		return 0;
+	}//if
+	
+	if ( argc == 2 ) { 
+		n = 1;
+		addr = str2addr(argv[1]);
+	} else {
+		n = str2num(argv[1]);
+		addr = str2addr(argv[2]);
+	}//if...else
+	
+	for ( i=0, paddr=(uint32_t *)addr; i < n; ) {
+		for ( j = 0; j < 2 && i < n; j++  ) {
+			mem = *paddr;
+			cprintf("[0x%08x]: %08x\t", paddr, mem);
+			paddr++;
+			i += 4;
+		}//for(j)
+		cprintf("\n");
+	}//for(i)
+	
+	return 0;
+}//mon_memcheck()
 
 
 
@@ -215,7 +255,8 @@ static int runcmd(char *buf, struct Trapframe *tf)
 	return 0;
 }
 
-void monitor(struct Trapframe *tf)
+void 
+monitor (struct Trapframe *tf)
 {
 	char *buf;
 
@@ -230,5 +271,5 @@ void monitor(struct Trapframe *tf)
 		if (buf != NULL)
 			if (runcmd(buf, tf) < 0)
 				break;
-	}
-}
+	}//while
+}//monitor()

@@ -39,7 +39,7 @@
 
 .globl		_start
 _start:
-	movw	$0x1234,0x472			# warm boot
+#	movw	$0x1234,0x472			# warm boot
 
 	# Establish our own GDT in place of the boot loader's temporary GDT.
 	lgdt	RELOC(mygdtdesc)		# load descriptor table

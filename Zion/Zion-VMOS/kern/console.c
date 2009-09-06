@@ -9,113 +9,23 @@
 void cons_intr(int (*proc)(void));
 
 
-/***** Serial I/O code *****/
-#define 	COM1			0x3F8
-#define 	COM_RX			0		// In:	Receive buffer (DLAB=0)
-#define 	COM_DLL			0		// Out: Divisor Latch Low (DLAB=1)
-#define 	COM_DLM			1		// Out: Divisor Latch High (DLAB=1)
-#define 	COM_IER			1		// Out: Interrupt Enable Register
-#define   	COM_IER_RDI		0x01	//   Enable receiver data interrupt
-#define 	COM_IIR			2		// In:	Interrupt ID Register
-#define 	COM_FCR			2		// Out: FIFO Control Register
-#define 	COM_LCR			3		// Out: Line Control Register
-#define	  	COM_LCR_DLAB	0x80	//   Divisor latch access bit
-#define	  	COM_LCR_WLEN8	0x03	//   Wordlength: 8 bits
-#define 	COM_MCR			4		// Out: Modem Control Register
-#define	  	COM_MCR_RTS		0x02	// RTS complement
-#define	  	COM_MCR_DTR		0x01	// DTR complement
-#define	  	COM_MCR_OUT2	0x08	// Out2 complement
-#define 	COM_LSR			5		// In:	Line Status Register
-#define   	COM_LSR_DATA	0x01	//   Data available
-
-static bool serial_exists;
-
-
-
-int serial_proc_data(void)
-{
-	if (!(inb(COM1+COM_LSR) & COM_LSR_DATA))
-		return -1;
-	return inb(COM1+COM_RX);
-}//serial_proc_data()
-
-
-
-void serial_intr(void)
-{
-	if (serial_exists)
-		cons_intr(serial_proc_data);
-}//serial_intr()
-
-
-
-void
-serial_init(void)
-{
-	// Turn off the FIFO
-	outb(COM1+COM_FCR, 0);
-	
-	// Set speed; requires DLAB latch
-	outb(COM1+COM_LCR, COM_LCR_DLAB);
-	outb(COM1+COM_DLL, (uint8_t) (115200 / 9600));
-	outb(COM1+COM_DLM, 0);
-
-	// 8 data bits, 1 stop bit, parity off; turn off DLAB latch
-	outb(COM1+COM_LCR, COM_LCR_WLEN8 & ~COM_LCR_DLAB);
-
-	// No modem controls
-	outb(COM1+COM_MCR, 0);
-	// Enable rcv interrupts
-	outb(COM1+COM_IER, COM_IER_RDI);
-
-	// Clear any preexisting overrun indications and interrupts
-	// Serial port doesn't exist if COM_LSR returns 0xFF
-	serial_exists = (inb(COM1+COM_LSR) != 0xFF);
-	(void) inb(COM1+COM_IIR);
-	(void) inb(COM1+COM_RX);
-}
-
-
-
-/***** Parallel port output code *****/
-// Stupid I/O delay routine necessitated by historical PC design flaws
-static void delay(void)
-{
-	inb(0x84);
-	inb(0x84);
-	inb(0x84);
-	inb(0x84);
-}
-
-static void lpt_putc(int c)
-{
-	int i;
-
-	for (i = 0; !(inb(0x378+1) & 0x80) && i < 12800; i++)
-		delay();
-	outb(0x378+0, c);
-	outb(0x378+2, 0x08|0x04|0x01);
-	outb(0x378+2, 0x08);
-}
-
-
-
 /***** Text-mode CGA/VGA display output *****/
-static unsigned addr_6845;
-static uint16_t *crt_buf;
-static uint16_t crt_pos;
+static unsigned 	addr_6845;
+static uint16_t 		*crt_buf;
+static uint16_t 		crt_pos;
 
 // Scrollback support
 #define CRT_SAVEROWS	128
 
 #if CRT_SAVEROWS > 0
-static uint16_t crtsave_buf[CRT_SAVEROWS * CRT_COLS];
-static uint16_t crtsave_pos;
-static int16_t crtsave_backscroll;
-static int16_t crtsave_size;
+static uint16_t 	crtsave_buf[CRT_SAVEROWS * CRT_COLS];
+static uint16_t 	crtsave_pos;
+static int16_t 	crtsave_backscroll;
+static int16_t 	crtsave_size;
 #endif
 
-static void cga_init(void)
+static void 
+cga_init ( void )
 {
 	volatile uint16_t *cp = (uint16_t*) (KERNBASE + CGA_BUF);
 	uint16_t was = *cp;
@@ -133,10 +43,13 @@ static void cga_init(void)
 	unsigned pos = inb(addr_6845 + 1) << 8;
 	outb(addr_6845, 15);
 	pos |= inb(addr_6845 + 1);
-
+	
+	crtsave_pos = 0;
+	crtsave_backscroll = 0;
+	crtsave_size = 0;
 	crt_buf = (uint16_t*) cp;
 	crt_pos = pos;
-}
+}//cga_init()
 
 
 #if CRT_SAVEROWS > 0
@@ -199,7 +112,6 @@ static void cga_putc(int c)
 		cga_putc(' ');
 		cga_putc(' ');
 		cga_putc(' ');
-		cga_putc(' ');
 		break;
 	default:
 		crt_buf[crt_pos++] = c;		/* write the character */
@@ -252,15 +164,15 @@ static void cga_scroll(int delta)
 
 
 /***** Keyboard input code *****/
-#define SHIFT		(1<<0)
-#define CTL			(1<<1)
-#define ALT			(1<<2)
+#define 	SHIFT				(1<<0)
+#define 	CTL					(1<<1)
+#define 	ALT					(1<<2)
 
-#define CAPSLOCK	(1<<3)
-#define NUMLOCK		(1<<4)
-#define SCROLLLOCK	(1<<5)
+#define 	CAPSLOCK		(1<<3)
+#define 	NUMLOCK		(1<<4)
+#define 	SCROLLLOCK	(1<<5)
 
-#define E0ESC		(1<<6)
+#define 	E0ESC				(1<<6)
 
 // Synonyms of other keys for the numeric keypad
 #define KEY_KP_ENTER	'\n'
@@ -407,15 +319,16 @@ static const uint8_t * const charcode[4] = {
  * Get data from the keyboard.  If we finish a character, return it.  Else 0.
  * Return -1 if no data.
  */
-static int kbd_proc_data(void)
+static int 
+kbd_proc_data ( void )
 {
+	static uint32_t shift = 0;
 	int c;
-	uint8_t data;
-	static uint32_t shift;
-
-	if ((inb(KBSTATP) & KBS_DIB) == 0)
+	uint8_t 	data;
+	
+	if ((inb(KBSTATP) & KBS_DIB) == 0) {
 		return -1;
-
+	}//if
 	data = inb(KBDATAP);
 
 	if (data == 0xE0) {
@@ -431,7 +344,7 @@ static int kbd_proc_data(void)
 		// Last character was an E0 escape; or with 0x80
 		data |= 0x80;
 		shift &= ~E0ESC;
-	}
+	}//if...else
 
 	shift |= shiftcode[data];
 	shift ^= togglecode[data];
@@ -455,26 +368,30 @@ static int kbd_proc_data(void)
 	// Ctrl-Alt-Del: reboot
 	if (!(~shift & (CTL | ALT)) && c == KEY_DEL) {
 		cprintf("Rebooting!\n");
-		outb(0x92, 0x3); // courtesy of Chris Frost
+		outb(0x92, 0x3);
 	}
 
 	return c;
-}
+}//kbd_proc_data()
 
-void kbd_intr(void)
+
+void 
+kbd_intr( void )
 {
 	cons_intr(kbd_proc_data);
-}
+}//kbd_intr()
 
-void kbd_init(void)
+
+void 
+kbd_init ( void )
 {
-}
+}//kbd_init()
 
 
 
 /***** General device-independent console code *****/
 // Here we manage the console input buffer,
-// where we stash characters received from the keyboard or serial port
+// where we stash characters received from the keyboard 
 // whenever the corresponding interrupt occurs.
 
 #define CONSBUFSIZE 512
@@ -492,8 +409,10 @@ static struct {
 void cons_intr(int (*proc)(void))
 {
 	int c;
-
+	//cprintf("TEST:begin cons_intr\n");
+	//cprintf("rpos:%d wpos:%d\n", cons.rpos, cons.wpos);
 	while ((c = (*proc)()) != -1) {
+		//cprintf("TEST:cons_intr got %d rpos %x wpos %x\n", c, cons.rpos, cons.wpos);
 		if (c == 0)
 			continue;
 		cons.buf[cons.wpos++] = c;
@@ -512,16 +431,15 @@ int cons_getc(void)
 	// poll for any pending input characters,
 	// so that this function works even when interrupts are disabled
 	// (e.g., when called from the kernel monitor).
-	serial_intr();
 	kbd_intr();
-
+	//cprintf("TEST:rpos %d wpos %d\n", cons.rpos, cons.wpos);
 	// grab the next character from the input buffer.
 	if (cons.rpos != cons.wpos) {
 		c = cons.buf[cons.rpos++];
 		if (cons.rpos == CONSBUFSIZE)
 			cons.rpos = 0;
 		return c;
-	}
+	}//if
 	return 0;
 }//cons_getc()
 
@@ -530,7 +448,6 @@ int cons_getc(void)
 // output a character to the console
 void cons_putc(int c)
 {
-	lpt_putc(c);
 	cga_putc(c);
 }//cons_putc()
 
@@ -541,10 +458,9 @@ void cons_init(void)
 {
 	cga_init();
 	kbd_init();
-	serial_init();
 
-	if (!serial_exists)
-		cprintf("Serial port does not exist!\n");
+//	cons.rpos = 0;
+//	cons.wpos = 0;
 }//cons_init()
 
 

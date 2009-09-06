@@ -170,6 +170,7 @@ trap(struct Trapframe *tf)
 	// LAB 2: Your code here.
 //----- Qian edit -----	
 	case T_BRKPT:	// Breakpoint
+		cprintf("TEST: break entry.\n");
 		monitor(tf);	// Invoke monitor.
 		break;
 //----- Qian edit [end] -----
