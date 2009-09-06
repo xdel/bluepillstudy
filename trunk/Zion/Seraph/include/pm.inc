@@ -37,7 +37,7 @@ DA_CCOR			EQU		9Eh		; 存在的可执行可读一致代码段属性值
 ;        Base:  dd
 ;        Limit: dd (low 20 bits available)
 ;        Attr:  dw (lower 4 bits of higher byte are always 0)
-%macro Descriptor 3
+%macro 	Descriptor 	3
 	dw	%2 & 0xFFFF											; 段界限 1								(2 字节)
 	dw	%1 & 0xFFFF											; 段基址 1								(2 字节)
 	db	(%1 >> 16) & 0xFF									; 段基址 2								(1 字节)
@@ -45,4 +45,4 @@ DA_CCOR			EQU		9Eh		; 存在的可执行可读一致代码段属性值
 	db	(%1 >> 24) & 0xFF									; 段基址 3								(1 字节)
 %endmacro 														; 											共 8 字节
 ;
-; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
