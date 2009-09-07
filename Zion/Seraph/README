@@ -5,7 +5,7 @@ $ make backupMBR
 
 [ Seraph 调试、编译及安装说明 ]
 1、用winhex 等工具，查找硬盘中空闲的、1024个连续的扇区，记录起始扇区的逻辑扇区号，将其填入以下两个地方：
-(1) Makefile 中install 分支的最有一行
+(1) Makefile 中install 分支的最后一行
 	install:
 		……
 		sudo dd if=Zion-VMOS of=/dev/sda bs=512 count=512 seek=####
