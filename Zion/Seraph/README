@@ -22,25 +22,18 @@ $ make backupMBR
 完成后，分别保存文件。
 
 
-2、Bochs 调试：将include/load.inc 文件中第一行的注释去掉
-	%define 	__BOCHS_DEBUG__
-	……
-	然后，在Seraph 目录下运行脚本
+2、Bochs 调试：在Seraph 目录下运行脚本
 $ ./remake
 
 
-3、安装到硬盘：将include/load.inc 文件中第一行屏蔽（用分号“;”）
-	;%define 	__BOCHS_DEBUG__
-	……
-	然后，在Seraph 目录下运行脚本
+3、安装到硬盘：在Seraph 目录下运行脚本
 $ ./reinstall
-	最后重启系统。
 	
 	
 4、卸载：在Seraph 目录下运行命令
 $ make uninstall
 
 
-[ NOTE ]
+[ Memo ]
 Qian Lin 的空闲硬盘扇区号：71682500
 Peijie Yu 的空闲硬盘扇区号：61431000

@@ -16,8 +16,14 @@ DASFLAG 	=
 
 all: image 
 
+bochs_debug: 
+	echo "%define __BOCHS_DEBUG__" > include/bochs.inc
+	
+no_debug: 
+	echo "%define __NO_BOCHS_DEBUG__" > include/bochs.inc
+
 # Write binary into bochs disk image
-image: $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion 
+image: bochs_debug $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion 
 	dd if=$(OBJDIR)/boot of=Seraph_boot.img bs=512 count=1 conv=notrunc
 	dd if=$(OBJDIR)/boot2 of=Seraph_boot.img bs=512 seek=33 count=1 conv=notrunc
 	dd if=$(OBJDIR)/boot_Zion of=Seraph_boot.img bs=512 seek=34 count=6 conv=notrunc
@@ -52,11 +58,11 @@ backupMBR:
 	sudo dd if=MBR.origin of=/dev/sda bs=512 count=1 seek=32
 
 # Install Seraph on disk.
-install: $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion
+install: no_debug $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion
 	sudo dd if=$(OBJDIR)/boot of=/dev/sda bs=446 count=1
 	sudo dd if=$(OBJDIR)/boot2 of=/dev/sda bs=512 count=1 seek=33
 	sudo dd if=$(OBJDIR)/boot_Zion of=/dev/sda bs=512 count=20 seek=34
-	sudo dd if=Zion-VMOS of=/dev/sda bs=512 count=512 seek=61431000 
+	sudo dd if=Zion-VMOS of=/dev/sda bs=512 count=512 seek=71682500 
 
 # Uninstall Seraph on disk.
 uninstall:
