@@ -1,4 +1,4 @@
-;%define 	__BOCHS_DEBUG__
+%include "include/bochs.inc"
 
 ; ----- // for boot.asm, boot2.asm // -----
 MBR_offset 								equ 		0x7c00
@@ -14,7 +14,7 @@ SizeOfBoot_Zion 						equ 		8 										; boot_Zion size (with respect to sector
 %ifdef __BOCHS_DEBUG__
 StartSecOfKernalFile 				equ 		189									; kernle ELF 文件在硬盘中的起始扇区号
 %else
-StartSecOfKernalFile 				equ 		61431000						; kernle ELF 文件在硬盘中的起始扇区号
+StartSecOfKernalFile 				equ 		71682500						; kernle ELF 文件在硬盘中的起始扇区号
 %endif
 
 BaseOfLoader							equ	 	0x0									; loader 被加载到的位置 ----  段地址
