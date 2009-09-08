@@ -70,16 +70,6 @@ LABEL_START:
 ;	out 			0x60 , al
 ;	call 			Wait_8042
 	
-;------------- test key ---------------
-;	sti
-;	mov 		ah, 0x00
-;	int 			0x16 				; wait for key "S"
-;	and 			al, 0xdf			; Trun all char into uppercase.
-;	cmp 		al, 'S' 
-;	je 			$	
-;	cli
-;------------- test key ---------------
-
 	mov			eax, cr0 				; Trun on protect-mode
 	or				eax, 1
 	mov			cr0, eax
@@ -135,11 +125,11 @@ LoadKernelFile:
 ;	inc 			ecx 										; 硬盘便宜1 个扇区
 	add			ecx, 64 								; 硬盘偏移64 个扇区
 ;	add			bx, 0x200 							; 内存偏移地址递增512B
-	add 		bx, 0x8000 							; 内存偏移地址递增32KB
+	add 			bx, 0x8000 							; 内存偏移地址递增32KB
 	cmp 		bx, 0x0000
 	jne 			.loop_load_kernel
 
-	add 		dx, 0x1000							; 内存段地址递增
+	add 			dx, 0x1000							; 内存段地址递增
 	cmp 		dx, 0x8000
 	jne 			.loop_load_kernel
 
@@ -152,7 +142,7 @@ ReadSector_LBA:
 	mov 		dl, DrvNum 							; dl = 驱动器号
 	mov 		ah, 0x42 								; ah = 42h
 	int 			0x13									; int 13h
-	jc 			ReadSector_LBA 					; 如果读取错误 CF 会被置为 1, 这时就不停地读, 直到正确为止
+	jc 				ReadSector_LBA 					; 如果读取错误 CF 会被置为 1, 这时就不停地读, 直到正确为止
 	ret
 
 
@@ -184,29 +174,6 @@ LABEL_PM_START:
 ;	call		DispStr
 ;	add		esp, 4
 
-	jmp 	scanend_1
-	
-scanning:
-	xor 		eax, eax
-;	in 		al, 0x64
-;	and 		al, 2
-;	jz 			scanning
-	in 		al, 0x60
-	mov		ecx, 0x3fffffff
-	loop 	$
-	push		eax
-	call			DispInt								
-	add			esp, 4								
-	jmp		scanning
-scanend:	
-	mov 	al, 0xFF
-	out		0x64, al
-	in			al, 0x60
-	cmp		al, 0xfc
-	jne			scanend
-	
-scanend_1:
-	
 	call		DispMemInfo 								; 显示内存信息
 
 	mov 	eax, [dwMemSize] 						; 将内存大小写入到指定地址
@@ -228,8 +195,8 @@ scanend_1:
 
 	; Switch to kernel.
 	mov 		eax, [BaseOfKernelFile_PhyAddr + e_entry]
-	and 			eax, 0xffffff 								; !! OPTIONAL: clear high bits.
-	jmp			eax												; 进入内核
+	and 			eax, PAddrMask						; Physical address mask
+	jmp			eax											; 进入内核
 	
 ;	jmp		SelectorFlatC:KernelEntryPoint_PhyAddr		; 进入内核
 
@@ -344,7 +311,7 @@ InitKernel:
 	add			eax, BaseOfKernelFile_PhyAddr						;	┣ ::memcpy(	(void*)(pPHdr->p_vaddr),
 	push		eax																; src	┃		uchCode + pPHdr->p_offset,
 	mov 		eax, [esi + p_vaddr]									; dst	┃		pPHdr->p_filesz;
-	and 			eax, 0xffffff 												; !! OPTIONAL: clear high bits.
+	and 			eax, PAddrMask										; Physical address mask
 	push 		eax
 	call			MemCpy															;	┃
 	add			esp, 12															;	┛
@@ -368,7 +335,7 @@ InitKernel:
 	cmp			eax, SHT_NOBITS 
 	jne			.ConfigSection_NoAction
 	mov 		eax, dword [esi + sh_addr] 
-	and 			eax, 0xffffff													; !! OPTIONAL: clear high bits.
+	and 			eax, PAddrMask												; Physical address mask
 	mov 		ecx, dword [esi + sh_size]
 .ConfigSection_ClearLoop:
 	mov 		byte [eax], bl
@@ -419,7 +386,7 @@ DAP_struct:		; 被int 13h, ah=42h 调用的Disk Address Packet (DAP) 结构体
 	
 ;
 ;; 保护模式下使用这些符号
-szMemChkTitle			equ		BaseOfLoader_PhyAddr + _szMemChkTitle
+szMemChkTitle				equ		BaseOfLoader_PhyAddr + _szMemChkTitle
 szRAMSize					equ		BaseOfLoader_PhyAddr + _szRAMSize
 szReturn						equ		BaseOfLoader_PhyAddr + _szReturn
 dwDispPos					equ		BaseOfLoader_PhyAddr + _dwDispPos
@@ -435,5 +402,5 @@ MemChkBuf					equ		BaseOfLoader_PhyAddr + _MemChkBuf
 
 
 ; 堆栈在数据段的末尾
-StackSpace:				times	0x200		db	0
+StackSpace:					times	0x200		db	0
 TopOfStack					equ		BaseOfLoader_PhyAddr + $	; 栈顶

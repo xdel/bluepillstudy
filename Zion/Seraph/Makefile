@@ -11,6 +11,9 @@ CFLAGS 		= -c
 LDFLAGS 		= -s
 DASFLAG 	= 
 
+# include Makefile parameter head file
+include 	parameter.def
+
 # All Phony Targets
 .PHONY : all clean image $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion
 
@@ -24,11 +27,11 @@ no_debug:
 
 # Write binary into bochs disk image
 image: bochs_debug $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion 
-	dd if=$(OBJDIR)/boot of=Seraph_boot.img bs=512 count=1 conv=notrunc
-	dd if=$(OBJDIR)/boot2 of=Seraph_boot.img bs=512 seek=33 count=1 conv=notrunc
-	dd if=$(OBJDIR)/boot_Zion of=Seraph_boot.img bs=512 seek=34 count=6 conv=notrunc
-	dd if=Zion-VMOS of=Seraph_boot.img bs=512 seek=189 count=512 conv=notrunc
-	dd if=$(OBJDIR)/boot of=Seraph_boot.img bs=512 seek=32 count=1 conv=notrunc
+	dd if=$(OBJDIR)/boot of=$(BochsImgName) bs=512 count=1 conv=notrunc
+	dd if=$(OBJDIR)/boot2 of=$(BochsImgName) bs=512 seek=$(StartSecOfBoot2) count=1 conv=notrunc
+	dd if=$(OBJDIR)/boot_Zion of=$(BochsImgName) bs=512 seek=$(StartSecOfBoot_Zion) count=$(SizeOfBoot_Zion) conv=notrunc
+	dd if=$(KernelName) of=$(BochsImgName) bs=512 seek=$(StartSecOfKernalFile_bochs) count=$(SizeOfKernelFile) conv=notrunc
+	dd if=$(OBJDIR)/boot of=$(BochsImgName) bs=512 seek=$(StartSecOfMBR_bak) count=1 conv=notrunc
 
 $(OBJDIR)/boot: boot/boot.asm 
 	@mkdir -p $(@D)
@@ -54,18 +57,18 @@ clean:
 # Backup original MBR
 backupMBR:
 	rm -f MBR.origin
-	sudo dd if=/dev/sda of=MBR.origin bs=512 count=1
-	sudo dd if=MBR.origin of=/dev/sda bs=512 count=1 seek=32
+	sudo dd if=$(HardDisk_Dev) of=MBR.origin bs=512 count=1
+	sudo dd if=MBR.origin of=$(HardDisk_Dev) bs=512 count=1 seek=$(StartSecOfMBR_bak)
 
 # Install Seraph on disk.
 install: no_debug $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/boot_Zion
-	sudo dd if=$(OBJDIR)/boot of=/dev/sda bs=446 count=1
-	sudo dd if=$(OBJDIR)/boot2 of=/dev/sda bs=512 count=1 seek=33
-	sudo dd if=$(OBJDIR)/boot_Zion of=/dev/sda bs=512 count=20 seek=34
-	sudo dd if=Zion-VMOS of=/dev/sda bs=512 count=512 seek=71682500 
+	sudo dd if=$(OBJDIR)/boot of=$(HardDisk_Dev) bs=446 count=1
+	sudo dd if=$(OBJDIR)/boot2 of=$(HardDisk_Dev) bs=512 count=1 seek=$(StartSecOfBoot2)
+	sudo dd if=$(OBJDIR)/boot_Zion of=$(HardDisk_Dev) bs=512 count=$(SizeOfBoot_Zion) seek=$(StartSecOfBoot_Zion)
+	sudo dd if=$(KernelName) of=$(HardDisk_Dev) bs=512 count=$(SizeOfKernelFile) seek=$(StartSecOfKernalFile)
 
 # Uninstall Seraph on disk.
 uninstall:
-	sudo dd if=/dev/sda of=MBR.temp bs=512 count=1 skip=32
-	sudo dd if=MBR.temp of=/dev/sda bs=512 count=1
+	sudo dd if=$(HardDisk_Dev) of=MBR.temp bs=512 count=1 skip=$(StartSecOfMBR_bak)
+	sudo dd if=MBR.temp of=$(HardDisk_Dev) bs=512 count=1
 	rm -f MBR.temp
