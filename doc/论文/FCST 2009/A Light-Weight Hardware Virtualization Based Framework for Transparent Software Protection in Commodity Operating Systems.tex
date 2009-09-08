@@ -594,71 +594,51 @@ relatively high system call rates, thus accessing CR3 register
 more often than other programs, which always causes trapping into
 hypervisor.
 
-The web server experiment, measuring the throughput bytes per
-second (bps), used the default configuration of APACHE 2.2.11
-win32 version. A test website is created with 10 random files, the
-size of which varies from 1KB to 8MB. The http\_load tool was set
-up on a remote host to generate requests for fetching all of these
-files with 100 concurrent connections. The client and server were
+The web server experiment, measuring the throughput bytes per second
+(Bps), used the default configuration of APACHE 2.2.11 win32
+version. A test website is created with 10 random files, the size of
+which varies from 1KB to 8MB. The http\_load tool was set up on a
+remote host to generate requests for fetching all of these files
+with 100 concurrent connections. The client and server were
 connected by a 100Mbps switch. The overhead of running the
 SNProtector is 0.55\%. Combined with the overall SPEC benchmarks,
-as shown in Figure 9, the total overhead to the guest machine is
-0.29\% on average.
-
-
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=0.45\textwidth]{fig9.png}
-\caption{{\bf Application Benchmark Summary.}} \label{Figure 8.}
-\end{figure}
-
+the total overhead to the guest machine is 0.29\% on average.
 
 \bigskip
 
 \section{related work}
 HEV Technology enables transparent intercepting guest OS exceptions
-and interrupts. This has been leveraged in the New Blue Pill project
-to intercept external timer source like HPET and Real Time
-Clock\cite{IEEEhowto:8}. Also, it enables another step of
-translating guest physical address into real machine physical
-address. Systems which employ this ability can be used in
-virtualizing physical address\cite{IEEEhowto:9} and transparent page
-sharing\cite{IEEEhowto:10} , as well as transparent VM migration
-among physical machines \cite{IEEEhowto:11}. Our approach modifies
-the guest OS's page table directly to provide different views of
-memory to guest machine and hypervisor.
-
-Another example is Overshadow\cite{IEEEhowto:6}, which also can be
-implemented by HBSP. With the help of additional layer of address
-translation, it provides different views of the sensitive
+and interrupts. One example is Overshadow\cite{IEEEhowto:6}, which
+also can be implemented by HBSP. With the help of additional layer
+of address translation, it provides different views of the sensitive
 application's address space according to the current context.
-Without affecting the existing OS and legacy protected
-application, even the hardware, kernel and other programs can only
-get the encrypted content from the protected application's virtual
-space. Considering only instruction interception at the moment,
-the performance of SNProtector is much higher than Overshadow
+Without affecting the existing OS and legacy protected application,
+even the hardware, kernel and other programs can only get the
+encrypted content from the protected application's virtual space.
+Considering only instruction interception at the moment, the
+performance of SNProtector is much higher than Overshadow
 comparatively.
 
 Many previous systems have attempted to provide a higher-assurance
 execution environment by means of building separate VMs.
-Proxos\cite{IEEEhowto:12} runs its protected applications in
-trusted VMs, with the ability of using the resource in the
-untrusted VM. Similarly, iKernel\cite{IEEEhowto:13} improves the
-commodity operating system's reliability and security by isolating
-the buggy and malicious device drivers running on separate virtual
-machine. To establish a configurable trust between applications
-and operating systems, partition system call interface  or
-separation of privilege\cite{IEEEhowto:15} is utilized to enable
-secure level code running in different VMs. Hypervisor based
-monitoring on malicious behaviors [15, 17] is used to handle
-certain security sensitive instructions. Focusing on the similar
-design goal, our approach excels at higher performance and less
-affect to legacy OS kernel due to the optimized design. Proxos
-\cite{IEEEhowto:12} requires code modification to both application
-and the kernel. While Igor Burdonov's work [14], Ether [15] and
-Lares [17] pose a high performance penalty and iKernel
-\cite{IEEEhowto:13} hasn't range its experiment statistics on
-temporal overhead test.
+Proxos\cite{IEEEhowto:12} runs its protected applications in trusted
+VMs, with the ability of using the resource in the untrusted VM.
+Similarly, iKernel\cite{IEEEhowto:13} improves the commodity
+operating system's reliability and security by isolating the buggy
+and malicious device drivers running on separate virtual machine. To
+establish a configurable trust between applications and operating
+systems, partition system call interface  or separation of
+privilege\cite{IEEEhowto:15} is utilized to enable secure level code
+running in different VMs. Hypervisor based monitoring on malicious
+behaviors [15, 17] is used to handle certain security sensitive
+instructions. Focusing on the similar design goal, our approach
+excels at higher performance and less affect to legacy OS kernel due
+to the optimized design. Proxos \cite{IEEEhowto:12} requires code
+modification to both application and the kernel. While Igor
+Burdonov's work \cite{IEEEhowto:15}, Ether \cite{IEEEhowto:16} and
+Lares \cite{IEEEhowto:18} pose a high performance penalty and
+iKernel \cite{IEEEhowto:13} hasn't range its experiment statistics
+on temporal overhead test.
 
 Intel's Trusted Execution Technology\cite{IEEEhowto:17} is another
 hardware-based software security approach, providing isolated
@@ -747,21 +727,9 @@ to Retrofitting Protection in Commodity Operating Systems.}\hskip
 
 \bibitem{IEEEhowto:7}
 Nick L. Petroni; PMichael Hicks. \emph {Automated detection of
-persistent kernel control-flow attacks.}\hskip 1em plus 0.5em
-minus 0.4em\relax Proceedings of the 14th Computer and
-communications security, Oct. 2007, Alexandria, Virginia, USA.
-
-\bibitem{IEEEhowto:8}
-Invisible Things Lab. \emph {Is GameOver() Anyone?}\\
-\hskip 1em plus 0.5em minus 0.4em\relax In Black Hat USA 2007, May
-2007.
-
-\bibitem{IEEEhowto:9}
-E. Bugnion; S. Devine; M. Rosenblum. \emph {Disco: Running
-Commodity Operating Systems on Scalable Multiprocessors.}\hskip
-1em plus 0.5em minus 0.4em\relax In Proceedings of the Sixteenth
-ACM Symposium on Operating Systems Principles, pages 143-156,
-October 1997.
+persistent kernel control-flow attacks.}\hskip 1em plus 0.5em minus
+0.4em\relax Proceedings of the 14th Computer and communications
+security, Oct. 2007, Alexandria, Virginia, USA.
 
 \bibitem{IEEEhowto:10}
 Carl A. Waldspurger. \emph {Memory resource management in VMware
