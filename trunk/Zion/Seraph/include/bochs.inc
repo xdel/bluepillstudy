@@ -1,1 +1,1 @@
-%define  __NO_BOCHS_DEBUG__
+%define __NO_BOCHS_DEBUG__
