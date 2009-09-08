@@ -127,15 +127,8 @@ party device drivers of a commodity operating system contain
 millions of lines of code\cite{IEEEhowto:7}. Meanwhile, nearly all
 the commercial operating systems provide tools to see other
 processes' address space and attach a thread to each process for
-debug use. As a result, there is no way to stop someone who
-intends to crack commercial software.
-
-Finally, current platform cannot verify the sender of a message.
-When verifying a serial key of software via Internet connections,
-the software cannot identify whether the received message comes
-from the target server. Even, the remote machine cannot
-distinguish whether a verification request comes from the real
-application or not.
+debug use. As a result, there is no way to stop someone who intends
+to crack commercial software.
 
 The growing popularity of hardware virtualization motivates our
 new solution of software protection. Previous efforts address to
@@ -187,36 +180,28 @@ conclude the ideas in section 7.
 \bigskip
 
 \section{Design Goals}
-Hardware Enabled Virtualization (HEV) Technology can be adopted as
-a way of software defense [10, 11, 17]. HBSP is built to offer
-another line of software protection even on an untrusted
-environment. This paper will start with describing its features,
-and then the limitations not studied yet.
-
-Our motivation is to introduce a new approach in protecting
-software that could be external and transparent to existing
-software, as well as being adopted easily. As a result, we build
-the lightweight HBSP with the following advantages:
+Hardware Enabled Virtualization (HEV) Technology can be adopted as a
+way of software defense [10, 11, 17]. Our motivation is to offer
+another line of software protection even on an untrusted environment
+while keeping external and transparent to existing software, as well
+as being adopted easily. As a result, we build the lightweight HBSP
+with the following advantages:
 
 {\bf\emph {Install/Uninstall on the fly}} \hskip 1em plus 0.5em
-minus 0.4em\relax Hardware Enabled Virtualization technology
-advices to start the hypervisor before constructing and powering
-on each virtual machine. HBSP inverts such process and loads the
-host OS into a virtual machine. By install/uninstalling hypervisor
-on the fly, it is much easier to use and debug the hypervisor,
-while not affecting any bit of the legacy OS and application, as
-well as the user experience.
+minus 0.4em\relax HBSP's key idea is to load the host OS into a
+virtual machine at runtime. By install/uninstalling hypervisor on
+the fly, it is much easier to use and debug the hypervisor, while
+not affecting the legacy OS and application's integrity, as well as
+the user experience.
 
 
 {\bf\emph {Flexible Configuration}} \hskip 1em plus 0.5em minus
 0.4em\relax In order to support various ways to protect software,
-for example, using \emph{Hardware-Virtual-Machine (HVM)} to protect
-the application data  and OS kernel , HBSP supplies a rich set of
-interfaces to configure VMCS (Virtual Machine Control Structure)
-struct and memory strategy. When comes to the high level it offers
-interfaces to initialize/start/shutdown the hypervisor. However,
-it's not advised to keep all sensitive data or code in hypervisor
-for performance reasons.
+HBSP supplies a rich set of interfaces to configure VMCS (Virtual
+Machine Control Structure) struct and memory strategy. Hypervisor
+can be configured at both the compile time and the runtime. However,
+it's not advised to keep all sensitive content in hypervisor for
+performance reasons.
 
 {\bf\emph {Support for other HEV technology}} \hskip 1em plus
 0.5em minus 0.4em\relax Currently HBSP supports Intel VT
@@ -247,55 +232,40 @@ will be placed in the top layer, with the help of the HBSP
 Services and the HBSP Interfaces. } \label{Figure 1.}
 \end{figure}
 
-HBSP uses a hierarchical structure, providing a low level
-abstraction of the HEV technology with a selected set of
-interfaces. HBSP leverages this mechanism by enabling hypervisor
-developers to customize the strategy and logic to protect
-software. Tailored from BluePill Project \cite{IEEEhowto:5}, HBSP
-doesn't include the anti anti-VMM detection module and runs on the
-x86 platform to expand its usage scope.
-
-Figure 1 presents the HBSP architecture. It is divided into three
-layers: Platform Related Layer, HBSP Interfaces and
-$\text3^\text{rd}$ Hypervisor Layer. In this section we will
-describe all the layers and the challenges to implement them in
-detail. The demonstration of making use of HBSP will be shown in
-Section 4.
+Figure 1 presents the HBSP architecture. Tailored from BluePill
+Project \cite{IEEEhowto:5} and migrated on to the x86 platform to
+expand its usage scope, HBSP is divided into three layers: Platform
+Related Layer, HBSP Interfaces and $\text3^\text{rd}$ Hypervisor
+Layer.
 
 {\bf\emph{Platform Related Layer}} \hskip 1em plus 0.5em minus
-0.4em\relax   All the platform related implementations are held
-within this layer. Intel VT and AMD SVM are the most common
-implementations of HEV technology on x86/x64 platform, whereas
-there exist differences between them (e.g. HEV-related
-instructions, checking platform, virtual-machine control
-structures, etc). Therefore, HBSP requires such a layer being
-responsible for hiding the differences and providing an HEV
-technology abstraction to the upper layers.
+0.4em\relax   This layer is used to mask implementation differences
+among HEV technologies (e.g. HEV-related instructions, checking
+platform, VMCS configurations, etc) and provide unique interfaces to
+upper layers.
 
-In Platform Related Layer, HBSP requires some implementation of
-HEV technology supporting the following routines (as we mentioned
-before, HBSP is tailored from BluePill Project, so we keep most of
-the procedure names and some function implementations), listed in
-Table 1.
+In Platform Related Layer, HBSP requires implementation of HEV
+technology supporting the following routines (Since HBSP is tailored
+from BluePill Project, we keep most of the procedure names and some
+function implementations), listed in Table 1.
 
 
 \iffalse
 \begin{itemize}
 \item {ArchIsHvmImplemented() \hskip 1em plus 0.5em minus
 0.4em\relax This procedure checks if a hardware platform supports
-HEV technology.} \item {ArchInitialize() \hskip 1em plus 0.5em
-minus 0.4em\relax This procedure takes the responsibility of
-initializing the hypervisor and guest machine, it can also enter
-the VMM if needed.} \item {ArchVirtualize() \hskip 1em plus 0.5em
-minus 0.4em\relax This routine is responsible for starting the
-guest machine. As a result, the original OS is put into the
-virtual machine and continue executing instructions with no sense
-to the underlying hypervisor.} \item {ArchDispatchEvent() \hskip
-1em plus 0.5em minus 0.4em\relax This function dispatches events
-to the proper handler. It is invoked under the following
-condition: the hypervisor is using the Default Event Handler
-supplied in HBSP, and a \#VMEXIT event is occurred in virtual
-machine.}
+HEV technology.} \item {ArchInitialize() \hskip 1em plus 0.5em minus
+0.4em\relax This procedure takes the responsibility of initializing
+the hypervisor and guest machine, it can also enter the VMM if
+needed.} \item {ArchVirtualize() \hskip 1em plus 0.5em minus
+0.4em\relax This routine is responsible for starting the guest
+machine. As a result, the original OS is put into the virtual
+machine and continue executing instructions with no sense to the
+underlying hypervisor.} \item {ArchDispatchEvent() \hskip 1em plus
+0.5em minus 0.4em\relax This function dispatches events to the
+proper handler. It is invoked under the following condition: the
+hypervisor is using the Default Event Handler supplied in HBSP and a
+\#VMEXIT event is occurred in virtual machine.}
 \end{itemize}
 \fi
 
@@ -322,49 +292,44 @@ ArchDispatchEvent() & \parbox[c]{5.0cm}{This function dispatches events to the p
 
 
 
-{\bf\emph{HBSP Interfaces}} \hskip 1em plus 0.5em minus
-0.4em\relax HBSP exports a set of interfaces called
-\emph{Strategy} to meet the requirement on the framework's
-behavior and resource management from hypervisor developer. For
-instance, with respect to Memory Strategy Interfaces, in order to
-allocate memory for future use, the Platform Related Layer calls
-proper functions declared in this set of interfaces. If Memory
-Hiding Strategy is used as the definition of the current memory
-strategy, HBSP always uses its private page table to allocate
-memory for the caller. While using the Default Memory Strategy as
-the current memory strategy, all the memory management tasks will
-be delegated to Windows system.
+{\bf\emph{HBSP Interfaces}} \hskip 1em plus 0.5em minus 0.4em\relax
+HBSP exports a set of interfaces called \emph{Strategy} to meet the
+requirement on the framework's behavior and resource management from
+hypervisor developer. For instance, with respect to Memory Strategy
+Interfaces, in order to allocate memory for future use, the Platform
+Related Layer calls proper functions declared in this set of
+interfaces. If Memory Hiding Strategy is used as the definition of
+the current memory strategy, HBSP always uses its private page table
+to allocate memory for the caller. While using the Default Memory
+Strategy results in all the memory management tasks will be
+delegated to Windows system.
 
 {\bf\emph{$\text3^\text{rd}$ Hypervisor Layer}} \hskip 1em plus
 0.5em minus 0.4em\relax This layer is concentrated on implementing
-customized hypervisor logic. Building on top of HBSP Interfaces,
-it supplies services and default HBSP Interfaces implementation to
-accelerate constructing a hypervisor, such as services for
-configuring VMCS. Modifying hypervisor configurations and
-implementing necessary HBSP interfaces are required when
-substituting the default strategies. By default, the build-in HBSP
+customized hypervisor logic. Building on top of HBSP Interfaces, it
+supplies services and default HBSP Interfaces implementation to
+accelerate constructing a hypervisor. By default, the build-in HBSP
 Services mainly include:
 
 \begin{itemize}
 \item Default Memory Management \hskip 1em plus 0.5em minus
 0.4em\relax HBSP supports two memory management strategies by
-default. The Default Memory Strategy uses the Windows kernel API
-to manage the hypervisor's code and data memory. Thus, any
-allocation and deallocation to this address space can be detected
-by other processes. In contrast, the Memory-Hiding Strategy uses
-memory-hiding technology and always preserves a private page
-table. The contents of the whole hypervisor's address space are
-hidden from guest OS; see Section 3.3 for details.
+default. The Default Memory Strategy uses the Windows kernel API to
+manage the hypervisor's code and data memory. Thus, any allocation
+and deallocation to this address space can be detected by other
+processes. In contrast, the Memory-Hiding Strategy is dedicated to
+keep the hypervisor out of the view of guest OS; see Section 3.3 for
+details.
 
 \item Default Event Handler \hskip 1em plus 0.5em minus
 0.4em\relax Default Event Handler is used to register a callback
-function with the indicated \#VMEXIT Reason. When an \#VMEXIT
-event happens, hardware automatically records the \#VMEXIT Reason
-in the VMCS before executing the first instruction in hypervisor.
-For the performance optimization, each \#VMEXIT Reason is linked
-to an independent event handler chain in HBSP. It cuts down the
-total time spending in the hypervisor for limiting the length of
-the chain.
+function with the indicated \#VMEXIT Reason. When an \#VMEXIT event
+happens, hardware automatically records the \#VMEXIT Reason in the
+VMCS before executing the first instruction in hypervisor. For the
+performance optimization, each \#VMEXIT Reason is linked to an
+independent event handler chain in HBSP. Thus it cuts down the total
+time spending in the hypervisor for limiting the length of the
+chain.
 \end{itemize}
 
 Currently, HBSP is designed to support only one guest machine at the
@@ -394,15 +359,14 @@ explicitly after it finishes handling the events.
 \end{figure}
 
 As shown in Figure 2, both guest user mode instructions and guest
-kernel mode instructions have the capability to trigger the
-hardware to generate a \#VMEXIT event then transferring control to
-the hypervisor. For example, when a guest application executes the
-CPUID instruction, a hardware \#VMEXIT event is generated and
-hardware activates the hypervisor automatically to handle the
-event (Transition 1). The hypervisor examines the \#VMEXIT reasons
-as well as the stored guest machine state to determine how to
-handle it properly. Hypervisor then uses VMX instructions to force
-the physical hardware to resume the guest machine's execution and
+kernel mode instructions have the capability to trigger the hardware
+to generate a \#VMEXIT event then transferring control to the
+hypervisor. For example, when a guest application executes the CPUID
+instruction, a \#VMEXIT event is generated and hardware activates
+the hypervisor automatically to handle the event (Transition 1). The
+hypervisor examines the stored guest machine state to determine how
+to handle it properly, then uses VMX instructions to force the
+physical hardware to resume the guest machine's execution and
 transfer the control back to the guest machine (Transition 2).
 
 Guest kernel has more chances to trap into the hypervisor. For
@@ -421,25 +385,21 @@ hypervisor can cheat a malicious kernel and software to protect
 applications.
 
 \subsection{Memory-Hiding Technology}
-A hypervisor is vulnerable if it can be accessed from the guest
-OS. To improve the approach of hypervisor based software
-protection, Memory-Hiding technology is applied to conceal the
-hypervisor completely. With this technique, applications and even
-the guest OS are unable to access its real content. In this
-section, we firstly describe the transparency limitation without
-Memory-Hiding, and then analyze its implementation. Finally, we
-will show the effectiveness after the hypervisor is turned on.
+A hypervisor is vulnerable if it can be accessed from the guest OS.
+To improve the approach of hypervisor based software protection,
+Memory-Hiding technology is applied to conceal the hypervisor
+completely. In this section, we firstly describe the transparency
+limitation without Memory-Hiding, and then analyze its
+implementation. Finally, we will show the effectiveness after the
+hypervisor is turned on.
 
 A typical commercial OS needs to build and manage process page
-tables for address translation. Nevertheless, this limits the
-hypervisor transparency to implement the feature of installing
-itself on the fly, in that all data and the hypervisor code is
-loaded by Guest OS. Consequently, the mapping from the
+tables for address translation. Consequently, the mapping from the
 hypervisor's virtual address  (VA) to real physical address
-(PA$_\text{real}$) is created as {P(VA, PA$_\text{real}$). Being
-accessible from the guest OS, a hypervisor can be easily modified
-and unloaded in the face of a malicious kernel. Figure 3 shows the
-limitation under this situation.
+(PA$_\text{real}$) is created as {P(VA, PA$_\text{real}$) in the
+system page table. Being accessible from the guest OS, a hypervisor
+can be easily invalidated in the face of a malicious kernel. Figure
+3 shows the limitation under this situation.
 
 \begin{figure}[!htb]
 \begin{center}
@@ -484,11 +444,9 @@ and not hard to implement.
 In order to verify the efficient and effectiveness of HBSP, we
 develop a simple hypervisor called \emph{SNProtector} to store the
 application's serial key validation algorithm and registration
-state. As a consequence, it protects the target software from
-cracked by dynamic analysis. Our protection goal is: even the
-source code of the application field is publicly known, the
-application still remains protected as long as the SNProtector
-hypervisor is running actively.
+state. Our protection goal is: even the source code of the
+application field is publicly known, the application still remains
+protected as long as the SNProtector hypervisor is active.
 
 \begin{figure}[!htb]
 \begin{center}
@@ -498,13 +456,10 @@ hypervisor is running actively.
 5.}
 \end{figure}
 
-Figure 5 shows the design and usage model of SNProtector. To
-fulfill the protection goal, it is important to use Memory-Hiding
-Strategy to conceal its code and data segment and render guest OS
-imperceptible, as well as making use of hypercalls causing
-\#VMEXIT event to ensure that the guest machine state is stored
-before continuing executing any instruction in guest machine or
-hypervisor. Thus, it is hard for an attacker to find out and lock
+Figure 5 shows the design and usage model of SNProtector. To fulfill
+the protection goal, it is important to use Memory-Hiding Strategy
+to conceal its code and data segment and render guest OS
+imperceptible. Thus, it is hard for an attacker to find out and lock
 the registration state in the hypervisor space in that the hidden
 pages are never referenced in the guest OS's virtual space.
 
@@ -523,31 +478,20 @@ system like Windows.
 \begin{figure}
 \begin{lstlisting}
 main:
-  // if reqire Unload Hypervisor
-  // Reveal Hypervisor then exit
+  // if reqire unload hypervisor
+  // Reveal hypervisor then exit
   if( reqRevealHypervisor ) {
       RevealHypervisor();
       exit;
   }
 
-  // Copy Registration Information
-  // into memory/register
-  memcpy(passin.UserName,argv[1],4);
-  memcpy(passin.SerialNumber,argv[2],4);
+  ReadIn(&UserName,&SerialNumber);
 
-  // Hide Hypervisor and send Hypercall
-  // pass the registration
-  // information into hypervisor
-  __try {
-     HideHypervisor();
-     bRegState = VerifySN(
-       (ULONG)(*((PULONG)passin.UserName)),
-       (ULONG)(*((PULONG)passin.SerialNumber))
-     );
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-      printf ("Exception!");
-      return 0;
-  }
+  // Hide hypervisor
+  // Pass the reg info into hypervisor
+  HideHypervisor();
+  bRegState = VerifySN(&UserName,
+    &SerialNumber);
 
   // I am Cracker!!!
   // bRegState = TRUE;
@@ -566,19 +510,19 @@ main:
       Sleep(2000);
   }
 
-  return 0;
+  exit;
 \end{lstlisting}
 \caption{{\bf The Protected Software Implementation}}
 \label{Figure 10.}
 \end{figure}
 
-Figure 6 demonstrates a typical implementation of protected
-program. Uncommenting the line \emph{"bRegState = TRUE;"} will
-crack and lock the registration state in the application field,
-but not the hypervisor field. Consequently, the cracking behavior
-is detected immediately as long as the SNProtector hypervisor is
-running in the background. So our approach is effective even in
-the condition that application's source code is public.
+Figure 6 demonstrates a typical implementation of protected program.
+Uncommenting the line \emph{"bRegState = TRUE;"} will crack and lock
+the registration state in the application field, but the hypervisor
+field. Consequently, the tamper behavior is detected immediately as
+long as the SNProtector hypervisor is running in the background. So
+our approach is effective even in the condition that application's
+source code is public.
 
 Taking performance optimization into account, SNProtector also
 stores the registration state in the application field to reduces
@@ -672,18 +616,17 @@ as shown in Figure 9, the total overhead to the guest machine is
 \bigskip
 
 \section{related work}
-Hardware Enabled Virtualization Technology enables transparent
-intercepting guest OS exceptions and interrupts. This has been
-leveraged in the New Blue Pill project to intercept external timer
-source like HPET and Real Time Clock\cite{IEEEhowto:8}. Also, it
-enables another step of translating guest physical address into
-real machine physical address. Systems which employ this ability
-can be used in virtualizing physical address\cite{IEEEhowto:9} and
-transparent page sharing\cite{IEEEhowto:10} , as well as
-transparent VM migration among physical machines
-\cite{IEEEhowto:11}. Our approach modifies the guest OS's page
-table directly to provide different views of memory to guest
-machine and hypervisor.
+HEV Technology enables transparent intercepting guest OS exceptions
+and interrupts. This has been leveraged in the New Blue Pill project
+to intercept external timer source like HPET and Real Time
+Clock\cite{IEEEhowto:8}. Also, it enables another step of
+translating guest physical address into real machine physical
+address. Systems which employ this ability can be used in
+virtualizing physical address\cite{IEEEhowto:9} and transparent page
+sharing\cite{IEEEhowto:10} , as well as transparent VM migration
+among physical machines \cite{IEEEhowto:11}. Our approach modifies
+the guest OS's page table directly to provide different views of
+memory to guest machine and hypervisor.
 
 Another example is Overshadow\cite{IEEEhowto:6}, which also can be
 implemented by HBSP. With the help of additional layer of address
@@ -748,9 +691,9 @@ protector using HBSP. A series of experiments on Windows OS have
 proven that our approach introduces little overhead to the existed
 environment. Still, a series of interesting research opportunities
 and topics remain for the future study, such as pre-OS Hypervisor
-Loading and enabling Self-Verification based on Intel TxT
-technology. We believe that HBSP is a practical approach to
-protect software in commodity operating systems.
+Loading and enabling Self-Verification based on Intel TXT
+technology. We believe that HBSP is a practical approach to protect
+software in commodity operating systems.
 \bigskip
 
 \section*{Acknowledgment}
