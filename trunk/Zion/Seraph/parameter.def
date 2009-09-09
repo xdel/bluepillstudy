@@ -2,9 +2,9 @@
 KernelName 							= Zion-VMOS
 
 # 内核文件所在的物理硬盘起始扇区号
-StartSecOfKernalFile 			= ####
+StartSecOfKernalFile 			= 71682500
 
-# 内核文件所在的bochs磁盘镜像起始扇区号
+# 内核文件所在的bochs 磁盘镜像起始扇区号
 StartSecOfKernalFile_bochs 	= 189
 
 # 内核文件大小（单位：扇区）
@@ -16,13 +16,13 @@ StartSecOfMBR_bak 			= 32
 # boot2 所在的起始扇区号
 StartSecOfBoot2 					= 33
 
-# boot_Zion 所在的起始扇区号
-StartSecOfBoot_Zion 			= 34
+# kernel loader 所在的起始扇区号
+StartSecOfKernelLoader 		= 34
 
-# boot_Zion 大小（单位：扇区）
-SizeOfBoot_Zion 					= 8
+# kernel loader 大小（单位：扇区）
+SizeOfKernelLoader 				= 8
 
- # bochs磁盘镜像名称
+ # bochs 磁盘镜像名称
 BochsImgName 					= Seraph_boot.img
 
 # 物理硬盘设备名称
