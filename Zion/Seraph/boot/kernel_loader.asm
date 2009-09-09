@@ -86,7 +86,7 @@ GetMemInfo:
 	mov		ebx, 0						; ebx = 后续值, 开始时需为 0
 	mov		di, _MemChkBuf		; es:di 指向一个地址范围描述符结构（Address Range Descriptor Structure）
 .MemChkLoop:
-	mov		eax, 0xe820			; eax = 0000E820h
+	mov		eax, 0xe820				; eax = 0000E820h
 	mov		ecx, 20					; ecx = 地址范围描述符结构的大小
 	mov		edx, 0x534D4150	; edx = 'SMAP'
 	int		0x15						; int 15h

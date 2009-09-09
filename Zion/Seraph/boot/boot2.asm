@@ -29,7 +29,7 @@ Boot_start:
 	mov 		cl, StartSecOfMBR_bak
 	mov 		bx, MBR_offset
 	int 			0x13 									; int 13h, ah=02
-	jc 			ERROR 								; Branch if not succeed.
+	jc 				ERROR 								; Branch if not succeed.
 
 ;	mov 		ax, 0x0000	 						; Write MBR secto
 ;	mov 		es, ax
@@ -39,7 +39,7 @@ Boot_start:
 ;	mov 		cl, StartSecOfMBRr
 ;	mov 		bx, MBR_offset
 ;	int 			0x13 									; int 13h, ah=03
-;	jc 			ERROR 								; Branch if not succeed.
+;	jc 				ERROR 								; Branch if not succeed.
 
 	mov 		ax, Msg_OK							; String: "OK!"
 	mov 		cx, MsgLen_OK

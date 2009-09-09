@@ -1,7 +1,7 @@
 ;##################################################
 ;	File: 			boot.asm
 ;	Description:	Seraph MBR Loader. Make a branch
-;					between Zion entry and normal
+;					between kernel entry and normal
 ;					booting. The latter branch will
 ;					load boot-stage2 for further.
 ;##################################################
@@ -10,7 +10,7 @@
 
 org		MBR_offset
 
-	jmp 	Boot_start
+	jmp 			Boot_start
 
 Boot_start:
 	mov			ax, cs
@@ -25,7 +25,7 @@ Boot_start:
 	mov 		dx, 0x0104							; Position: row 1, column 2.
 	call 			Display_string
 	
-	mov 		ax, Msg_Branch					; String: "Enter Zion? [No] "
+	mov 		ax, Msg_Branch					; String: "Enter kernel? [No] "
 	mov 		cx, MsgLen_Branch
 	mov 		dx, 0x0404							; Position: row 4, column 4.
 	call 			Display_string
@@ -37,41 +37,36 @@ Boot_start:
 
 	mov 		ax, Msg_Yes							; String: "Yes"
 	mov 		cx, MsgLen_Yes
-	mov 		dx, 0x0415							; Position: row 4, column 21.
+	mov 		dx, 0x0417							; Position: row 4, column 23.
 	call 			Display_string
 
-	mov 		ax, Msg_ZionBoot				; String: "Now, entering Zion..."
-	mov 		cx, MsgLen_ZionBoot
-	mov 		dx, 0x0604							; Position: row 6, column 4.
-	call			Display_string
-
-	mov 		ax, Msg_LoadBootZion		; String: "Loading Zion boot loader..."
-	mov 		cx, MsgLen_LoadBootZion	
-	mov 		dx, 0x0804							; Position: row 8, column 4.
+	mov 		ax, Msg_LoadKernelLoader			; String: "Loading kernel-loader..."
+	mov 		cx, MsgLen_LoadKernelLoader	
+	mov 		dx, 0x0604									; Position: row 6, column 4.
 	call 			Display_string
 	
-	mov 		ax, StartSecOfBoot_Zion		; Start sector 43,
-	mov 		cl, SizeOfBoot_Zion  			; read SizeOfBoot_Zion sectors
-	mov 		dx, 0x0000							; to address 0000:BOOT_ZION_offset in memory.
-	mov 		bx, BOOT_ZION_offset
+	mov 		ax, StartSecOfKernelLoader		; Start sector,
+	mov 		cl, SizeOfKernelLoader  			; read SizeOfKernelLoader sectors
+	mov 		dx, 0x0000								; to address 0000:KERNEL_LOADER_offset in memory.
+	mov 		bx, KERNEL_LOADER_offset
 	call 			ReadSector
-	jc 			ERR_Read_sector_fail			; Branch if not succeed.
+	jc 				ERR_Read_sector_fail				; Branch if not succeed.
 
 	mov 		ax, Msg_OK							; String: "OK!"
 	mov 		cx, MsgLen_OK	
-	mov 		dx, 0x0820							; Position: row 8, column 32.
+	mov 		dx, 0x061d							; Position: row 6, column 29.
 	call 			Display_string
 	
 	call 			Clear_screen						; Clear current screen.
 
-	jmp			BOOT_ZION_offset				; Jump to boot-Zion.
+	jmp			KERNEL_LOADER_offset		; Jump to kernel loader.
 
 
 
 Normal_boot:
 	mov 		ax, Msg_No							; String: "No"
 	mov 		cx, MsgLen_No
-	mov 		dx, 0x0415							; Position: row 4, column 21.
+	mov 		dx, 0x0417							; Position: row 4, column 23.
 	call 			Display_string
 
 	mov 		ax, Msg_NormalBoot			; String: "Normal booting..."
@@ -89,7 +84,7 @@ Normal_boot:
 	mov 		dx, 0x0000							; to address 0000:BOOT2_offset in memory.
 	mov 		bx, BOOT2_offset
 	call 			ReadSector
-	jc 			ERR_Read_sector_fail			; Branch if not succeed.
+	jc 				ERR_Read_sector_fail			; Branch if not succeed.
 	
 	mov 		ax, Msg_OK							; String: "OK!"
 	mov 		cx, MsgLen_OK	
@@ -98,12 +93,12 @@ Normal_boot:
 
 	jmp			BOOT2_offset						; Jump to boot-stage2.
 
-ERR_Read_sector_fail:							; Read sector error disposal.
+ERR_Read_sector_fail:								; Read sector error disposal.
 	mov 		ax, Msg_FAIL						; String: "Fail!"
 	mov 		cx, MsgLen_FAIL	
 	mov 		dx, 0x081b							; Position: row 8, column 27.
 	call 			Display_string
-	jmp 		$ 											; Spin here forever.
+	jmp 			$ 											; Spin here forever.
 	
 
 
@@ -211,27 +206,25 @@ Wait_key:
 ;----------------------------------------
 ;	Message strings
 ;----------------------------------------
-MsgLen_Logo 					equ 	30
-Msg_Logo: 						db 		"@@@ Seraph MBR/Boot Loader @@@"
-MsgLen_Branch 				equ 	17
-Msg_Branch:					db 		"Enter Zion? [No] "
-MsgLen_ZionBoot			equ 	21
-Msg_ZionBoot:					db		"Now, entering Zion..."
-MsgLen_NormalBoot 		equ 	17
-Msg_NormalBoot:			db 		"Normal Booting..."
-MsgLen_Yes 					equ 	3
-Msg_Yes: 							db 		"Yes"
-MsgLen_No 						equ 	2
-Msg_No:							db 		"No"
-MsgLen_LoadBoot2 		equ 	22
-Msg_LoadBoot2:				db 		"Loading boot-stage2..."
-MsgLen_OK 					equ 	3
-Msg_OK:							db 		"OK!"
-MsgLen_FAIL 					equ 	5
-Msg_FAIL:						db 		"Fail!"
-MsgLen_LoadBootZion 	equ 	27
-Msg_LoadBootZion: 		db 		"Loading Zion boot loader..."
+MsgLen_Logo 						equ 	30
+Msg_Logo: 							db 		"@@@ Seraph MBR/Boot Loader @@@"
+MsgLen_Branch 					equ 	19
+Msg_Branch:						db 		"Enter kernel? [No] "
+MsgLen_NormalBoot 			equ 	17
+Msg_NormalBoot:				db 		"Normal Booting..."
+MsgLen_LoadKernelLoader 	equ 	24
+Msg_LoadKernelLoader:		db 		"Loading kernel-loader..."
+MsgLen_LoadBoot2 			equ 	22
+Msg_LoadBoot2:					db 		"Loading boot-stage2..."
+MsgLen_Yes 						equ 	3
+Msg_Yes: 								db 		"Yes"
+MsgLen_No 							equ 	2
+Msg_No:								db 		"No"
+MsgLen_OK 							equ 	3
+Msg_OK:								db 		"OK!"
+MsgLen_FAIL 						equ 	5
+Msg_FAIL:							db 		"Fail!"
 
 
-	times 	510-($-$$)		db	0	; Fullfile the rest space, making binary file to be 512 bytes exactly.
-	dw 		0xaa55						; MBR magic number.
+	times 	510-($-$$)			db	0		; Fullfile the rest space, making binary file to be 512 bytes exactly.
+	dw 		0xaa55								; MBR magic number.
