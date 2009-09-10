@@ -20,7 +20,7 @@ Boot_start:
 	
 	call 			Clear_screen						; Clear current screen.
 	
-	mov 		ax, Msg_Logo						; String: "@@@ Seraph MBR Loader @@@"
+	mov 		ax, Msg_Logo						; String: "@@@ Seraph MBR/Boot Loader @@@"
 	mov 		cx, MsgLen_Logo
 	mov 		dx, 0x0104							; Position: row 1, column 2.
 	call 			Display_string
