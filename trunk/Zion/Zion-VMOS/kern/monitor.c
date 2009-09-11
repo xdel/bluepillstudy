@@ -30,7 +30,8 @@ static struct Command commands[] = {
 	{ "reboot", "Restart the system.", mon_reboot },
 	{ "cpuid", "Display processor identification values.", mon_cpuid },
 	{ "cpuinfo", "Display CPU feature information.", mon_cpuinfo },
-	{ "x", "check the memory ", mon_memcheck},
+	{ "x", "Check the memory. ", mon_memcheck },
+	{ "meminfo", "Display memory information.", mon_meminfo },
 };
 #define NCOMMANDS (int) (sizeof(commands)/sizeof(commands[0]))
 
@@ -80,7 +81,6 @@ mon_help(int argc, char **argv, struct Trapframe *tf)
 
 	for (i = 0; i < NCOMMANDS; i++)
 		cprintf("%s - %s\n", commands[i].name, commands[i].desc);
-		cprintf("try UP-ARROW key for last command\n");
 	return 0;
 }
 
@@ -184,32 +184,59 @@ mon_reboot( int argc, char** argv, struct Trapframe* tf )
 int
 mon_memcheck( int argc, char **argv, struct Trapframe *tf )
 {
-	uint32_t		i, j, n, addr, mem, *paddr;
+	uint32_t		n, *vaddr;
     
-	if ( argc < 2 || argc > 3 ) {
+	if ( argc < 2 || argc > 3 ) { 		// Argument arbitration
 		return 0;
 	}//if
 	
-	if ( argc == 2 ) { 
+	if ( argc == 2 ) { 	// for 2 arguments case
 		n = 1;
-		addr = str2addr(argv[1]);
-	} else {
+		vaddr = (uint32_t *)(str2addr(argv[1]));
+	} else { 	// for 3 arguments case
 		n = str2num(argv[1]);
-		addr = str2addr(argv[2]);
+		vaddr = (uint32_t *)(str2addr(argv[2]));
 	}//if...else
 	
-	for ( i=0, paddr=(uint32_t *)addr; i < n; ) {
-		for ( j = 0; j < 2 && i < n; j++  ) {
-			mem = *paddr;
-			cprintf("[0x%08x]: %08x\t", paddr, mem);
-			paddr++;
-			i += 4;
+	for ( uint32_t i=0; i<n; ) {
+		for ( uint32_t j = 0; j < 2 && i < n; j++, vaddr++, i+=4  ) {
+			cprintf("\t[0x%08x]: %08x ", vaddr, *vaddr);
 		}//for(j)
 		cprintf("\n");
 	}//for(i)
 	
 	return 0;
 }//mon_memcheck()
+
+
+
+#define 	MemSize_paddr 			0xf0009000
+#define 	MCRNumber_paddr 		0xf0009008
+#define 	MemInfo_paddr 			0xf0009010
+int
+mon_meminfo ( int argc, char **argv, struct Trapframe *tf )
+{
+	uint32_t 		MemSize = *((uint32_t *)MemSize_paddr);
+	uint32_t 		MCRNumber = *((uint32_t *)MCRNumber_paddr);
+	uint32_t 		*pMemInfo = (uint32_t *)MemInfo_paddr;
+	
+	// Print table title.
+	cprintf("\tBaseAddrLow  BaseAddrHigh LengthLow    LengthHigh   Type\n");
+	
+	for ( uint32_t i=0; i<MCRNumber; i++ ) {
+		// 每次得到一个ARDS(Address Range Descriptor Structure)结构
+		for ( uint32_t j=0; j<5; j++, pMemInfo++)	 {		// 每次得到一个ARDS中的成员，共5个成员
+			// 依次显示：BaseAddrLow，BaseAddrHigh，LengthLow，LengthHigh，Type
+			cprintf("\t%08x ", *pMemInfo);
+		}//for(j)
+		cprintf("\n");
+	}//for(i)
+	
+	cprintf("\t--------------------------------------------------------------\n");
+	cprintf("\tMemory Size: %u MB (%u bytes)\n", MemSize/0x100000, MemSize);
+	
+	return 0;
+}//mon_meminfo()
 
 
 
