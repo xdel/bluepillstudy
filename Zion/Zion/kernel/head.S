@@ -46,6 +46,8 @@ _start:
 	# Establish our own GDT in place of the boot loader's temporary GDT.
 	lgdt	RELOC(mygdtdesc)		# load descriptor table
 
+
+	
 	# Immediately reload all segment registers (including CS!)
 	# with segment selectors from the new GDT.
 	movl	$DATA_SEL, %eax			# Data segment selector
@@ -91,3 +93,4 @@ mygdt:
 mygdtdesc:
 	.word	0x17			# sizeof(mygdt) - 1
 	.long	RELOC(mygdt)		# address mygdt
+

@@ -14,11 +14,11 @@
 
 #pragma once
 
-#include <ntddk.h>
-#include "common.h"
-#include "traps.h"
-#include "hypercalls.h"
+#include <vmx/common.h>
+#include <vmx/trap.h>
+#include <include/stdio.h>
 
-NTSTATUS NTAPI VmxRegisterTraps (
+
+ZVMSTATUS ZVMAPI VmxRegisterTraps (
   PCPU Cpu
 );

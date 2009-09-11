@@ -27,7 +27,9 @@ KERN_SRCFILES :=	kernel/head.S \
 			lib/printfmt.c \
 			lib/readline.c \
 			lib/string.c \
-			mm/pmap.c 
+			mm/pmap.c \
+			lib/malloc.c
+			
 
 # Only build files if they exist.
 KERN_SRCFILES := $(wildcard $(KERN_SRCFILES))

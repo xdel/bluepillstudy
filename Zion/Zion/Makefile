@@ -63,12 +63,15 @@ GCC_LIB := $(shell $(CC) -print-libgcc-file-name)
 OBJDIRS :=
 
 # Make sure that 'all' is the first target
-all: $(OBJDIR)/zion-grub
+#all: $(OBJDIR)/zion-grub
+all: install
 
 # Make install
 install: $(OBJDIR)/zion-grub
 	sudo cp $(OBJDIR)/zion-grub /boot/
 
+#sudo dd if=$(OBJDIR)/zion-grub of=/dev/sda bs=512 count=512 seek=61431000 
+	
 # Eliminate default suffix rules
 .SUFFIXES:
 

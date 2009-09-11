@@ -109,7 +109,7 @@ print_regs(struct Registers *regs)
 	cprintf("  edi  0x%08x\n", regs->reg_edi);
 	cprintf("  esi  0x%08x\n", regs->reg_esi);
 	cprintf("  ebp  0x%08x\n", regs->reg_ebp);
-	cprintf("  oesp 0x%08x\n", regs->reg_oesp);
+	cprintf("  oesp  0x%08x\n", regs->reg_oesp);
 	cprintf("  ebx  0x%08x\n", regs->reg_ebx);
 	cprintf("  edx  0x%08x\n", regs->reg_edx);
 	cprintf("  ecx  0x%08x\n", regs->reg_ecx);
@@ -125,13 +125,20 @@ trap(struct Trapframe *tf)
 
 	// LAB 2: Your code here.
 	case T_BRKPT:
+	    cprintf("Bp...\n");
 		monitor(tf);
 		//print_trapframe(tf);
 		break;
+	case T_PGFLT:
+	    cprintf("Page Fault...\n");
+		monitor(tf);
+		break;
 	default:
 		// Unexpected trap: The user process or the kernel has a bug.
-		print_trapframe(tf);
+		cprintf("Default...\n");
+		print_trapframe(tf); 
 		if (tf->tf_cs == GD_KT)
+		    //cprintf("unhandled trap in kernel");
 			panic("unhandled trap in kernel");
 		else
 			panic("unhandled trap in user mode");

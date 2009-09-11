@@ -1,11 +1,13 @@
 #ifndef ZION_VMXAPI_H
 #define ZION_VMXAPI_H
 
-#include <include/types.h>
+//#include <include/types.h>
 #include <include/stdio.h>
 
-#include <vmx/vmx.h>
+//#include <vmx/vmx.h>
 #include <vmx/hvm.h>
+#include <vmx/memory.h>
+
 
 //+++++++++++++++++++++Structs Definitions+++++++++++++++++++++
 
@@ -13,19 +15,24 @@
  * This struct contains all the callback func pointer.
  * User must initialize this struct first to install MadDog.
  */
+/*
 typedef struct _Zion_Control
 {
 	ZVMSTATUS (*SetupVMCB)(PCPU Cpu, void* GuestEip, void* GuestEsp);
 	ZVMSTATUS (*ApplyTraps) (PCPU Cpu);
 } Zion_Control,
 *PZion_Control;
-
+*/
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
+/**
+ * effects: Copy the PageTable
+ */ 
+ZVMSTATUS ZVMAPI Zion_MapPageTable();
 
 /**
  * effects: Install HelloWorld VMM hypervisor.
  */
-ZVMSTATUS ZVMAPI Zion_InstallHypervisor(PZion_Control hvmCtl);
+ZVMSTATUS ZVMAPI Zion_InstallHypervisor();
 
 /**
  * effects: Uninstall HelloWorld VMM Hypervisor
@@ -36,6 +43,8 @@ ZVMSTATUS ZVMAPI Zion_InstallHypervisor(PZion_Control hvmCtl);
  * effects: Check if this cpu supports Intel VT Technology. Initialize
  */
 ZVMSTATUS ZVMAPI Zion_HypervisorInit();
+
+ZVMSTATUS ZVMAPI start_vmx();
 
 /**
  * effects:Build and Initialize General Trap struct (which is also a Trap struct).

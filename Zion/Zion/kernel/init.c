@@ -11,17 +11,10 @@
 
 #include <mm/pmap.h>
 
-#include <vmx/vmx.h>
+#include <vmx/vmxapi.h>
 
-extern uint32_t arg0;
-extern uint32_t arg1;
-extern uint32_t arg2;
-extern uint32_t arg3;
-extern uint32_t arg4;
-extern uint32_t arg5;
-extern uint32_t arg6;
-extern uint32_t arg7;
-extern uint32_t arg8;
+uint32_t size;
+
 
 // Test the stack backtrace function (lab 1 only)
 void
@@ -54,7 +47,16 @@ i386_init(void)
 	for (ctorva = ectors; ctorva > sctors; )
 		((void(*)()) *--ctorva)();
 
-	cprintf("Welcome to our Virtual Machine World!\n");
+	// Print starting message.
+	cprintf("\n");
+	cprintf("    -----------------------------------------------------------------\n");
+	cprintf("    | ***** Zion Virtual Machine Operating System (Zion VMOS) ***** |\n");
+	cprintf("    | COPYRIGHT @ School of Software, Shanghai Jiao Tong University |\n");
+	cprintf("    | Version: 9.09.07                                              |\n");
+	cprintf("    -----------------------------------------------------------------\n");
+	cprintf("\n");
+
+
 
 	// Lab 2 memory management initialization functions
 	mem_init();
@@ -62,9 +64,11 @@ i386_init(void)
 	// Lab 2 interrupt and gate descriptor initialization functions
 	idt_init();
 
+	cprintf("Start vmx....\n");
 	// Initialize VM and Turn on VMM
-	start_vmx();
+    ///start_vmx();
 
+    cprintf("Vmx end...\n");
 	// Drop into the kernel monitor.
 	while (1)
 		monitor(NULL);

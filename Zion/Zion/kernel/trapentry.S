@@ -82,7 +82,7 @@ _alltraps:
     movw %ax, %ds
     pushl %esp
     call trap
-	popl    %esp
+	popl  %esp
 	popal
 	popl    %es
 	popl    %ds
