@@ -31,7 +31,7 @@ void i386_init(void)
 	cprintf("    -----------------------------------------------------------------\n");
 	cprintf("    | ***** Zion Virtual Machine Operating System (Zion VMOS) ***** |\n");
 	cprintf("    | COPYRIGHT @ School of Software, Shanghai Jiao Tong University |\n");
-	cprintf("    | Version: 9.09.05-2                                              |\n");
+	cprintf("    | Version: 9.09.11                                              |\n");
 	cprintf("    -----------------------------------------------------------------\n");
 	cprintf("\n");
 

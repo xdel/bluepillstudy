@@ -59,7 +59,7 @@ $(OBJDIR)/Zion-VMOS: $(OBJDIR)/kernel
 install: $(OBJDIR)/Zion-VMOS
 	sudo cp $< /boot
 	sudo cp $< ~/VM_project/Seraph
-	sudo dd if=$< of=/dev/sda bs=512 count=512 seek=61431000 
+	sudo dd if=$< of=/dev/sda bs=512 count=512 seek=71682500 
 
 clean:
 	rm -rf $(OBJDIR) 

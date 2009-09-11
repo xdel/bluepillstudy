@@ -20,5 +20,6 @@ int mon_reboot( int argc, char **argv, struct Trapframe *tf );
 int mon_cpuid( int argc, char **argv, struct Trapframe *tf );
 int mon_cpuinfo( int argc, char **argv, struct Trapframe *tf );
 int mon_memcheck( int argc, char **argv, struct Trapframe *tf );
+int mon_meminfo ( int argc, char **argv, struct Trapframe *tf );
 
 #endif	
