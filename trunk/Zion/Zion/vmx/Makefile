@@ -7,10 +7,14 @@
 
 OBJDIRS += vmx
 
-VMX_SRCFILES :=		vmx/vmx.c \
-			vmx/vmxapi.c \
-			vmx/hvm.c \
-			vmx/common.c
+VMX_SRCFILES :=		vmx/common.c \
+				    vmx/vmx.c \
+					vmx/hvm.c  \
+					vmx/vmxtraps.c \
+					vmx/trap.c  \
+					vmx/memory.c \
+					vmx/vmxapi.c \
+					
 
 VMX_OBJFILES := $(patsubst %.c, $(OBJDIR)/%.o, $(VMX_SRCFILES))
 

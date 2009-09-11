@@ -28,12 +28,58 @@ static struct Command commands[] = {
 	{ "kerninfo", "Display information about the kernel", mon_kerninfo },
 	{ "backtrace", "Display information about the stack", mon_backtrace },
 	{ "exit", "Exit from a breakpoint kernel monitor", mon_exit },
+	{ "x", "Check the memory ", mon_memcheck},
+	{ "cpu", "Check the cpu ", cpucheck},
+	{ "reboot", "Restart the system.", mon_reboot },
+	{ "cpuid" , "Check the hypervisor", mon_cpuid },
+	{ "cr0check", "back to real mode", cr0check},
 };
 #define NCOMMANDS (int) (sizeof(commands)/sizeof(commands[0]))
 
 
 
+static int str2num(char *str)
+{ 
+   int n = 0;
+   int i = 0;
+   while(str[i] != '\0')
+   {
+	   n = n * 10 + ((int)str[i]-'0');
+       i++;
+   }
+   return n; 
+}
+
+static int str2addr(char *str)
+{
+	int i = 2;
+	int addr = 0;
+	if ( str[0] != '0' || str[1] != 'x') return 0;
+	while(str[i] != '\0')
+	{
+		switch(str[i])
+		{
+			case 'f':
+			case 'e':
+			case 'd':
+			case 'c':
+			case 'b':
+			case 'a':
+				addr = addr * 16 + ((int)str[i]-'a' + 10);
+				i++;
+				break;
+			default:
+				addr = addr * 16 + ((int)str[i]-'0');
+				i++;
+				break;
+		}
+	}
+	return addr;
+}
+
+
 /***** Implementations of basic kernel monitor commands *****/
+
 
 int
 mon_help(int argc, char **argv, struct Trapframe *tf)
@@ -57,6 +103,79 @@ mon_kerninfo(int argc, char **argv, struct Trapframe *tf)
 	cprintf("  end    %08x (virt)  %08x (phys)\n", end, end - KERNBASE);
 	cprintf("Kernel executable memory footprint: %dKB\n",
 		(end-_start+1023)/1024);
+	return 0;
+}
+
+int
+mon_memcheck(int argc, char **argv, struct Trapframe *tf)
+{
+    if ( argc < 2 || argc > 3 ) return 0;
+	int i,j;
+    int n,addr;
+	unsigned int *paddr,mem;
+	unsigned int *ptest;
+	if ( argc == 2 ) 
+		{ 
+			n = 1;
+			addr = str2addr(argv[1]);
+		}
+	else 
+		{
+			n = str2num(argv[1]);
+			addr = str2addr(argv[2]);
+		}
+	cprintf("n = %d\n", n);
+	cprintf("addr = 0x%x\n", addr);
+	
+	ptest = (unsigned int *) 0xf0010000;
+	*ptest = 0x1234;
+
+	paddr = (unsigned int *)addr;
+	
+	for ( i = 0; i < n; )
+	{
+		for ( j = 0; j < 2 && i < n; j++  )
+		{
+			mem = *paddr;
+			cprintf("0x%x: %x ", paddr,mem);
+			paddr = paddr + 1;
+			i = i + 4;
+		}
+    cprintf("\n");
+	}
+	return 0;
+}
+
+int cpucheck(int argc, char **argv, struct Trapframe *tf)
+{
+	asm("int3");
+	return 0;
+}
+
+int cr0check(int argc, char **argv, struct Trapframe *tf)
+{
+	uint32_t cr0 = 0x7fffffff,tmp;
+	asm volatile("movl %cr0,%eax");
+	asm volatile("andl %0,%%eax"::"b"(cr0):"memory");
+	asm volatile("movl %%eax,%0":"=c"(tmp));
+	asm volatile("movl %%cr0,%0":"=b"(cr0));
+	cprintf("cr0 is 0x%x\n",cr0);	
+    cprintf("tmp is 0x%x\n",tmp);
+	asm volatile("movl %0,%%cr0"::"r"(tmp));
+	cprintf("...");
+    while(1);
+	return 0;
+}
+
+int
+mon_cpuid(int argc, char **argv, struct Trapframe *tf)
+{
+	uint32_t eax;
+	asm("movl $0x999,%eax");
+	asm("cpuid");
+	asm("movl %%eax,%0":"=r"(eax));
+	cprintf("eax is 0x%x\n",eax);
+	cprintf("before here should have other words...\n");
 	return 0;
 }
 
@@ -129,6 +248,18 @@ mon_exit(int argc, char **argv, struct Trapframe *tf)
 	return 0;
 }
 
+
+int mon_reboot( int argc, char** argv, struct Trapframe* tf )
+{
+	cprintf("\n[ System Restarting! ]\n");
+    asm(".byte	0x0f, 0x01, 0xC4");
+	outb(0x92, 0x3);
+
+	return 0;
+}//mon_reboot()
+
+
+
 /***** Kernel monitor command interpreter *****/
 
 #define WHITESPACE "\t\r\n "
@@ -167,7 +298,11 @@ runcmd(char *buf, struct Trapframe *tf)
 		return 0;
 	for (i = 0; i < NCOMMANDS; i++) {
 		if (strcmp(argv[0], commands[i].name) == 0)
-			return commands[i].func(argc, argv, tf);
+			{
+				commands[i].func(argc, argv, tf);
+				return 0;
+			}
+			///return commands[i].func(argc, argv, tf);
 	}
 	cprintf("Unknown command '%s'\n", argv[0]);
 	return 0;
