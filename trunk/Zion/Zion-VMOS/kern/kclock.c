@@ -3,8 +3,8 @@
  * generates interrupts on IRQ 0.
  */
 
-#include <arch/x86.h>
-#include <kern/kclock.h>
+#include <inc/arch/x86.h>
+#include <inc/kern/kclock.h>
 
 unsigned mc146818_read(unsigned reg)
 {

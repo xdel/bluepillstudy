@@ -3,8 +3,8 @@
 // This code is also used by both the kernel and user programs.
 
 #include <inc/types.h>
-#include <inc/stdio.h>
-#include <inc/string.h>
+#include <inc/lib/stdio.h>
+#include <inc/lib/string.h>
 #include <inc/stdarg.h>
 #include <inc/error.h>
 

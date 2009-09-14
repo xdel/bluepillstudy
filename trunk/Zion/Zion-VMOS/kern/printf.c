@@ -2,7 +2,7 @@
 // based on printfmt() and the kernel console's cputchar().
 
 #include <inc/types.h>
-#include <inc/stdio.h>
+#include <inc/lib/stdio.h>
 #include <inc/stdarg.h>
 
 

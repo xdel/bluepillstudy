@@ -1,10 +1,10 @@
-#include <arch/x86.h>
-#include <inc/mmu.h>
+#include <inc/arch/x86.h>
+#include <inc/kern/mmu.h>
 #include <inc/error.h>
-#include <inc/string.h>
+#include <inc/lib/string.h>
 #include <inc/assert.h>
-#include <kern/pmap.h>
-#include <kern/kclock.h>
+#include <inc/kern/pmap.h>
+#include <inc/kern/kclock.h>
 
 // These variables are set by i386_mem_detect()
 size_t npages;			// Amount of physical memory (in pages)

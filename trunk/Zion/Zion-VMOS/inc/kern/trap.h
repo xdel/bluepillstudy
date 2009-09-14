@@ -5,7 +5,7 @@
 #endif
 
 #include <inc/trap.h>
-#include <inc/mmu.h>
+#include <inc/kern/mmu.h>
 
 /* The kernel's interrupt descriptor table */
 extern struct Gatedesc idt[];

@@ -1,10 +1,10 @@
-#include <arch/x86.h>
-#include <inc/mmu.h>
+#include <inc/arch/x86.h>
+#include <inc/kern/mmu.h>
 #include <inc/assert.h>
-#include <kern/pmap.h>
-#include <kern/trap.h>
-#include <kern/console.h>
-#include <kern/monitor.h>
+#include <inc/kern/pmap.h>
+#include <inc/kern/trap.h>
+#include <inc/kern/console.h>
+#include <inc/kern/monitor.h>
 
 static struct Taskstate ts;
 

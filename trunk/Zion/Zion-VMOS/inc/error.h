@@ -15,4 +15,4 @@
 
 #define	MAXERROR	6
 
-#endif	// !JOS_INC_ERROR_H */
+#endif

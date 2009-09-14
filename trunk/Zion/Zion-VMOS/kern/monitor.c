@@ -1,14 +1,14 @@
-#include <inc/stdio.h>
-#include <inc/string.h>
+#include <inc/lib/stdio.h>
+#include <inc/lib/string.h>
 #include <inc/memlayout.h>
 #include <inc/assert.h>
-#include <inc/stdlib.h>
-#include <arch/x86.h>
-#include <kern/console.h>
-#include <kern/monitor.h>
-#include <kern/kdebug.h>
-#include <kern/trap.h>
-#include <arch/cpu.h>
+#include <inc/lib/stdlib.h>
+#include <inc/arch/x86.h>
+#include <inc/kern/console.h>
+#include <inc/kern/monitor.h>
+#include <inc/kern/kdebug.h>
+#include <inc/kern/trap.h>
+#include <inc/arch/cpu.h>
 
 #define CMDBUF_SIZE	80	// enough for one VGA text line
 
