@@ -1,12 +1,11 @@
-#include <inc/stdio.h>
-#include <inc/string.h>
 #include <inc/assert.h>
-
-#include <kern/monitor.h>
-#include <kern/console.h>
-#include <kern/pmap.h>
-#include <kern/kclock.h>
-#include <kern/trap.h>
+#include <inc/lib/stdio.h>
+#include <inc/lib/string.h>
+#include <inc/kern/monitor.h>
+#include <inc/kern/console.h>
+#include <inc/kern/pmap.h>
+#include <inc/kern/kclock.h>
+#include <inc/kern/trap.h>
 
 
 extern "C" {

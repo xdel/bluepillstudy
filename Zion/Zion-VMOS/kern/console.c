@@ -1,9 +1,9 @@
-#include <arch/x86.h>
+#include <inc/arch/x86.h>
 #include <inc/memlayout.h>
-#include <inc/kbdreg.h>
-#include <inc/string.h>
+#include <inc/kern/kbdreg.h>
+#include <inc/lib/string.h>
 #include <inc/assert.h>
-#include <kern/console.h>
+#include <inc/kern/console.h>
 
 
 void cons_intr(int (*proc)(void));

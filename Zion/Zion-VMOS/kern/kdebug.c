@@ -1,9 +1,9 @@
 #include <inc/stab.h>
-#include <inc/string.h>
+#include <inc/lib/string.h>
 #include <inc/memlayout.h>
 #include <inc/assert.h>
 
-#include <kern/kdebug.h>
+#include <inc/kern/kdebug.h>
 
 extern const struct Stab __STAB_BEGIN__[];	// Beginning of stabs table
 extern const struct Stab __STAB_END__[];	// End of stabs table

@@ -1,4 +1,4 @@
-#include <inc/mmu.h>
+#include <inc/kern/mmu.h>
 #include <inc/memlayout.h>
 #include <inc/trap.h>
 

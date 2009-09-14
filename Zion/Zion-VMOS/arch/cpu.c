@@ -1,8 +1,8 @@
-#include <inc/stdio.h>
-#include <arch/cpu.h>
-#include <arch/x86.h>
-#include <arch/bitops.h>
-#include <arch/cpufeature.h>
+#include <inc/lib/stdio.h>
+#include <inc/arch/cpu.h>
+#include <inc/arch/x86.h>
+#include <inc/arch/bitops.h>
+#include <inc/arch/cpufeature.h>
 
 /*
  * Print CPU feature informations.

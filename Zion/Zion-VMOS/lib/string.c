@@ -1,6 +1,6 @@
 // Basic string routines.
 
-#include <inc/string.h>
+#include <inc/lib/string.h>
 
 int
 strlen(const char *s)

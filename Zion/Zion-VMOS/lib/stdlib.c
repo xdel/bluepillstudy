@@ -1,5 +1,5 @@
-#include <inc/stdlib.h>
-#include <inc/string.h>
+#include <inc/lib/stdlib.h>
+#include <inc/lib/string.h>
 
 int 
 atoi( char *str )

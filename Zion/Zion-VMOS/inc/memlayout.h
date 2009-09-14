@@ -3,7 +3,7 @@
 
 #ifndef __ASSEMBLER__
 #include <inc/types.h>
-#include <inc/mmu.h>
+#include <inc/kern/mmu.h>
 #include <inc/assert.h>
 #endif /* not __ASSEMBLER__ */
 
