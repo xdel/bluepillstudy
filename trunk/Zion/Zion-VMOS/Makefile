@@ -1,4 +1,5 @@
 -include env.mk
+
 OBJDIR := obj
 TOP = .
 
@@ -26,14 +27,18 @@ LDFLAGS := -T kernel.ld -nostdlib
 # Include Makefiles for subdirectories
 include kern/Makefile
 include arch/Makefile
+include lib/Makefile
+include vmx/Makefile
 
+OBJS := $(KERN_OBJFILES) $(ARCH_OBJFILES) $(LIB_OBJFILES)
+OBJS += $(VMX_OBJFILES)
 
 ### Make entries ###
 all: $(OBJDIR)/Zion-VMOS
 
-$(OBJDIR)/kernel: $(KERN_OBJFILES) $(ARCH_OBJFILES) kernel.ld
+$(OBJDIR)/kernel: $(OBJS) kernel.ld
 	@echo + ld $@
-	$(V)$(LD) -o $@ $(LDFLAGS) $(KERN_OBJFILES) $(ARCH_OBJFILES) $(GCC_LIB) -b binary 
+	$(V)$(LD) -o $@ $(LDFLAGS) $(OBJS) $(GCC_LIB) -b binary 
 	$(V)$(OBJDUMP) -S $@ > $@.asm
 
 $(OBJDIR)/Zion-VMOS: $(OBJDIR)/kernel
@@ -47,3 +52,4 @@ install: $(OBJDIR)/Zion-VMOS
 
 clean:
 	rm -rf $(OBJDIR) 
+

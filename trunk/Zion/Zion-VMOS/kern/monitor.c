@@ -32,6 +32,7 @@ static struct Command commands[] = {
 	{ "cpuinfo", "Display CPU feature information.", mon_cpuinfo },
 	{ "x", "Check the memory. ", mon_memcheck },
 	{ "meminfo", "Display memory information.", mon_meminfo },
+	{ "cr0check", "Test: go back to real-mode.", mon_cr0check},
 };
 #define NCOMMANDS (int) (sizeof(commands)/sizeof(commands[0]))
 
@@ -174,6 +175,7 @@ int
 mon_reboot( int argc, char** argv, struct Trapframe* tf )
 {
 	cprintf("\n[ System Restarting! ]\n");
+    asm(".byte	0x0f, 0x01, 0xC4");
 	outb(0x92, 0x3);
 
 	return 0;
@@ -237,6 +239,24 @@ mon_meminfo ( int argc, char **argv, struct Trapframe *tf )
 	
 	return 0;
 }//mon_meminfo()
+
+
+
+int 
+mon_cr0check (int argc, char **argv, struct Trapframe *tf)
+{
+	uint32_t cr0 = 0x7fffffff,tmp;
+	asm volatile("movl %cr0,%eax");
+	asm volatile("andl %0,%%eax"::"b"(cr0):"memory");
+	asm volatile("movl %%eax,%0":"=c"(tmp));
+	asm volatile("movl %%cr0,%0":"=b"(cr0));
+	cprintf("cr0 is 0x%x\n",cr0);	
+    cprintf("tmp is 0x%x\n",tmp);
+	asm volatile("movl %0,%%cr0"::"r"(tmp));
+	cprintf("...");
+    while(1);
+	return 0;
+}
 
 
 

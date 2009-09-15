@@ -1,8 +1,6 @@
 #ifndef __KERN_PMAP_H
 #define __KERN_PMAP_H
-#ifndef ZION_KERNEL
-# error "This is a Zion kernel header; user programs should not #include it"
-#endif
+
 #include <inc/memlayout.h>
 #include <inc/assert.h>
 
@@ -48,4 +46,9 @@ pte_t *	pgdir_walk(pde_t *pgdir, uintptr_t va, int create);
 
 void	tlb_invalidate(pde_t *pgdir, uintptr_t va);
 
-#endif /* !JOS_KERN_PMAP_H */
+physaddr_t GetPhysicalAddress(pde_t *pgdir, uintptr_t va);
+Page*   va2page(void* va);
+int	page_map(uintptr_t va, int perm);
+void	page_unmap(uintptr_t va);
+
+#endif

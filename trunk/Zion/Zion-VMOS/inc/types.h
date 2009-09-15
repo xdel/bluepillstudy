@@ -20,6 +20,26 @@ typedef 		unsigned int 				uint32_t;
 typedef 		long long 					int64_t;
 typedef 		unsigned long long 	uint64_t;
 
+typedef long ZVMSTATUS, *PZVMSTATUS;
+
+//===============================Definition for ZVM===========================
+#define ZVM_SUCCESS(a)	((a) == ZVMSUCCESS)
+#define ZVMAPI
+
+/* Success or Error Number*/
+#define	TRUE	1
+#define	FALSE	0
+#define	ZVMSUCCESS	((ZVMSTATUS)0x00000000L)
+#define	ZVM_UNSUCCESSFUL ((ZVMSTATUS)0xC0000001L)
+#define	ZVM_NOT_SUPPORTED ((ZVMSTATUS)0xC00000BBL)
+#define   ZVM_INVALID_PARAMETER ((ZVMSTATUS)0xC000000DL)
+
+typedef struct LIST_ENTRY
+   {
+    struct LIST_ENTRY *Flink;
+    struct LIST_ENTRY *Blink;
+   } 	ZION_LIST_ENTRY,*PZION_LIST_ENTRY;
+   
 // Pointers and addresses are 32 bits long.
 // We use pointer types to represent virtual addresses,
 // uintptr_t to represent the numerical values of virtual addresses,

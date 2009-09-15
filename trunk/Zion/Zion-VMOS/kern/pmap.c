@@ -531,6 +531,94 @@ void tlb_invalidate(pde_t *pgdir, uintptr_t va)
 	invlpg(va);
 }
 
+physaddr_t
+GetPhysicalAddress(pde_t *pgdir, uintptr_t va)
+{
+	return check_va2pa(pgdir, va);
+}
+
+
+
+// return the page structure of virtual address.
+Page*
+va2page(void* va){
+	return &pages[check_va2pa(kern_pgdir, (uintptr_t)va)/PGSIZE];
+}
+
+
+
+// allocate a free page from kernel space([KERNBASE, 2^32]).
+void *
+alloc_free_page()
+{
+	static char *freeptr;
+	struct Page *pp0, *pp1 = free_pages;
+	void * va;
+
+	if(freeptr == 0)
+		freeptr = (char *)boot_alloc(0);
+
+	while ((uintptr_t)freeptr <= 0xfffff000)
+	{
+		pp0 = &pages[check_va2pa(kern_pgdir, (uintptr_t)freeptr)/PGSIZE];
+		if(pp0->pp_next == NULL)
+			freeptr += PGSIZE;
+		else
+		{
+			if(pp1 == pp0){
+				pp0->pp_ref++;
+				pp0->pp_next = NULL;
+				va = freeptr;
+				freeptr += PGSIZE;
+				return va;
+			}
+			else{
+				while(pp1->pp_next != pp0){
+					if(pp1->pp_next == NULL)
+						return NULL;
+					pp1 = pp1->pp_next;
+				}
+				memset(pp0->data(), 0, PGSIZE);
+				pp0->pp_ref++;
+				pp1->pp_next = pp0->pp_next;
+				pp0->pp_next = NULL;
+				va = freeptr;
+				freeptr += PGSIZE;
+				return va;
+			}
+		}
+
+	}
+	panic("alloc_free_page: out of kernel space");
+	return NULL;
+}
+
+
+// Map a free page at va, and initialized.
+// This is a kernel function.
+// Modified by zhumin in 2009-7-28.
+int
+page_map(uintptr_t va, int perm)
+{
+	struct Page * allocatepage = page_alloc();
+	if(!allocatepage)
+	{
+		return -E_NO_MEM;
+	}
+	memset(allocatepage->data(), 0, PGSIZE);
+	page_insert(kern_pgdir, allocatepage, va, perm);
+	return 0;
+}
+
+// Unmap a free page at va.
+// This is a kernel function.
+// Modified by zhumin in 2009-7-28.
+void
+page_unmap(uintptr_t va)
+{
+	page_remove(kern_pgdir, va);
+}
+
 
 // Map [la, la+size) of linear address space to physical [pa, pa+size)
 // in the kernel's page table 'kern_pgdir'.  Size is a multiple of PGSIZE.
