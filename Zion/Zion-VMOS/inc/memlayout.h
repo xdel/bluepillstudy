@@ -179,6 +179,9 @@ struct Page {
 	// to this page.  Reserved pages may not have valid reference counts.
 	uint16_t pp_ref;
 
+	// alloc_ref is the count of allocated by allocator.
+	uint16_t alloc_ref;
+
 #if ZION_KERNEL
 	// Returns the physical page number for this page.
 	size_t page_number() const {

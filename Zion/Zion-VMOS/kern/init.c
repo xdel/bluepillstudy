@@ -6,6 +6,7 @@
 #include <inc/kern/pmap.h>
 #include <inc/kern/kclock.h>
 #include <inc/kern/trap.h>
+#include <inc/vmx/vmxapi.h>
 
 
 extern "C" {
@@ -30,7 +31,7 @@ void i386_init(void)
 	cprintf("    -----------------------------------------------------------------\n");
 	cprintf("    | ***** Zion Virtual Machine Operating System (Zion VMOS) ***** |\n");
 	cprintf("    | COPYRIGHT @ School of Software, Shanghai Jiao Tong University |\n");
-	cprintf("    | Version: 9.09.11                                              |\n");
+	cprintf("    | Version: 9.09.15                                              |\n");
 	cprintf("    -----------------------------------------------------------------\n");
 	cprintf("\n");
 
@@ -41,7 +42,10 @@ void i386_init(void)
 	// Interrupt and gate descriptor initialization.
 	idt_init();
 	
-//	__asm__ __volatile__("int3");
+	// Initialize VM and Turn on VMM
+	cprintf("VMX initialization: start.\n");
+    start_vmx();
+    cprintf("VMX initialization: finished.\n");
 
 	// Drop into the kernel monitor.
 	while (1)
@@ -77,6 +81,7 @@ _panic(const char *file, int line, const char *fmt, ...)
 
 dead:
 	/* break into the kernel monitor */
+	cprintf("!! Enter monitor from panic !!\n");
 	while (1)
 		monitor(NULL);
 }

@@ -5,12 +5,12 @@
 #include <inc/lib/stdio.h>
 #include <inc/stdarg.h>
 
+#define 	ZION_COLOR
 
 static void
 putch(int ch, void *thunk)
 {
-/*
-	//----- Qian edit -----
+#ifdef ZION_COLOR
 	// Add color.
 	// NOTE: 	bit0-7: 	character ASCII code
 	// 			bit8-11:	font color
@@ -44,8 +44,8 @@ putch(int ch, void *thunk)
 		case 'z': ch |= 0x0f00; 	break;
 		default: break;
 	}//switch
-	//----- Qian edit [end] -----
-*/
+#endif
+
 	cputchar(ch);
 	int *cntptr = (int *) thunk;
 	(*cntptr)++;
