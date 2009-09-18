@@ -105,7 +105,7 @@ GetMemInfo:
 
 	
 ; Load kernel file (origin ELF file) -------------------------------
-; NOTE: 调用int 13h, ah=0x42，每次读入1 个（或64 个）扇区；填充内存0x10000~0x7FFFF。
+; NOTE: 调用int 13h, ah=0x42，每次读入1 个（或8 个）扇区；填充内存0x10000~0x7FFFF。
 LoadKernelFile:
 	mov 		si, DAP_struct
 	mov 		ecx, StartSecOfKernalFile		; Start from logic sector StartSecOfKernalFile
@@ -123,14 +123,14 @@ LoadKernelFile:
 	pop 		dx
 	
 ;	inc 			ecx 										; 硬盘便宜1 个扇区
-	add			ecx, 64 								; 硬盘偏移64 个扇区
+	add			ecx, 8 									; 硬盘偏移8 个扇区
 ;	add			bx, 0x200 							; 内存偏移地址递增512B
-	add 			bx, 0x8000 							; 内存偏移地址递增32KB
+	add 			bx, 0x1000 							; 内存偏移地址递增4KB
 	cmp 		bx, 0x0000
 	jne 			.loop_load_kernel
 
 	add 			dx, 0x1000							; 内存段地址递增
-	cmp 		dx, 0x8000
+	cmp 		dx, LimitOfKernelFile				; 判断是否到达加载地址的段界限
 	jne 			.loop_load_kernel
 
 	ret
@@ -377,11 +377,11 @@ _MemChkBuf:				times	MEMCHKBUF_SIZE	db	0
 DAP_struct:		; 被int 13h, ah=42h 调用的Disk Address Packet (DAP) 结构体
 	DAP_Size: 				db 	16 		; size of DAP
 	DAP_unused_1:		db 	0 			; unused, should be zero
-	DAP_SecNum: 		db 	1 			; number of sectors to be read, 0..127
+	DAP_SecNum: 			db 	1 			; number of sectors to be read, 0..127
 	DAP_unused_2: 		db 	0 			; unused, should be zero
-	DAP_Mem_off: 		dw 	0 			; offset value of memory buffer to which sectors will be transferred
+	DAP_Mem_off: 			dw 	0 			; offset value of memory buffer to which sectors will be transferred
 	DAP_Mem_seg: 		dw 	0 			; segment value of memory buffer to which sectors will be transferred
-	DAP_SecStart: 		dd 	0, 0 		; absolute number of the start of the sectors to be read 
+	DAP_SecStart: 			dd 	0, 0 		; absolute number of the start of the sectors to be read 
 														; (1st sector of drive has number 0)
 	
 ;
@@ -402,5 +402,5 @@ MemChkBuf					equ		BaseOfLoader_PhyAddr + _MemChkBuf
 
 
 ; 堆栈在数据段的末尾
-StackSpace:					times	0x200		db	0
+StackSpace:					times	SizeOfStack		db	0
 TopOfStack					equ		BaseOfLoader_PhyAddr + $	; 栈顶
