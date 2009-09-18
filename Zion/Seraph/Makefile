@@ -1,29 +1,38 @@
+TOP 					= .
 OBJDIR 			:= obj
 DASMDIR 		:= DASM
-SERAPH_OBJS 	:= $(OBJDIR)/boot $(OBJDIR)/boot2 $(OBJDIR)/kernel_loader
 
 AS					:= nasm
 DAS 				:= ndisasm
 
 ASFLAGS			:= -O0 
 
+# Source files list
+SERAPH_SRCFILES :=\
+		boot/boot.asm 				\
+		boot/boot2.asm 				\
+		boot/kernel_loader.asm 
+SERAPH_SRCFILES 	:= $(wildcard $(SERAPH_SRCFILES))
+SERAPH_OBJS 			:= $(patsubst %.asm, $(OBJDIR)/%, $(notdir $(SERAPH_SRCFILES)))
+
+
 # include Makefile parameter head file
 include 	parameter.def
 
 # All Phony Targets
-.PHONY : all clean image $(SERAPH_OBJS)
+.PHONY : all clean image 
 
 all: image 
 
 # Create debug flags
 bochs_debug: 
 	echo "%define __BOCHS_DEBUG__" > include/bochs.inc
-	
+
 no_debug: 
 	echo "%define __NO_BOCHS_DEBUG__" > include/bochs.inc
 
 # Generate targets
-$(SERAPH_OBJS) : $(OBJDIR)/% : boot/%.asm
+$(OBJDIR)/% : boot/%.asm
 	@mkdir -p $(@D)
 	@mkdir -p $(DASMDIR)
 	$(AS) $(ASFLAGS) -o $@ $<

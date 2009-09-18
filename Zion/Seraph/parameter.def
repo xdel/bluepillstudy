@@ -20,7 +20,7 @@ StartSecOfBoot2 					= 33
 StartSecOfKernelLoader 		= 34
 
 # kernel loader 大小（单位：扇区）
-SizeOfKernelLoader 				= 8
+SizeOfKernelLoader 				= 5
 
  # bochs 磁盘镜像名称
 BochsImgName 					= Seraph_boot.img
