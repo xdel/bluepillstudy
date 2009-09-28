@@ -16,18 +16,16 @@ LABEL_DESC_VIDEO:		Descriptor 	0xb8000, 	0xffff, 			DA_DRW | DA_DPL3	 						; Vi
 ; GDT ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 GdtLen		equ		$ - LABEL_GDT
-GdtPtr		dw		GdtLen - 1												; Segment limit
+GdtPtr:		dw		GdtLen - 1												; Segment limit
 				dd		BaseOfLoader_PhyAddr + LABEL_GDT	; Segment base
 
 ; GDT Selector ----------------------------------------------------------------------------------
 SelectorFlatC		equ		LABEL_DESC_FLAT_C		- LABEL_GDT
-SelectorFlatRW	equ		LABEL_DESC_FLAT_RW	- LABEL_GDT
+SelectorFlatRW		equ		LABEL_DESC_FLAT_RW	- LABEL_GDT
 SelectorVideo		equ		LABEL_DESC_VIDEO		- LABEL_GDT
 ; GDT Selector ----------------------------------------------------------------------------------
 
 
-
-BaseOfStack	equ	OffsetOfLoader
 
 ; 16-bit 实模式代码 ----------------------------------------------------------
 [SECTION .s16]
@@ -35,97 +33,79 @@ BaseOfStack	equ	OffsetOfLoader
 LABEL_START:
 	mov		ax, cs
 	mov		ds, ax
-	mov		es, ax
 	mov		ss, ax
-	mov		sp, BaseOfStack
-
-	call 		GetMemInfo 						; 获取内存布局
+	mov		sp, OffsetOfLoader
 	
-	call 		LoadKernelFile 					; 载入kernel ELF 文件
+	call 		GetMemInfo 						; 获取内存布局
+
+%ifndef __LOAD_KERNEL_IN_PM__
+	call 		LoadKernelFile 						; 载入kernel ELF 文件
+%endif
 
 	; Get ready for protect-mode
 	lgdt		[GdtPtr] 								; Load GDTR
 
-	mov 	ax, 0x0003							; BIOS video mode
+	mov 	ax, 0x0003							; Set BIOS video mode
 	int 		0x10
 	
-	mov 	ah, 0x02								; Set cursor position to
-	mov 	bh, 0x0 								; page 0, 
-	mov 	dx, 0x0000 							; row 0 and column 0
-	int 		0x10 									; int 10h, ah=2
-
 	; Turn on A20 Gate
 	cli 													; Close interrupt
-	; // 方法一：
 	in			al, 0x92
 	or			al, 00000010b
 	out		0x92, al
 	
-	; // 方法二：
-;	call 			Wait_8042
-;	mov 		al , 0xd1
-;	out 			0x64 , al
-;	call 			Wait_8042
-;	mov 		al , 0xdf
-;	out 			0x60 , al
-;	call 			Wait_8042
-	
-	mov			eax, cr0 				; Trun on protect-mode
-	or				eax, 1
-	mov			cr0, eax
+	TurnOnPM										; Turn on protect-mode
 	
 	; Switich to protect-mode
 	jmp		dword SelectorFlatC:(BaseOfLoader_PhyAddr+LABEL_PM_START)
 
-;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
 ; 获取内存布局 ----------------------------------------------------------
 GetMemInfo:
-	mov		ebx, 0						; ebx = 后续值, 开始时需为 0
-	mov		di, _MemChkBuf		; es:di 指向一个地址范围描述符结构（Address Range Descriptor Structure）
+	mov			ebx, 0							; ebx = 后续值, 开始时需为 0
+	mov			di, _MemChkBuf			; es:di 指向一个地址范围描述符结构（Address Range Descriptor Structure）
 .MemChkLoop:
-	mov		eax, 0xe820				; eax = 0000E820h
-	mov		ecx, 20					; ecx = 地址范围描述符结构的大小
-	mov		edx, 0x534D4150	; edx = 'SMAP'
-	int		0x15						; int 15h
-	jc			.MemChkFail
-	add		di, 20
-	inc		dword [_dwMCRNumber]	; dwMCRNumber = ARDS 的个数
-	cmp		ebx, 0
-	jne		.MemChkLoop
-	jmp		.MemChkOK
+	mov			eax, 0xe820					; eax = 0000E820h
+	mov			ecx, 20						; ecx = 地址范围描述符结构的大小
+	mov			edx, 0x534D4150		; edx = 'SMAP'
+	int			0x15							; int 15h
+	jc				.MemChkFail
+	add			di, 20
+	inc			dword [_dwMCRNumber]		; dwMCRNumber = ARDS 的个数
+	cmp			ebx, 0
+	jne			.MemChkLoop
+	jmp			.MemChkOK
 .MemChkFail:
-	mov		dword [_dwMCRNumber], 0
+	mov			dword [_dwMCRNumber], 0
 .MemChkOK:
 
 	ret
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-	
+%ifndef __LOAD_KERNEL_IN_PM__
 ; Load kernel file (origin ELF file) -------------------------------
-; NOTE: 调用int 13h, ah=0x42，每次读入1 个（或8 个）扇区；填充内存0x10000~0x7FFFF。
 LoadKernelFile:
 	mov 		si, DAP_struct
 	mov 		ecx, StartSecOfKernalFile		; Start from logic sector StartSecOfKernalFile
 	mov 		dx, BaseOfKernelFile				; 起始内存段地址
-	mov 		bx, OffsetOfKernelFile				; 起始内存偏移地址
+	mov 		bx, OffsetOfKernelFile			; 起始内存偏移地址
+	mov 		al, SecNumOfReadOnce		; 每次中断读取的磁盘扇区数
+	mov 		[DAP_SecNum], al
+
 .loop_load_kernel:
 	push 		dx
 	mov 		[DAP_SecStart], ecx
 	mov 		[DAP_Mem_seg], dx
 	mov 		[DAP_Mem_off], bx
-;	mov 		al, 1
-	mov 		al, 64
-	mov 		[DAP_SecNum], al
 	call 			ReadSector_LBA
 	pop 		dx
 	
-;	inc 			ecx 										; 硬盘便宜1 个扇区
-	add			ecx, 8 									; 硬盘偏移8 个扇区
-;	add			bx, 0x200 							; 内存偏移地址递增512B
-	add 			bx, 0x1000 							; 内存偏移地址递增4KB
+	add			ecx, SecNumOfReadOnce					; 硬盘偏移OnceReadSecNum 个扇区
+	add 			bx, (SecNumOfReadOnce * 0x200)		; 内存偏移地址递增
 	cmp 		bx, 0x0000
 	jne 			.loop_load_kernel
 
@@ -134,24 +114,18 @@ LoadKernelFile:
 	jne 			.loop_load_kernel
 
 	ret
-
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 ; LBA 模式读取硬盘扇区
 ReadSector_LBA:
-	mov 		dl, DrvNum 							; dl = 驱动器号
-	mov 		ah, 0x42 								; ah = 42h
-	int 			0x13									; int 13h
-	jc 				ReadSector_LBA 					; 如果读取错误 CF 会被置为 1, 这时就不停地读, 直到正确为止
+	mov 		dl, DrvNum 					; dl = 驱动器号
+	mov 		ah, 0x42 						; ah = 42h
+	int 			0x13							; int 13h
+	jc 				ReadSector_LBA 			; 如果读取错误 CF 会被置为 1, 这时就不停地读, 直到正确为止
 	ret
-
-
-
-Wait_8042:
-	in 			al , 0x64
-	test 			al , 0x2
-	jnz 			Wait_8042
-	ret
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%endif
 
 
 
@@ -159,28 +133,23 @@ Wait_8042:
 [SECTION .s32]
 ALIGN	32
 [BITS	32]
-
 LABEL_PM_START:
-	mov		ax, SelectorVideo
-	mov		gs, ax
-	mov		ax, SelectorFlatRW
-	mov		ds, ax
-	mov		es, ax
-	mov		fs, ax
-	mov		ss, ax
-	mov		esp, TopOfStack
+	mov			ax, SelectorVideo
+	mov			gs, ax
+	mov			ax, SelectorFlatRW
+	mov			ds, ax
+	mov			es, ax
+	mov			fs, ax
+	mov			ss, ax
+	mov			esp, TopOfProtStack
 
-;	push	szMemChkTitle							; 显示内存信息标题
-;	call		DispStr
-;	add		esp, 4
+	call			DispMemInfo 							; 显示内存信息
 
-	call		DispMemInfo 								; 显示内存信息
+	mov 		eax, [dwMemSize] 					; 将内存大小写入到指定地址
+	mov 		[MemSize_PhyAddr], eax
 
-	mov 	eax, [dwMemSize] 						; 将内存大小写入到指定地址
-	mov 	[MemSize_PhyAddr], eax
-
-	mov 	eax, [dwMCRNumber] 				; 将内存布局信息的条目数写入到指定地址
-	mov 	[MCRNumber_PhyAddr], eax
+	mov 		eax, [dwMCRNumber] 				; 将内存布局信息的条目数写入到指定地址
+	mov 		[MCRNumber_PhyAddr], eax
 	
 	mov 		eax, MEMCHKBUF_SIZE 			; 将内存布局信息写入指定地址
 	push		eax											; size
@@ -191,14 +160,31 @@ LABEL_PM_START:
 	call			MemCpy
 	add			esp, 12
 
+%ifdef __LOAD_KERNEL_IN_PM__
+;// 在保护模式下load kernel ELF 文件
+	mov 		eax, [_dwMemSize] 					; 计算kernel ELF 文件存放的起始地址（从内存高端偏移）
+	sub 			eax, (OffsetFromMemoryEnd_MB * 0x100000)
+	mov 		dword [KernelFile_PhyAddr], eax
+
+	call 			LoadKernelFile_PM 					; Load kernel file from prot-mode.
+%else
+;// 在实模式下已经将kernel ELF 文件load 好，此处仅将文件地址写入变量
+	mov 		eax, BaseOfKernelFile_PhyAddr
+	mov 		dword [KernelFile_PhyAddr], eax
+%endif
+
 	call			InitKernel 									; 解析kernel 的ELF 格式，将kernel 代码在内存中重定位
+	mov 		eax, [KernelFile_PhyAddr] 		; 从ELF文件中取入口地址
+	add 			eax, e_entry
+	mov 		eax, [eax]
+	mov 		[KernelEntryPoint], eax
 
 	; Switch to kernel.
-	mov 		eax, [BaseOfKernelFile_PhyAddr + e_entry]
+	mov 		eax, [KernelEntryPoint]
 	and 			eax, PAddrMask						; Physical address mask
 	jmp			eax											; 进入内核
-	
-;	jmp		SelectorFlatC:KernelEntryPoint_PhyAddr		; 进入内核
+
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 %include "include/asm_pm_lib.inc"
 
@@ -239,12 +225,16 @@ MemCpy:
 	mov			esp, ebp
 	pop			ebp
 	ret
-; MemCpy 结束-------------------------------------------------------------
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
 ; 显示内存信息 --------------------------------------------------------------
 DispMemInfo:
+;	push		szMemChkTitle					; 显示内存信息标题
+;	call			DispStr
+;	add			esp, 4
+
 	push		esi
 	push		edi
 	push		ecx
@@ -288,7 +278,7 @@ DispMemInfo:
 	pop			edi
 	pop			esi
 	ret
-; ---------------------------------------------------------------------------
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
@@ -297,69 +287,177 @@ DispMemInfo:
 ; --------------------------------------------------------------------------------------------
 InitKernel:	
 	; 遍历每一个 Program Header，根据 Program Header 中的信息来确定把什么放进内存，放到什么位置，以及放多少。
-	xor			esi, esi
-	mov			cx, word [BaseOfKernelFile_PhyAddr + e_phnum]	; ┓ ecx <- pELFHdr->e_phnum
-	movzx		ecx, cx																		; ┛
-	mov			esi, [BaseOfKernelFile_PhyAddr + e_phoff]				; esi <- pELFHdr->e_phoff
-	add			esi, BaseOfKernelFile_PhyAddr								; esi <- OffsetOfKernel + pELFHdr->e_phoff
+	mov 		ecx, [KernelFile_PhyAddr]					; ┓ ecx <- pELFHdr->e_phnum
+	add 			ecx, e_phnum
+	mov 		cx, word [ecx]
+	movzx		ecx, cx												; ┛
+	mov 		esi, [KernelFile_PhyAddr] 					; esi <- pELFHdr->e_phoff
+	add 			esi, e_phoff
+	mov 		esi, [esi]
+	add 			esi, [KernelFile_PhyAddr]					; esi <- OffsetOfKernel + pELFHdr->e_phoff
 .LoadSegment_Begin:
 	mov			eax, [esi + p_type]
-	cmp			eax, 0																; PT_NULL
+	cmp			eax, 0												; PT_NULL
 	jz				.LoadSegment_NoAction
-	push		dword [esi + p_filesz]								; size	┓
-	mov			eax, [esi + p_offset]										;	┃
-	add			eax, BaseOfKernelFile_PhyAddr						;	┣ ::memcpy(	(void*)(pPHdr->p_vaddr),
-	push		eax																; src	┃		uchCode + pPHdr->p_offset,
-	mov 		eax, [esi + p_vaddr]									; dst	┃		pPHdr->p_filesz;
+	push		dword [esi + p_filesz]						; size	┓
+	mov			eax, [esi + p_offset]									;	┃
+	add			eax, [KernelFile_PhyAddr]							;	┣ ::memcpy(	(void*)(pPHdr->p_vaddr),
+	push		eax														; src	┃		uchCode + pPHdr->p_offset,
+	mov 		eax, [esi + p_vaddr]								; dst	┃		pPHdr->p_filesz;
 	and 			eax, PAddrMask										; Physical address mask
 	push 		eax
-	call			MemCpy															;	┃
-	add			esp, 12															;	┛
+	call			MemCpy													;	┃
+	add			esp, 12													;	┛
 .LoadSegment_NoAction:
-	xor 			eax, eax 													  		; esi += pELFHdr->e_phentsize
-	mov 		ax, word [BaseOfKernelFile_PhyAddr + e_phentsize]
-	add			esi, eax 
+	mov 		eax, [KernelFile_PhyAddr]							; esi += pELFHdr->e_phentsize
+	add 			eax, e_phentsize
+	movzx		eax, word [eax]
+	add			esi, eax
 	dec			ecx
 	jnz			.LoadSegment_Begin
 	
 
 	; 遍历每一个 Section Header，将.bss 段清零
 	xor 			edx, edx
-	mov 		dx, word [BaseOfKernelFile_PhyAddr + e_shnum]
-	xor 			esi, esi
-	mov			esi, [BaseOfKernelFile_PhyAddr + e_shoff]	
-	add			esi, BaseOfKernelFile_PhyAddr 
-	xor 			bl, bl
+	mov 		edx, [KernelFile_PhyAddr]
+	add 			edx, e_shnum
+	movzx		edx, word [edx]
+	mov 		esi, [KernelFile_PhyAddr]
+	add 			esi, e_shoff
+	mov 		esi, [esi]
+	add 			esi, [KernelFile_PhyAddr]
 .ConfigSection_Begin:
 	mov			eax, dword [esi + sh_type]
 	cmp			eax, SHT_NOBITS 
 	jne			.ConfigSection_NoAction
 	mov 		eax, dword [esi + sh_addr] 
-	and 			eax, PAddrMask												; Physical address mask
+	and 			eax, PAddrMask									; Physical address mask
 	mov 		ecx, dword [esi + sh_size]
 .ConfigSection_ClearLoop:
-	mov 		byte [eax], bl
+	mov 		byte [eax], 0
 	inc 			eax
 	loop 		.ConfigSection_ClearLoop
 .ConfigSection_NoAction:
-	xor 			eax, eax 													  		; esi += pELFHdr->e_phentsize
-	mov 		ax, word [BaseOfKernelFile_PhyAddr + e_shentsize]
+
+	mov 		eax, [KernelFile_PhyAddr]						; esi += pELFHdr->e_shentsize
+	add 			eax, e_shentsize
+	movzx		eax, word [eax]
+
 	add			esi, eax 
 	dec			edx
 	jnz			.ConfigSection_Begin
 
 	ret
-; InitKernel ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
-; 数据段
+%ifdef __LOAD_KERNEL_IN_PM__
+; Load kernel file from prot-mode ----------------------------------------
+; GDT ---------------------------------------------------------------------------------------------------
+;												Base 	Limit 			Attribute
+GDT_TEMP:			Descriptor 	0, 		0, 				0					; Null
+DESC_CODE16: 	Descriptor 	0, 		0xffffff,			DA_C			; 16-bit code
+; GDT ---------------------------------------------------------------------------------------------------
+
+GdtTemp_Len		equ		$ - GDT_TEMP
+GdtTemp_Ptr:		dw		GdtTemp_Len - 1										; Segment limit
+							dd		BaseOfLoader_PhyAddr + GDT_TEMP		; Segment base
+
+; GDT Selector ----------------------------------------------------------------------------------
+SelectCode16_temp		equ		DESC_CODE16		- GDT_TEMP
+; GDT Selector ----------------------------------------------------------------------------------
+
+LoadKernelFile_PM:
+	mov 	[SPValueInProtMode], esp 				; Save current ESP value
+	sgdt 	[SaveGDTR] 									; Save current GDTR value
+	lgdt 		[GdtTemp_Ptr] 									; Load temporary GDT for 16-bit code use
+	jmp 		SelectCode16_temp:(BaseOfLoader_PhyAddr + BACK_TO_REAL)
+	
+[BITS 16]
+BACK_TO_REAL:
+	TurnOffPM 													; NOTE: 关闭保护模式必须在16位代码段进行
+	jmp 		0: REAL_ENTRY 								; 将CS清零，跳转到实模式代码
+	
+; 实模式堆栈空间
+RealStack: 			times 	SizeOfRealStack 		db 	0
+TopOfRealStack: 	; 栈顶
+
+REAL_ENTRY:
+	mov 		ax, cs
+	mov 		ds, ax
+	mov 		es, ax
+	mov 		ss, ax
+	mov 		sp, TopOfRealStack
+
+;--------------------------------------------
+; Load kernel file (origin ELF file)
+	mov 		si, DAP_struct 						; DAP 结构体地址
+	mov 		ebx, StartSecOfKernalFile		; Start from logic sector StartSecOfKernalFile
+	mov 		word [DAP_Mem_seg], BaseOfTempLoadAddr 	; 1MB 以下暂存位置 -- 段地址
+	mov 		word [DAP_Mem_off], OffsetOfTempLoadAddr 	; 1MB 以下暂存位置 -- 偏移地址
+	mov 		byte [DAP_SecNum], SecNumOfReadOnce 			; 单次中断读取的扇区数
+	mov 		ecx, SizeOfKernelFile			; [用于循环计数]
+	mov 		edi, [KernelFile_PhyAddr] 		; 内存高端放置ELF文件的起始地址
+	mov 		ax, BaseOfTempLoadAddr 	; 1MB 以下暂存位置 -- 偏移地址
+	mov 		es, ax
+.loop_load_kernel:
+	mov 		[DAP_SecStart], ebx			; 起始扇区号
+	call 			ReadSector_LBA
+
+	; 将1MB 以下临时存放的内容拷贝至目标位置（内存高端）
+	push 		ecx
+	push 		esi
+	mov 		ecx, (SecNumOfReadOnce * 128)	; [用于循环计数]
+	mov 		esi, OffsetOfTempLoadAddr
+.loop_MemCopy:
+	mov 		eax, dword [es:esi]				; 4-byte 拷贝
+	add 			esi, 4
+	mov 		dword [fs:edi], eax
+	add 			edi, 4
+	loop 		.loop_MemCopy
+	pop 		esi
+	pop 		ecx
+		
+	add			ebx, SecNumOfReadOnce			; 硬盘偏移SecNumOfReadOnce 个扇区
+	loop 		.loop_load_kernel
+;--------------------------------------------
+
+	lgdt 			[_SaveGDTR] 								; Recover the previous GDTR
+
+	TurnOnPM 													; Turn on prot-mode
+
+	jmp 		dword SelectorFlatC:(BaseOfLoader_PhyAddr + BACK_TO_PROT)
+
+
+; LBA 模式读取硬盘扇区
+ReadSector_LBA:
+	mov 		dl, DrvNum 							; dl = 驱动器号
+	mov 		ah, 0x42 								; ah = 42h
+	int 			0x13									; int 13h
+	jc 				ReadSector_LBA 					; 如果读取错误 CF 会被置为 1, 这时就不停地读, 直到正确为止
+	ret
+
+[BITS 32]
+BACK_TO_PROT:
+	mov			ax, SelectorFlatRW
+	mov			ss, ax
+	mov 		ds, ax
+	mov 		es, ax
+	mov 		esp, [SPValueInProtMode]
+	ret
+;^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+%endif
+
+
+
+; 数据段 -----------------------------------------------------------------------
 [SECTION .data]
 ALIGN	32
 LABEL_DATA:
 ; 实模式下使用这些符号
 ; 字符串
-_szMemChkTitle:			db	"BaseAddrL BaseAddrH LengthLow LengthHigh   Type", 0Ah, 0
+;_szMemChkTitle:			db	"BaseAddrL BaseAddrH LengthLow LengthHigh   Type", 0Ah, 0
 _szRAMSize:					db	"RAM size: ", 0
 _szReturn:					db	0Ah, 0
 ;; 变量
@@ -383,10 +481,13 @@ DAP_struct:		; 被int 13h, ah=42h 调用的Disk Address Packet (DAP) 结构体
 	DAP_Mem_seg: 		dw 	0 			; segment value of memory buffer to which sectors will be transferred
 	DAP_SecStart: 			dd 	0, 0 		; absolute number of the start of the sectors to be read 
 														; (1st sector of drive has number 0)
-	
-;
+_SPValueInProtMode: 	dd 	0
+_KernelFile_PhyAddr: 	dd 	0
+_KernelEntryPoint: 		dd 	0
+_SaveGDTR: 				dd 	0, 0
+
 ;; 保护模式下使用这些符号
-szMemChkTitle				equ		BaseOfLoader_PhyAddr + _szMemChkTitle
+;szMemChkTitle				equ		BaseOfLoader_PhyAddr + _szMemChkTitle
 szRAMSize					equ		BaseOfLoader_PhyAddr + _szRAMSize
 szReturn						equ		BaseOfLoader_PhyAddr + _szReturn
 dwDispPos					equ		BaseOfLoader_PhyAddr + _dwDispPos
@@ -399,8 +500,12 @@ ARDStruct					equ		BaseOfLoader_PhyAddr + _ARDStruct
 	dwLengthHigh			equ		BaseOfLoader_PhyAddr + _dwLengthHigh
 	dwType					equ		BaseOfLoader_PhyAddr + _dwType
 MemChkBuf					equ		BaseOfLoader_PhyAddr + _MemChkBuf
+SPValueInProtMode 		equ 		BaseOfLoader_PhyAddr + _SPValueInProtMode
+KernelFile_PhyAddr 		equ 		BaseOfLoader_PhyAddr + _KernelFile_PhyAddr
+KernelEntryPoint 			equ 		BaseOfLoader_PhyAddr + _KernelEntryPoint
+SaveGDTR 					equ 		BaseOfLoader_PhyAddr + _SaveGDTR
 
+; 保护模式的栈空间 -----------------------------------------------------------------
+ProtStack:					times	SizeOfProtStack		db	0
+TopOfProtStack			equ		BaseOfLoader_PhyAddr + $	; 栈顶
 
-; 堆栈在数据段的末尾
-StackSpace:					times	SizeOfStack		db	0
-TopOfStack					equ		BaseOfLoader_PhyAddr + $	; 栈顶

@@ -3,7 +3,7 @@
 ###############################################################
 
 # how much memory the emulated machine will have
-megs: 256 
+megs: 512 
 
 # filename of ROM images
 romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
@@ -11,7 +11,7 @@ vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest
 
 # what disk images will be used 
 floppya: 1_44=boot_sector.img, status=inserted
-ata0-master: type=disk, path="Seraph_boot.img", mode=flat, cylinders=20, heads=16, spt=63
+ata0-master: type=disk, path="VirtualDisk.img", mode=flat, cylinders=20, heads=16, spt=63
 
 # choose the boot disk.
 boot: disk
