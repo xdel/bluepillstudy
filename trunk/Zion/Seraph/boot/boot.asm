@@ -59,6 +59,11 @@ Boot_start:
 	
 	call 			Clear_screen						; Clear current screen.
 
+	mov 		ah, 0x02								; Set cursor position to
+	mov 		bh, 0x0 								; page 0, 
+	mov 		dx, 0x0000 							; row 0 and column 0
+	int 			0x10 									; int 10h, ah=2
+
 	jmp			KERNEL_LOADER_offset		; Jump to kernel loader.
 
 

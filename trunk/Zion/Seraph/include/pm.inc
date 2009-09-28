@@ -45,4 +45,18 @@ DA_CCOR			EQU		9Eh		; 存在的可执行可读一致代码段属性值
 	db	(%1 >> 24) & 0xFF									; 段基址 3								(1 字节)
 %endmacro 														; 											共 8 字节
 ;
-; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+; Trun on protect-mode
+%macro 	TurnOnPM 	0
+	mov			eax, cr0 
+	or			eax, 1 					; Set PE bit
+	mov			cr0, eax
+%endmacro
+
+; Trun off protect-mode
+%macro 	TurnOffPM 	0
+	mov			eax, cr0 
+		and 		al, 11111110b 		; Clear PE bit
+	mov			cr0, eax
+%endmacro
+; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

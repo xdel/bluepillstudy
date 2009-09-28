@@ -20,15 +20,22 @@ $ make backupMBR
 完成后，分别保存文件。
 
 
-2、Bochs 调试：在Seraph 目录下运行脚本
+2、选择装载kernel ELF文件的方式
+	Seraph 支持两种装载kernel ELF文件的方式：(1) 在实模式下装载；(2) 在保护模式下装载。
+	在include/load.inc 文件中可进行选择：
+    %define 	__LOAD_KERNEL_IN_PM__ 			; 宏标记：在保护模式下从硬盘读取kernel ELF 文件
+	若屏蔽该宏定义，则选择(1)；反之，则选择(2)。
+
+
+3、Bochs 调试：在Seraph 目录下运行脚本
 $ ./remake
 
 
-3、安装到硬盘：在Seraph 目录下运行脚本
+4、安装到硬盘：在Seraph 目录下运行脚本
 $ ./reinstall
 	
 	
-4、卸载：在Seraph 目录下运行命令
+5、卸载：在Seraph 目录下运行命令
 $ make uninstall
 
 
