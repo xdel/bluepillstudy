@@ -14,9 +14,9 @@ SizeOfKernelLoader 					equ 		5 										; size of kernel loader (with respect 
 
 ;------ // for boot_Zion.asm // -----
 %ifdef __BOCHS_DEBUG__
-StartSecOfKernalFile 				equ 		189									; kernle ELF 文件在硬盘中的起始扇区号
+StartSecOfKernalFile 				equ 		64									; kernle ELF 文件在硬盘中的起始扇区号
 %else
-StartSecOfKernalFile 				equ 		71682500						; kernle ELF 文件在硬盘中的起始扇区号
+StartSecOfKernalFile 				equ 		71674000						; kernle ELF 文件在硬盘中的起始扇区号
 %endif
 
 SizeOfProtStack						equ 		128 									; Size of protecte-mode stack
@@ -35,8 +35,8 @@ BaseOfKernelFile_PhyAddr		equ		(BaseOfKernelFile * 0x10 + OffsetOfKernelFile)	; 
 SecNumOfReadOnce 				equ 		8 										; 每次中断读取的磁盘扇区数
 %else
 ; // for func: LoadKernelFile_PM -- Load kernel ELF file from prot-mode.
-SizeOfKernelFile 						equ 		10 									; kernel ELF 文件大小（以32KB为单位）
-BaseOfTempLoadAddr 			equ 		0x8000 							; 1MB 以下临时存放从硬盘读出数据的位置 ---- 段地址
+SizeOfKernelFile 						equ 		128 									; kernel ELF 文件大小（以32KB为单位）= 4MB
+BaseOfTempLoadAddr 			equ 		0x8800 							; 1MB 以下临时存放从硬盘读出数据的位置 ---- 段地址
 OffsetOfTempLoadAddr 			equ 		0x0000 							; 1MB 以下临时存放从硬盘读出数据的位置 ---- 偏移地址
 OffsetFromMemoryEnd_MB		equ 		128 									; 距离内存高端的偏移量（单位：MB）
 SecNumOfReadOnce 				equ 		64 									; 每次中断读取的磁盘扇区数
@@ -46,6 +46,6 @@ PAddrMask 								equ 		0xFFFFFFFF						; 物理地址掩码
 
 ;----- for memory infomation -----
 MEMCHKBUF_SIZE 					equ 		512 									; 内存布局存储缓冲区大小
-MemSize_PhyAddr 					equ 		0x9000 							; 内存地址信息存放的位置 ---- 物理地址
-MCRNumber_PhyAddr 			equ 		0x9008
-MemInfo_PhyAddr 					equ 		0x9010
+MemSize_PhyAddr 					equ 		0x8000 							; 内存地址信息存放的位置 ---- 物理地址
+MCRNumber_PhyAddr 			equ 		0x8008
+MemInfo_PhyAddr 					equ 		0x8010
