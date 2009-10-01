@@ -1,6 +1,8 @@
 ###############################################################
 # Configuration file for Bochs
 ###############################################################
+# how many cpu cores the emulated machine will have
+#cpu: count=2
 
 # how much memory the emulated machine will have
 megs: 512 
@@ -10,7 +12,6 @@ romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
 vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest
 
 # what disk images will be used 
-floppya: 1_44=boot_sector.img, status=inserted
 ata0-master: type=disk, path="VirtualDisk.img", mode=flat, cylinders=20, heads=16, spt=63
 
 # choose the boot disk.

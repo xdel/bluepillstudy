@@ -1,2 +1,1 @@
-make clean && make && bochs -q
-
+make clean && make && bochs -f bochsrc -q

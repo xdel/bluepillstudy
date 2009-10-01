@@ -5,10 +5,10 @@ KernelName 							= Zion-VMOS
 StartSecOfKernalFile 			= ####
 
 # 内核文件所在的bochs 磁盘镜像起始扇区号
-StartSecOfKernalFile_bochs 	= 189
+StartSecOfKernalFile_bochs 	= 64
 
 # 内核文件大小（单位：扇区）
-SizeOfKernelFile 					= 512
+SizeOfKernelFile 					= 8192
 
 # MBR_bak 所在的起始扇区号
 StartSecOfMBR_bak 			= 32
