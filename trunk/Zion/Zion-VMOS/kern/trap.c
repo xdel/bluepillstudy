@@ -5,6 +5,7 @@
 #include <inc/kern/trap.h>
 #include <inc/kern/console.h>
 #include <inc/kern/monitor.h>
+#include <inc/kern/dbg.h>
 
 static struct Taskstate ts;
 
@@ -17,7 +18,7 @@ struct Pseudodesc idt_pd = {
 };
 
 
-static const char *trapname(int trapno)
+const char *trapname(int trapno)
 {
 	static const char * const excnames[] = {
 		"Divide error",
@@ -28,7 +29,7 @@ static const char *trapname(int trapno)
 		"BOUND Range Exceeded",
 		"Invalid Opcode",
 		"Device Not Available",
-		"Double Falt",
+		"Double Fault",
 		"Coprocessor Segment Overrun",
 		"Invalid TSS",
 		"Segment Not Present",
@@ -54,18 +55,13 @@ void
 idt_init(void)
 {
 	extern struct Segdesc gdt[];
-	
-	// LAB 2: Your code here.
-//----- Qian edit (for Challenge!) -----
 	extern uint32_t 	idt_entry[];
 
 	// Initialize idt to point to each entry points.
 	for( int i=0; i<=T_SIMDERR; i++ ) {
 		SETGATE(idt[i], 0, GD_KT, idt_entry[i], 0);
 	}//for
-//----- Qian edit (for Challenge!) [end] -----
 
-//----- Qian edit -----
 /* // Declaration of trap entry point.
 	extern char brkpt[];
 	extern char divide[];
@@ -107,27 +103,10 @@ idt_init(void)
 	SETGATE(idt[T_MCHK], 0, GD_KT, mchk, 0);			// Machine check
 	SETGATE(idt[T_SIMDERR], 0, GD_KT, simderr, 0);	// SIMD floating point error
 	SETGATE(idt[T_SYSCALL], 0, GD_KT, syscall, 0);	// System call
-//----- Qian edit [end] -----
 */
-	// Set a gate for the system call interrupt.
-	// Hint: Must this gate be accessible from userlevel?
-	// LAB 3: Your code here.
-	
-	// Setup a TSS so that we get the right stack
-	// when we trap to the kernel.
-	ts.ts_esp0 = KSTACKTOP;
-	ts.ts_ss0 = GD_KD;
-
-	// Initialize the TSS field of the gdt.
-	gdt[GD_TSS >> 3] = SEG16(STS_T32A, (uint32_t) (&ts),
-					sizeof(struct Taskstate), 0);
-	gdt[GD_TSS >> 3].sd_s = 0;
-
-	// Load the TSS
-	ltr(GD_TSS);
 
 	// Load the IDT
-	asm volatile("lidt idt_pd");
+	__asm__ __volatile__("lidt idt_pd");
 }//idt_init()
 
 
@@ -165,23 +144,20 @@ void
 trap(struct Trapframe *tf)
 {
 	// Dispatch based on what type of trap occurred
+	cprintf("TEST trapping %d!\n", tf->tf_trapno);
 	switch (tf->tf_trapno) {
-
-	// LAB 2: Your code here.
-//----- Qian edit -----	
-	case T_BRKPT:	// Breakpoint
-		cprintf("TEST: break entry.\n");
-		monitor(tf);	// Invoke monitor.
-		break;
-//----- Qian edit [end] -----
-
-	default:
+		case T_DEBUG:
+		case T_BRKPT:
+			cprintf("TEST:int3 trapped\n");
+			dbg_break(tf);
+			break;
+		default:
 		// Unexpected trap: The user process or the kernel has a bug.
-		print_trapframe(tf);
-		if (tf->tf_cs == GD_KT)
-			panic("unhandled trap in kernel");
-		else
-			panic("unhandled trap in user mode");
-	}
-}
+			print_trapframe(tf);
+			if (tf->tf_cs == GD_KT)
+				panic("unhandled trap in kernel");
+			else
+				panic("unhandled trap in user mode");
+	}//switch
+}//trap()
 }

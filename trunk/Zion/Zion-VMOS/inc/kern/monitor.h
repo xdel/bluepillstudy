@@ -1,8 +1,8 @@
 #ifndef __KERN_MONITOR_H
 #define __KERN_MONITOR_H
-#ifndef ZION_KERNEL
-# error "This is a Zion kernel header; user programs should not #include it"
-#endif
+
+#define WHITESPACE "\t\r\n "
+#define MAXARGS 16
 
 struct Trapframe;
 
@@ -21,6 +21,10 @@ int mon_cpuid( int argc, char **argv, struct Trapframe *tf );
 int mon_cpuinfo( int argc, char **argv, struct Trapframe *tf );
 int mon_memcheck( int argc, char **argv, struct Trapframe *tf );
 int mon_meminfo ( int argc, char **argv, struct Trapframe *tf );
-int mon_cr0check (int argc, char **argv, struct Trapframe *tf);
+int mon_int3 (int argc, char **argv, struct Trapframe *tf);
+int mon_startvmx (int argc, char **argv, struct Trapframe *tf);
+int mon_LoadKernel (int argc, char **argv, struct Trapframe *tf);
+int mon_GetHDInfo (int argc, char **argv, struct Trapframe *tf);
+int mon_HDRead (int argc, char **argv, struct Trapframe *tf);
 
 #endif	

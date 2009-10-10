@@ -99,8 +99,6 @@ void mem_init(void)
 	int r;
 	struct Page *pp;
 	
-	nextfree = (char *)0; // TODO!!!
-	
 	// Find out how much memory the machine has ('npages' & 'n_base_pages')
 	i386_mem_detect();
 
@@ -110,16 +108,13 @@ void mem_init(void)
 	// We advise you set the memory to 0 after allocating it, since that
 	// will help you catch bugs later.
 	//
-	// LAB 2: Your code here.
 	pages = (Page *)boot_alloc(npages * sizeof(struct Page));
 	memset(pages, 0, npages * sizeof(struct Page));
-//	cprintf("TEST: boot_alloc() \n");
 	
 	// Now that we've allocated the 'pages' array, initialize it
 	// by putting all free physical pages onto a list.  After this point,
 	// all further memory management will go through the page_* functions.
 	page_init();
-//	cprintf("TEST: page_init() \n");
 
 	// Allocate the kernel's initial page directory, 'kern_pgdir'.
 	// This starts out empty (all zeros).  Any virtual
@@ -154,8 +149,6 @@ void mem_init(void)
 	// Permissions: kernel RW, user NONE
 	//
 	page_map_segment(kern_pgdir, KERNBASE, (0xffffffff)-KERNBASE+1, 0, PTE_W | PTE_P);
-//	cprintf("TEST: page_map_segment() \n");
-
 	
 	// On x86, segmentation maps a VA to a LA (linear addr) and
 	// paging maps the LA to a PA; we write VA => LA => PA.  If paging is
@@ -175,24 +168,19 @@ void mem_init(void)
 	kern_pgdir[0] = kern_pgdir[PDX(KERNBASE)];
 
 	// Install page table.
-//	cprintf("TEST: begin load cr3 \n");
 	lcr3(PADDR(kern_pgdir));
-//	cprintf("TEST: after load cr3 \n");
 
 	// Turn on paging.
 	cr0 = rcr0();
 	cr0 |= CR0_PE|CR0_PG|CR0_AM|CR0_WP|CR0_NE|CR0_TS|CR0_EM|CR0_MP;
 	cr0 &= ~(CR0_TS|CR0_EM);
 	lcr0(cr0);
-//	cprintf("TEST: load cr0 \n");
 
 	// Current mapping: VA KERNBASE+x => LA x => PA x.
 	// (x < 4MB so uses paging kern_pgdir[0])
 
 	// Reload all segment registers.
 	asm volatile("lgdt gdt_pd");
-	asm volatile("movw %%ax,%%gs" :: "a" (GD_UD|3));
-	asm volatile("movw %%ax,%%fs" :: "a" (GD_UD|3));
 	asm volatile("movw %%ax,%%es" :: "a" (GD_KD));
 	asm volatile("movw %%ax,%%ds" :: "a" (GD_KD));
 	asm volatile("movw %%ax,%%ss" :: "a" (GD_KD));

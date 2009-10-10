@@ -100,6 +100,29 @@ strfind(const char *s, char c)
 	return (char *) s;
 }
 
+char * strcat(char *dst, char const *src)
+{
+	while (*dst);
+		++dst;
+	return strcpy(dst, src);
+}
+
+int memicmp(void const *buf1, void const *buf2, unsigned int count)
+{
+	char const *p1 = (char const *)buf1;
+	char const *p2 = (char const *)buf2;
+	char c1 = 1, c2 = 1;
+	do
+	{
+		c1 = *p1++; c2 = *p2++;
+		if (c1 >= 'A' && c1 <= 'Z')
+			c1 += 'a' - 'A';
+		if (c2 >= 'A' && c2 <= 'Z')
+			c2 += 'a' - 'A';
+	} while (--count && c1 == c2 && c1 && c2);
+	return c1 - c2;
+}
+
 
 void *
 memset(void *v, int c, size_t n)
@@ -217,7 +240,7 @@ strtol(const char *s, char **endptr, int base)
 
 
 
-int 
+int64_t 
 str2num(char *str)
 { 
 	int 	n=0, i=0;

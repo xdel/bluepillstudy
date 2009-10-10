@@ -1,0 +1,14 @@
+# 内核文件所在的物理硬盘起始扇区号
+StartSecOfKernalFile 			= 71674000
+
+# 内核文件所在的bochs 磁盘镜像起始扇区号
+StartSecOfKernalFile_bochs 	= 64
+
+# 内核文件大小（单位：扇区）
+SizeOfKernelFile 					= 8192
+
+ # bochs 磁盘镜像名称
+BochsImgName 					= VirtualDisk.img
+
+# 物理硬盘设备名称
+HardDisk_Dev 						= /dev/sda

@@ -485,7 +485,7 @@ void CmIOOutW(uint32_t port, uint32_t data)
 {
 	asm volatile("movl %0,%%eax"::"r"(data));
 	asm volatile("movl %0,%%edx"::"r"(port));
-	asm volatile("outb %ax,%dx");
+	asm volatile("outb %al,%dx");
 }
 
 //CmIOOutD PROC StdCall _Port,_Data
@@ -499,7 +499,7 @@ void CmIOOutD(uint32_t port, uint32_t data)
 {
 	asm volatile("movl %0,%%eax"::"r"(data));
 	asm volatile("movl %0,%%edx"::"r"(port));
-	asm volatile("outb %eax,%dx");
+	asm volatile("outb %al,%dx");
 } 
  
 //+++++++++++++++++++++++DDK Function+++++++++++++++++++++++++++++++
