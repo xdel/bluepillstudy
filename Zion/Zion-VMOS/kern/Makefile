@@ -19,7 +19,6 @@ KERN_SRCFILES :=\
 			kern/trap.c 					\
 			kern/trapentry.S 			\
 			kern/kdebug.c 				\
-			kern/LoadKernel.asm 	\
 			kern/hdd.c 					\
 			kern/Loader.c
 
