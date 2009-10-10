@@ -6,7 +6,7 @@
 ;					load boot-stage2 for further.
 ;##################################################
 %include "include/load.inc"
-%include	"include/hdd.inc"	
+%include "include/hdd.inc"	
 
 org		MBR_offset
 

@@ -31,6 +31,7 @@ Boot_start:
 	int 			0x13 									; int 13h, ah=02
 	jc 				ERROR 								; Branch if not succeed.
 
+;// for recovering MBR
 ;	mov 		ax, 0x0000	 						; Write MBR secto
 ;	mov 		es, ax
 ;	mov 		ax, 0x0301
