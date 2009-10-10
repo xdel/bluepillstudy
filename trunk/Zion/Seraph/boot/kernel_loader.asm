@@ -12,7 +12,7 @@ org		OffsetOfLoader
 LABEL_GDT:						Descriptor 	0, 				0, 				0														; Null
 LABEL_DESC_FLAT_C:		Descriptor 	0, 				0xFFFFFF,	DA_CR    | DA_32 | DA_LIMIT_4K		; Code, 0 ~ 4G
 LABEL_DESC_FLAT_RW:	Descriptor 	0, 				0xFFFFFF,	DA_DRW | DA_32 | DA_LIMIT_4K		; Data, 0 ~ 4G
-LABEL_DESC_VIDEO:		Descriptor 	0xb8000, 	0xffff, 			DA_DRW | DA_DPL3	 						; Video
+LABEL_DESC_VIDEO:		Descriptor 	0xb8000, 	0xFFFF,		DA_DRW | DA_DPL3	 						; Video
 ; GDT ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 GdtLen		equ		$ - LABEL_GDT
@@ -36,26 +36,20 @@ LABEL_START:
 	mov		ss, ax
 	mov		sp, OffsetOfLoader
 	
+	mov 	ax, 0x0003							; Set BIOS video mode
+	int 		0x10
+
 	call 		GetMemInfo 						; 获取内存布局
 
 %ifndef __LOAD_KERNEL_IN_PM__
 	call 		LoadKernelFile 						; 载入kernel ELF 文件
 %endif
 
-	; Get ready for protect-mode
-	lgdt		[GdtPtr] 								; Load GDTR
-
-	mov 	ax, 0x0003							; Set BIOS video mode
-	int 		0x10
-	
-	; Turn on A20 Gate
 	cli 													; Close interrupt
-	in			al, 0x92
-	or			al, 00000010b
-	out		0x92, al
-	
+	TurnOnA20 										; Turn on A20 Gate
+	lgdt		[GdtPtr] 								; Load GDTR
 	TurnOnPM										; Turn on protect-mode
-	
+
 	; Switich to protect-mode
 	jmp		dword SelectorFlatC:(BaseOfLoader_PhyAddr+LABEL_PM_START)
 
@@ -87,7 +81,6 @@ GetMemInfo:
 
 
 %ifndef __LOAD_KERNEL_IN_PM__
-; Load kernel file (origin ELF file) -------------------------------
 LoadKernelFile:
 	mov 		si, DAP_struct
 	mov 		ecx, StartSecOfKernalFile		; Start from logic sector StartSecOfKernalFile
@@ -377,6 +370,7 @@ LoadKernelFile_PM:
 [BITS 16]
 BACK_TO_REAL:
 	TurnOffPM 													; NOTE: 关闭保护模式必须在16位代码段进行
+	sti 																; Open interrupt
 	jmp 		0: REAL_ENTRY 								; 将CS清零，跳转到实模式代码
 	
 ; 实模式堆栈空间
@@ -423,10 +417,10 @@ REAL_ENTRY:
 	loop 		.loop_load_kernel
 ;--------------------------------------------
 
+	cli 																; Close interrupt
 	lgdt 			[_SaveGDTR] 								; Recover the previous GDTR
-
 	TurnOnPM 													; Turn on prot-mode
-
+	
 	jmp 		dword SelectorFlatC:(BaseOfLoader_PhyAddr + BACK_TO_PROT)
 
 
@@ -437,6 +431,7 @@ ReadSector_LBA:
 	int 			0x13									; int 13h
 	jc 				ReadSector_LBA 					; 如果读取错误 CF 会被置为 1, 这时就不停地读, 直到正确为止
 	ret
+
 
 [BITS 32]
 BACK_TO_PROT:

@@ -11,7 +11,7 @@ $ make backupMBR
 
 (2) include/load.inc 文件中条件编译语句的else 分支
 	%ifdef __BOCHS_DEBUG__
-	StartSecOfKernalFile 				equ 		189				; kernle ELF 文件在硬盘中的起始扇区号
+	StartSecOfKernalFile 				equ 		64				; kernle ELF 文件在硬盘中的起始扇区号
 	%else
 	StartSecOfKernalFile 				equ 		####			; kernle ELF 文件在硬盘中的起始扇区号
 	%endif

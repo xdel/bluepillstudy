@@ -59,4 +59,18 @@ DA_CCOR			EQU		9Eh		; 存在的可执行可读一致代码段属性值
 		and 		al, 11111110b 		; Clear PE bit
 	mov			cr0, eax
 %endmacro
+
+; Trun on A20 Gate
+%macro 	TurnOnA20 	0
+	in			al, 0x92
+	or		al, 00000010b
+	out		0x92, al
+%endmacro
+
+; Trun on A20 Gate
+%macro 	TurnOffA20 	0
+	in			al, 0x92
+	and		al, 11111101b
+	out		0x92, al
+%endmacro
 ; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
