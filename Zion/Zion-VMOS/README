@@ -1,9 +1,7 @@
 [ Zion-VMOS 调试、编译及安装说明 ]
-1、用winhex 等工具，查找硬盘中空闲的、1024个连续的扇区，记录起始扇区的逻辑扇区号，将其填入以下位置：
-	Makefile 中install 分支的最有一行
-	install:
-		……
-		sudo dd if=Zion-VMOS of=/dev/sda bs=512 count=512 seek=####
+1、用winhex 等工具，查找硬盘中空闲的、8192个连续的扇区，记录起始扇区的逻辑扇区号，将其填入以下位置：
+	parameter.def 文件的StartSecOfKernalFile 值
+	StartSecOfKernalFile = ####
 	“####”即为所要填写的扇区号。
 	注意：该扇区号必须与Seraph 中的相应扇区号一致。
 
@@ -17,5 +15,5 @@ $ ./reinstall
 
 
 [ NOTE ]
-Qian Lin 的空闲硬盘扇区号：71682500
-Peijie Yu 的空闲硬盘扇区号：61431000
+Qian Lin 的空闲硬盘扇区号：71674000
+Peijie Yu 的空闲硬盘扇区号：61422000

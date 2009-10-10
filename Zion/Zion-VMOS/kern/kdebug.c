@@ -2,7 +2,6 @@
 #include <inc/lib/string.h>
 #include <inc/memlayout.h>
 #include <inc/assert.h>
-
 #include <inc/kern/kdebug.h>
 
 extern const struct Stab __STAB_BEGIN__[];	// Beginning of stabs table
@@ -179,8 +178,6 @@ debuginfo_eip(uintptr_t addr, struct Eipdebuginfo *info)
 	//	There's a particular stabs type used for line numbers.
 	//	Look at the STABS documentation and <inc/stab.h> to find
 	//	which one.
-	// Your code here.
-	//----- Qian edit -----
 	stab_binsearch(stabs, &lline, &rline, N_SLINE, addr);
 
 	if( lline <= rline ) { 	// Refresh eip_line if find the required line number.
@@ -188,7 +185,6 @@ debuginfo_eip(uintptr_t addr, struct Eipdebuginfo *info)
 	} else { 	// Otherwise, return -1 as error.
 		return -1;
 	}//if...else
-	//----- Qian edit [end] -----
 
 	
 	// Search backwards from the line number for the relevant filename
@@ -207,15 +203,11 @@ debuginfo_eip(uintptr_t addr, struct Eipdebuginfo *info)
 
 	// Set eip_fn_narg to the number of arguments taken by the function,
 	// or 0 if there was no containing function.
-	// Your code here.
-	//----- Qian edit -----
 	if( lfun < rfun ) {
 		for( lline=lfun+1; lline<rfun && stabs[lline].n_type==N_PSYM; lline++ ) {
 			info->eip_fn_narg++;
 		}//for
 	}//if
-	//----- Qian edit [end] -----
-
 	
 	return 0;
 }

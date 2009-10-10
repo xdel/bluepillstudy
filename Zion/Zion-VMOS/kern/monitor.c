@@ -1,3 +1,5 @@
+#define __MONITOR_DEBUG__
+
 #include <inc/lib/stdio.h>
 #include <inc/lib/string.h>
 #include <inc/memlayout.h>
@@ -9,11 +11,16 @@
 #include <inc/kern/kdebug.h>
 #include <inc/kern/trap.h>
 #include <inc/arch/cpu.h>
+#include <inc/kern/hdd.h>
+#include <inc/kern/dbg.h>
+#include <inc/kern/Loader.h>
 
-#define CMDBUF_SIZE	80	// enough for one VGA text line
+#define 	ADDR_OFFSET  	KERNBASE
+#define 	CMDBUF_SIZE	80	// enough for one VGA text line
 
-//extern char 	cmdrec[][];
-//extern int 		cmdcnt, cmdlen[];
+#define 	MemSize_paddr 			(0x8000 + ADDR_OFFSET)
+#define 	MCRNumber_paddr 		(0x8008 + ADDR_OFFSET)
+#define 	MemInfo_paddr 			(0x8010 + ADDR_OFFSET)
 
 struct Command {
 	const char *name;
@@ -21,6 +28,8 @@ struct Command {
 	// return -1 to force monitor to exit
 	int (*func)(int argc, char** argv, struct Trapframe* tf);
 };
+
+static int test_dbg(int argc, char **argv, struct Trapframe *tf);
 
 static struct Command commands[] = {
 	{ "help", "Display this list of commands", mon_help },
@@ -32,16 +41,29 @@ static struct Command commands[] = {
 	{ "cpuinfo", "Display CPU feature information.", mon_cpuinfo },
 	{ "x", "Check the memory. ", mon_memcheck },
 	{ "meminfo", "Display memory information.", mon_meminfo },
-	{ "cr0check", "Test: go back to real-mode.", mon_cr0check},
+	{ "int3", "Manually trigger an \"int3\" interrupt.", mon_int3 },
+	{ "startvmx", "Start VMX.", mon_startvmx },
+	{ "loadkern", "Load kernel.", mon_LoadKernel },
+	{ "hdinfo", "Get hard disk information.", mon_GetHDInfo },
+	{ "hdread", "Read hard disk sectors.", mon_HDRead },
+	{ "testdbg", "test the k debugger", test_dbg},
+	{ "kdbg", "k debugger", dbg_dummy_console },
 };
 #define NCOMMANDS (int) (sizeof(commands)/sizeof(commands[0]))
 
+static int test_dbg(int argc, char **argv, struct Trapframe *tf)
+{
+	static int count = 0;
+	++count;
+	cprintf("hello debugger:%d i am @%08x \n", count, &test_dbg);
+	return 0;
+}
 
 int 
 mon_cpuid( int argc, char **argv, struct Trapframe *tf )
 {
-	uint32_t 	eax, ebx, ecx, edx;
-	uint32_t 	op, op_max_idx;
+	uint32_t 		eax, ebx, ecx, edx;
+	uint32_t 		op, op_max_idx=2;
 
 	// Basic information.
 	cpuid(0, &op_max_idx, 0, 0, 0);
@@ -155,15 +177,19 @@ int mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 int 
 mon_exit(int argc, char **argv, struct Trapframe *tf)
 {
-	if( tf==NULL )	// Skip if this function runs in normal monitor.
+	if( tf==NULL )		// Skip if this function runs in normal monitor.
 		return 0;
 
 	// Trap relevant dispossal.
 	switch( tf->tf_trapno ) {
 		case T_BRKPT: 
+			cprintf("<< Exit Breakpoint monitor >>\n");
 			return -1;
 			break;
-		default: break;
+		default: 
+			cprintf("\tExit monitor from %s\n", trapname(tf->tf_trapno));
+			return -1;
+			break;
 	}//switch
 
 	return 0;
@@ -175,7 +201,7 @@ int
 mon_reboot( int argc, char** argv, struct Trapframe* tf )
 {
 	cprintf("\n[ System Restarting! ]\n");
-    asm(".byte	0x0f, 0x01, 0xC4");
+//    asm(".byte	0x0f, 0x01, 0xC4");
 	outb(0x92, 0x3);
 
 	return 0;
@@ -199,10 +225,10 @@ mon_memcheck( int argc, char **argv, struct Trapframe *tf )
 		n = str2num(argv[1]);
 		vaddr = (uint32_t *)(str2addr(argv[2]));
 	}//if...else
-	
+
 	for ( uint32_t i=0; i<n; ) {
 		for ( uint32_t j = 0; j < 2 && i < n; j++, vaddr++, i+=4  ) {
-			cprintf("\t[0x%08x]: %08x ", vaddr, *vaddr);
+			cprintf("\t[0x%08x]: %08x ", vaddr, *(uint32_t *)((uint8_t *)vaddr + ADDR_OFFSET));
 		}//for(j)
 		cprintf("\n");
 	}//for(i)
@@ -212,9 +238,6 @@ mon_memcheck( int argc, char **argv, struct Trapframe *tf )
 
 
 
-#define 	MemSize_paddr 			0xf0009000
-#define 	MCRNumber_paddr 		0xf0009008
-#define 	MemInfo_paddr 			0xf0009010
 int
 mon_meminfo ( int argc, char **argv, struct Trapframe *tf )
 {
@@ -243,26 +266,128 @@ mon_meminfo ( int argc, char **argv, struct Trapframe *tf )
 
 
 int 
-mon_cr0check (int argc, char **argv, struct Trapframe *tf)
+mon_int3 (int argc, char **argv, struct Trapframe *tf)
 {
-	uint32_t cr0 = 0x7fffffff,tmp;
-	asm volatile("movl %cr0,%eax");
-	asm volatile("andl %0,%%eax"::"b"(cr0):"memory");
-	asm volatile("movl %%eax,%0":"=c"(tmp));
-	asm volatile("movl %%cr0,%0":"=b"(cr0));
-	cprintf("cr0 is 0x%x\n",cr0);	
-    cprintf("tmp is 0x%x\n",tmp);
-	asm volatile("movl %0,%%cr0"::"r"(tmp));
-	cprintf("...");
-    while(1);
+	__asm__ __volatile__("int3");
 	return 0;
-}
+}//mon_int3()
+
+
+int 
+mon_startvmx (int argc, char **argv, struct Trapframe *tf)
+{
+	extern ZVMSTATUS ZVMAPI start_vmx();
+
+	if ( !ZVM_SUCCESS(start_vmx()) ) {
+		cprintf("Start VMX fail!\n");
+	} else {
+		cprintf("Start VMX successfully.\n");
+	}
+	return 0;
+}//mon_startvmx()
+
+
+#define OffsetFromMemoryEnd_MB		128 		// 距离内存高端的偏移量（单位：MB）
+int 
+mon_LoadKernel (int argc, char **argv, struct Trapframe *tf)
+{
+//	extern char LoadKernelFile[];				// Function entry.
+//	((void (*)(void))LoadKernelFile)();
+
+	u32 		KernFileBaseAddr = *((uint32_t *)MemSize_paddr) - (OffsetFromMemoryEnd_MB * 0x100000);
+	u32 		KernFileSize;
+	u64 		NrStartSector;
+	char 		*cmdbuf;
+
+	while (1) {
+		cmdbuf = readline("Kernel file size (MB): ");
+		if ( cmdbuf != NULL ) {
+			// gobble whitespace
+			while (*cmdbuf && strchr(WHITESPACE, *cmdbuf))
+				*cmdbuf++ = 0;
+			if (*cmdbuf == 0)
+				continue;
+
+			if ( !strcmp(cmdbuf, "q") ) {
+				return 0;
+			}
+			KernFileSize = str2num(cmdbuf);
+			if ( KernFileSize > 0 && KernFileSize<OffsetFromMemoryEnd_MB) {
+				break;
+			} else {
+				cprintf("\tERROR: File size should be between 1 and %d MB!\n", OffsetFromMemoryEnd_MB);
+				continue;
+			}//if...else
+		}//if
+	}//while
+
+	while (1) {
+		cmdbuf = readline("Sector number of kernel file base: ");
+		if ( cmdbuf != NULL ) {
+			// gobble whitespace
+			while (*cmdbuf && strchr(WHITESPACE, *cmdbuf))
+				*cmdbuf++ = 0;
+			if (*cmdbuf == 0)
+				continue;
+
+			if ( !strcmp(cmdbuf, "q") ) {
+				return 0;
+			}
+			NrStartSector = str2num(cmdbuf);
+			if ( NrStartSector > 0 ) {
+				break;
+			} else {
+				cprintf("\tERROR: Logic sector number does not exist!\n");
+				continue;
+			}//if...else
+		}//if
+	}//while
+
+	KernFileSize *= 0x800;			// Turn into sector unit.
+
+#ifdef __MONITOR_DEBUG__
+	cprintf("\tKernFileSize = %ld (sectors)\n", KernFileSize);
+	cprintf("\tNrStartSector = %ld\n", NrStartSector);
+#endif
+
+	LoadFile(NrStartSector, KernFileBaseAddr, KernFileSize);
+
+	return 0;
+}//mon_LoadKernel()
 
 
 
-/***** Kernel monitor command interpreter *****/
-#define WHITESPACE "\t\r\n "
-#define MAXARGS 16
+int 
+mon_GetHDInfo (int argc, char **argv, struct Trapframe *tf)
+{
+	init_hd();
+	hd_identify(0);
+	
+	return 0;
+}//mon_GetHDDInfo()
+
+
+
+int 
+mon_HDRead (int argc, char **argv, struct Trapframe *tf)
+{
+	uint64_t 		start_sector;
+	uint8_t 		hdbuf[512];
+
+	if ( argc < 2 || argc > 3 ) { 		// Argument arbitration
+		cprintf("\tERROR: Missing sector number!\n");
+		return 0;
+	}//if
+
+	start_sector = str2num(argv[1]);
+	
+	hd_rw(HD_READ, hdbuf, start_sector, 1);
+	
+	output_buf(hdbuf, SECTOR_SIZE);
+	
+	return 0;
+}//mon_GetHDDInfo()
+
 
 static int runcmd(char *buf, struct Trapframe *tf)
 {

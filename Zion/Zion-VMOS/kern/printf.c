@@ -5,7 +5,7 @@
 #include <inc/lib/stdio.h>
 #include <inc/stdarg.h>
 
-#define 	ZION_COLOR
+//#define 	ZION_COLOR
 
 static void
 putch(int ch, void *thunk)

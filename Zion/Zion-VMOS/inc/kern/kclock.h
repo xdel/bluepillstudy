@@ -1,8 +1,5 @@
 #ifndef __KERN_KCLOCK_H
 #define __KERN_KCLOCK_H
-#ifndef ZION_KERNEL
-# error "This is a Zion VMOS kernel header; user programs should not #include it"
-#endif
 
 #define	IO_RTC		0x070		/* RTC port */
 

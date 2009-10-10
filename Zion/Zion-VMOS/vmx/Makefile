@@ -1,4 +1,4 @@
-OBJDIRS += arch
+OBJDIRS += vmx
 
 VMX_SRCFILES := \
 		vmx/common.c 		\

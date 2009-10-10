@@ -1,8 +1,5 @@
 #ifndef __KERN_CONSOLE_H
 #define __KERN_CONSOLE_H
-#ifndef ZION_KERNEL
-# error "This is a Zion VMOS kernel header; user programs should not #include it"
-#endif
 
 #include <inc/types.h>
 

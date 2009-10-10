@@ -304,4 +304,4 @@ struct Pseudodesc {
 
 #endif /* !__ASSEMBLER__ */
 
-#endif /* !JOS_INC_MMU_H */
+#endif

@@ -80,4 +80,4 @@
 #define	KBR_RSTDONE	0xAA	/* reset complete */
 #define	KBR_ECHO	0xEE	/* echo response */
 
-#endif /* !JOS_KBDREG_H */
+#endif

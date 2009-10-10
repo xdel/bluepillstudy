@@ -8,6 +8,7 @@
 #include <inc/kern/trap.h>
 #include <inc/vmx/vmxapi.h>
 
+//#define 	__ZION_WITH_VMX__
 
 extern "C" {
 void i386_init(void)
@@ -31,10 +32,9 @@ void i386_init(void)
 	cprintf("    -----------------------------------------------------------------\n");
 	cprintf("    | ***** Zion Virtual Machine Operating System (Zion VMOS) ***** |\n");
 	cprintf("    | COPYRIGHT @ School of Software, Shanghai Jiao Tong University |\n");
-	cprintf("    | Version: 9.09.15                                              |\n");
+	cprintf("    | Version: 9.10.10                                              |\n");
 	cprintf("    -----------------------------------------------------------------\n");
 	cprintf("\n");
-
 
 	// Memory management initialization.
 	mem_init();
@@ -42,10 +42,12 @@ void i386_init(void)
 	// Interrupt and gate descriptor initialization.
 	idt_init();
 	
+#ifdef __ZION_WITH_VMX__
 	// Initialize VM and Turn on VMM
 	cprintf("VMX initialization: start.\n");
     start_vmx();
     cprintf("VMX initialization: finished.\n");
+#endif
 
 	// Drop into the kernel monitor.
 	while (1)

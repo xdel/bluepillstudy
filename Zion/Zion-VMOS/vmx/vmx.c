@@ -183,11 +183,12 @@ ZVMSTATUS ZVMAPI VmxEnable (
   }	
   vmxmsr = MsrRead (MSR_IA32_FEATURE_CONTROL);
   if (!(vmxmsr & 4)) {
-    cprintf ("VmxEnable(): VMX is not supported: IA32_FEATURE_CONTROL is 0x%llx\n");
+    cprintf ("VmxEnable(): IA32_FEATURE_CONTROL is 0x%x\n", vmxmsr);
     return ZVM_NOT_SUPPORTED;
   }
 
   vmxmsr = MsrRead (MSR_IA32_VMX_BASIC);
+   cprintf ("VmxEnable(): MSR_IA32_VMX_BASIC is 0x%x\n", vmxmsr);
   *((uint64_t *) VmxonVA) = (vmxmsr & 0xffffffff);       //set up vmcs_revision_id
   ///VmxonPA = MmGetPhysicalAddress (VmxonVA);
   //VmxTurnOn (MmGetPhysicalAddress (VmxonVA));
@@ -414,8 +415,8 @@ static ZVMSTATUS VmxSetupVMCS (
   /* NATURAL GUEST State Fields. */
 
   VmxWrite (GUEST_CR0, RegGetCr0 ());
-  VmxWrite (GUEST_CR3, guestcr3);
-  ///VmxWrite (GUEST_CR3, RegGetCr3 ());
+  //VmxWrite (GUEST_CR3, guestcr3);
+  VmxWrite (GUEST_CR3, RegGetCr3 ());
   VmxWrite (GUEST_CR4, RegGetCr4 ());
 
   
@@ -478,8 +479,8 @@ static ZVMSTATUS VmxSetupVMCS (
   //// private cr3
   //VmxWrite (HOST_CR3, g_PageMapBasePhysicalAddress.QuadPart);
 //#else
-  VmxWrite(HOST_CR3,HostCr3);
-  ///VmxWrite (HOST_CR3, RegGetCr3 ());
+  ///VmxWrite(HOST_CR3,HostCr3);
+  VmxWrite (HOST_CR3, RegGetCr3 ());
 //#endif
   VmxWrite (HOST_CR4, RegGetCr4 ());
 

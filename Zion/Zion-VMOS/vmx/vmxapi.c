@@ -57,51 +57,20 @@ ZVMSTATUS start_vmx(void)
 
 	//~ asm("movl %0,%%cr3"::"r"(HostCr3));
 	
-	if (!ZVM_SUCCESS (Status = Zion_HypervisorInit()))
-	{
+	if (!ZVM_SUCCESS (Status = Zion_HypervisorInit())) {
 		cprintf("Zion Hypervisor: Zion_HypervisorInit() failed with status 0x%08hX\n");
 		return Status;
 	}
-
-    
 	
-	if (!ZVM_SUCCESS (Status = Zion_InstallHypervisor()))
-	{
+	if (!ZVM_SUCCESS (Status = Zion_InstallHypervisor())) {
 		cprintf("Zion Hypervisor: Zion_InstallHypervisor() failed with status 0x%08hX\n");
 		return Status;
 	}
 	
-    if(!ZVM_SUCCESS(Status = Zion_MapPageTable()))
-	{
-		cprintf("Zion Hypervisor: Zion_MapPageTable() failed...\n");
-		return Status;
-	}
-
+    //if(!ZVM_SUCCESS(Status = Zion_MapPageTable())) {
+		//cprintf("Zion Hypervisor: Zion_MapPageTable() failed...\n");
+		//return Status;
+	//}
 
 	return Status;
 }
-
-/**
-* effects:Build and Initialize General Trap struct (which is also a Trap struct).
-*/
-// EFI_STATUS EFIAPI MadDog_InitializeGeneralTrap (
-// 	PCPU Cpu,
-// 	UINT32 TrappedVmExit,
-// 	UCHAR RipDelta,
-// 	NBP_TRAP_CALLBACK TrapCallback,
-// 	PNBP_TRAP *pInitializedTrap
-// 	)
-// {
-// 	return TrInitializeGeneralTrap(Cpu,TrappedVmExit,RipDelta,TrapCallback,pInitializedTrap);
-// }
-
-/**
-* effects: Register trap struct.
-*/
-// EFI_STATUS EFIAPI MadDog_RegisterTrap (
-// 									PCPU Cpu,
-// 									PNBP_TRAP Trap
-// 									)
-// {
-// 	return TrRegisterTrap(Cpu, Trap);
-// }

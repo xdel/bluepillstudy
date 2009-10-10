@@ -1,5 +1,5 @@
-#ifndef JOS_INC_TYPES_H
-#define JOS_INC_TYPES_H
+#ifndef __INC_TYPES_H
+#define __INC_TYPES_H
 
 #ifndef NULL
 #define NULL __null
@@ -11,6 +11,9 @@ typedef int bool;
 #endif
 
 // Explicitly-sized versions of integer types
+typedef 		unsigned int 				uint;
+typedef 		unsigned char 			uchar;
+
 typedef 		__signed char 				int8_t;
 typedef 		unsigned char 			uint8_t;
 typedef 		short 							int16_t;
@@ -20,9 +23,15 @@ typedef 		unsigned int 				uint32_t;
 typedef 		long long 					int64_t;
 typedef 		unsigned long long 	uint64_t;
 
+typedef		unsigned long long	u64;
+typedef		unsigned int				u32;
+typedef		unsigned short			u16;
+typedef		unsigned char			u8;
+
+
 typedef long ZVMSTATUS, *PZVMSTATUS;
 
-//===============================Definition for ZVM===========================
+//================ Definition for ZVM =================
 #define ZVM_SUCCESS(a)	((a) == ZVMSUCCESS)
 #define ZVMAPI
 
@@ -91,4 +100,4 @@ T round_up(T a, uint32_t n) {
 // Return the offset of 'member' relative to the beginning of a struct type
 #define offsetof(type, member)  ((size_t) (&((type*)0)->member))
 
-#endif /* !JOS_INC_TYPES_H */
+#endif
