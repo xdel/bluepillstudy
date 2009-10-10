@@ -291,9 +291,6 @@ mon_startvmx (int argc, char **argv, struct Trapframe *tf)
 int 
 mon_LoadKernel (int argc, char **argv, struct Trapframe *tf)
 {
-//	extern char LoadKernelFile[];				// Function entry.
-//	((void (*)(void))LoadKernelFile)();
-
 	u32 		KernFileBaseAddr = *((uint32_t *)MemSize_paddr) - (OffsetFromMemoryEnd_MB * 0x100000);
 	u32 		KernFileSize;
 	u64 		NrStartSector;

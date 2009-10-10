@@ -29,12 +29,12 @@
 00000000000i[     ]   SB16 support: no
 00000000000i[     ]   USB support: no
 00000000000i[     ]   VGA extension support: vbe 
-00000000000i[MEM0 ] allocated memory at 0x96dfb008. after alignment, vector=0x96dfc000
+00000000000i[MEM0 ] allocated memory at 0x96e08008. after alignment, vector=0x96e09000
 00000000000i[MEM0 ] 512.00MB
 00000000000i[MEM0 ] rom at 0xfffe0000/131072 ('/usr/local/share/bochs/BIOS-bochs-latest')
 00000000000i[MEM0 ] rom at 0xc0000/40448 ('/usr/local/share/bochs/VGABIOS-lgpl-latest')
 00000000000i[CMOS ] Using local time for initial clock
-00000000000i[CMOS ] Setting initial clock to: Sat Oct 10 11:37:16 2009 (time0=1255145836)
+00000000000i[CMOS ] Setting initial clock to: Sat Oct 10 13:32:48 2009 (time0=1255152768)
 00000000000i[DMA  ] channel 4 used by cascade
 00000000000i[DMA  ] channel 2 used by Floppy Drive
 00000000000i[VGA  ] interval=50000
@@ -108,25 +108,25 @@
 00000846164i[BIOS ] ata0-0: PCHS=20/16/63 translation=none LCHS=20/16/63
 00004726392i[BIOS ] IDE time out
 00016726482i[BIOS ] Booting from 0000:7c00
-00027800000i[XGUI ] charmap update. Font Height is 16
-00254416000p[XGUI ] >>PANIC<< POWER button turned off.
-00254416000i[CPU0 ] CPU is in protected mode (active)
-00254416000i[CPU0 ] CS.d_b = 32 bit
-00254416000i[CPU0 ] SS.d_b = 32 bit
-00254416000i[CPU0 ] | EAX=00000000  EBX=c01095f8  ECX=00000000  EDX=00000064
-00254416000i[CPU0 ] | ESP=c0108ef0  EBP=c0108f18  ESI=00000000  EDI=00000001
-00254416000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf SF zf af PF cf
-00254416000i[CPU0 ] | SEG selector     base    limit G D
-00254416000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
-00254416000i[CPU0 ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-00254416000i[CPU0 ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00254416000i[CPU0 ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00254416000i[CPU0 ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00254416000i[CPU0 ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00254416000i[CPU0 ] |  GS:0018( 0003| 0|  0) 000b8000 0000ffff 0 0
-00254416000i[CPU0 ] | EIP=c01095fe (c01095fe)
-00254416000i[CPU0 ] | CR0=0xe0050033 CR2=0x00000000
-00254416000i[CPU0 ] | CR3=0x03fff000 CR4=0x00000000
-00254416000i[CMOS ] Last time is 1255145899 (Sat Oct 10 11:38:19 2009)
-00254416000i[XGUI ] Exit
-00254416000i[CTRL ] quit_sim called with exit code 1
+00029800000i[XGUI ] charmap update. Font Height is 16
+00297180000p[XGUI ] >>PANIC<< POWER button turned off.
+00297180000i[CPU0 ] CPU is in protected mode (active)
+00297180000i[CPU0 ] CS.d_b = 32 bit
+00297180000i[CPU0 ] SS.d_b = 32 bit
+00297180000i[CPU0 ] | EAX=00000000  EBX=c01095f8  ECX=00000000  EDX=00000064
+00297180000i[CPU0 ] | ESP=c0108f1c  EBP=c0108f28  ESI=00000000  EDI=00000001
+00297180000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf SF zf af pf cf
+00297180000i[CPU0 ] | SEG selector     base    limit G D
+00297180000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
+00297180000i[CPU0 ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
+00297180000i[CPU0 ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00297180000i[CPU0 ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00297180000i[CPU0 ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00297180000i[CPU0 ] |  FS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00297180000i[CPU0 ] |  GS:0018( 0003| 0|  0) 000b8000 0000ffff 0 0
+00297180000i[CPU0 ] | EIP=c01095f8 (c01095f8)
+00297180000i[CPU0 ] | CR0=0xe0050033 CR2=0x00000000
+00297180000i[CPU0 ] | CR3=0x03fff000 CR4=0x00000000
+00297180000i[CMOS ] Last time is 1255152842 (Sat Oct 10 13:34:02 2009)
+00297180000i[XGUI ] Exit
+00297180000i[CTRL ] quit_sim called with exit code 1

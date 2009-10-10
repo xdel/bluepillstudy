@@ -66,7 +66,7 @@ struct hd_cmd {
 };
 
 
-#define	HD_TIMEOUT		3000
+#define	HD_TIMEOUT		800000
 #define 	CMD_IDENTIFY		0xEC
 #define 	CMD_READ			0x20
 #define 	CMD_WRITE			0x30
