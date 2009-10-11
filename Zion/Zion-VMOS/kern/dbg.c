@@ -11,7 +11,9 @@
 #include <inc/types.h>
 #include <inc/trap.h>
 #include <inc/lib/string.h>
+#include <inc/lib/stdlib.h>
 #include <inc/kern/disasm.h>
+
 
 #ifdef DEBUGGER_ENABLED
 extern struct Segdesc gdt[]; // TODO

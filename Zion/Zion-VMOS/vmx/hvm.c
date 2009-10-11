@@ -1,5 +1,6 @@
 #include <inc/vmx/hvm.h>
 #include <inc/lib/malloc.h>
+#include <inc/lib/stdlib.h>
 
 uint32_t g_uSubvertedCPUs = 0;
 uint32_t KeNumberProcessors = 1;

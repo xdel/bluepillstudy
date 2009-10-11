@@ -14,15 +14,8 @@ int	strncmp(const char *s1, const char *s2, size_t size);
 char *	strchr(const char *s, char c);
 char *	strfind(const char *s, char c);
 
-int memicmp(void const *buf1, void const *buf2, unsigned int count);
-void *	memset(void *dst, int c, size_t len);
-void *	memcpy(void *dst, const void *src, size_t len);
-void *	memmove(void *dst, const void *src, size_t len);
-int	memcmp(const void *s1, const void *s2, size_t len);
-void *	memfind(const void *s, int c, size_t len);
-
 long	strtol(const char *s, char **endptr, int base);
 int64_t str2num(char *str);
-int str2addr(char *str);
+uint str2addr(char *str);
 
 #endif 

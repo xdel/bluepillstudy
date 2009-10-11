@@ -1,5 +1,6 @@
 #include <inc/vmx/memory.h>
 #include <inc/lib/malloc.h>
+#include <inc/lib/stdlib.h>
 
 extern size_t npages;			// Amount of physical memory (in pages)
 
