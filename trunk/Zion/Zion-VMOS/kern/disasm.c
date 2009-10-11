@@ -21,6 +21,7 @@
 
 #include <inc/types.h>
 #include <inc/lib/stdio.h>
+#include <inc/lib/stdlib.h>
 #include <inc/lib/string.h>
 
 #define MAINPROG

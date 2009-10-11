@@ -1,5 +1,8 @@
 #include <inc/kern/common.h>
 #include <inc/lib/stdio.h>
+#include <inc/memlayout.h>
+
+#define 	ADDR_OFFSET  	KERNBASE
 
 void 
 debug_warning ( char const *msg )
@@ -10,8 +13,12 @@ debug_warning ( char const *msg )
 
 
 void 
-output_buf ( u8 *buf, u32 size8_t )
+output_buf ( void *__buf, u32 size8_t )
 {
+	uint8_t *buf = (uint8_t *)__buf;
+	
+	cprintf("[ Base address=0x%08x, Size=%ld bytes ]\n", (buf - ADDR_OFFSET), size8_t);
+	
 	cprintf("%04xh: %08x ", 0, *(u32 *)buf); 		// Output the first word.
 	
 	for ( u32 i=4; i<size8_t ; i+=4 ) {

@@ -1,7 +1,7 @@
 #include <inc/arch/x86.h>
 #include <inc/memlayout.h>
 #include <inc/kern/kbdreg.h>
-#include <inc/lib/string.h>
+#include <inc/lib/stdlib.h>
 #include <inc/assert.h>
 #include <inc/kern/console.h>
 

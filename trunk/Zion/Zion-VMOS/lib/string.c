@@ -1,39 +1,46 @@
 // Basic string routines.
 
 #include <inc/lib/string.h>
+#include <inc/lib/stdlib.h>
 
 int
-strlen(const char *s)
+strlen ( const char *s )
 {
 	int n;
 
-	for (n = 0; *s != '\0'; s++)
+	for ( n = 0; *s != '\0'; s++ )
 		n++;
 	return n;
-}
+}//strlen()
+
+
 
 int
-strnlen(const char *s, size_t size)
+strnlen ( const char *s, size_t size )
 {
 	int n;
 
-	for (n = 0; size > 0 && *s != '\0'; s++, size--)
+	for ( n = 0; size > 0 && *s != '\0'; s++, size-- )
 		n++;
 	return n;
-}
+}//strnlen()
+
+
 
 char *
-strcpy(char *dst, const char *src)
+strcpy ( char *dst, const char *src )
 {
 	char *ret = dst;
 
-	while ((*dst++ = *src++) != '\0')
+	while ( (*dst++ = *src++) != '\0' )
 		/* do nothing */;
 	return ret;
-}
+}//strcpy()
+
+
 
 char *
-strncpy(char *dst, const char *src, size_t size)
+strncpy ( char *dst, const char *src, size_t size )
 {
 	char *ret = dst;
 
@@ -44,10 +51,12 @@ strncpy(char *dst, const char *src, size_t size)
 			src++;
 	}
 	return ret;
-}
+}//strncpy()
+
+
 
 size_t
-strlcpy(char *dst, const char *src, size_t size)
+strlcpy ( char *dst, const char *src, size_t size )
 {
 	char *dst_in = dst;
 
@@ -57,18 +66,22 @@ strlcpy(char *dst, const char *src, size_t size)
 		*dst = '\0';
 	}
 	return dst - dst_in;
-}
+}//strlcpy()
+
+
 
 int
-strcmp(const char *p, const char *q)
+strcmp ( const char *p, const char *q )
 {
 	while (*p && *p == *q)
 		p++, q++;
 	return (unsigned char) *p - (unsigned char) *q;
-}
+}//strcmp()
+
+
 
 int
-strncmp(const char *p, const char *q, size_t n)
+strncmp ( const char *p, const char *q, size_t n )
 {
 	while (n > 0 && *p && *p == *q)
 		n--, p++, q++;
@@ -76,123 +89,48 @@ strncmp(const char *p, const char *q, size_t n)
 		return 0;
 	else
 		return (unsigned char) *p - (unsigned char) *q;
-}
+}//strncmp()
+
+
 
 // Return a pointer to the first occurrence of 'c' in 's',
 // or a null pointer if the string has no 'c'.
 char *
-strchr(const char *s, char c)
+strchr ( const char *s, char c )
 {
 	for (; *s; s++)
 		if (*s == c)
 			return (char *) s;
 	return 0;
-}
+}//strchr()
+
+
 
 // Return a pointer to the first occurrence of 'c' in 's',
 // or a pointer to the string-ending null character if the string has no 'c'.
 char *
-strfind(const char *s, char c)
+strfind ( const char *s, char c )
 {
 	for (; *s; s++)
 		if (*s == c)
 			break;
 	return (char *) s;
-}
+}//strfind()
 
-char * strcat(char *dst, char const *src)
+
+
+char * 
+strcat ( char *dst, char const *src )
 {
-	while (*dst);
+	while ( *dst );
 		++dst;
 	return strcpy(dst, src);
-}
-
-int memicmp(void const *buf1, void const *buf2, unsigned int count)
-{
-	char const *p1 = (char const *)buf1;
-	char const *p2 = (char const *)buf2;
-	char c1 = 1, c2 = 1;
-	do
-	{
-		c1 = *p1++; c2 = *p2++;
-		if (c1 >= 'A' && c1 <= 'Z')
-			c1 += 'a' - 'A';
-		if (c2 >= 'A' && c2 <= 'Z')
-			c2 += 'a' - 'A';
-	} while (--count && c1 == c2 && c1 && c2);
-	return c1 - c2;
-}
+}//strcat()
 
 
-void *
-memset(void *v, int c, size_t n)
-{
-	char *p = (char *) v;
-	int m = n;
 
-	while (--m >= 0)
-		*p++ = c;
-	return v;
-}
-
-void *
-memcpy(void *dst, const void *src, size_t n)
-{
-	const char *s = (const char *) src;
-	char *d = (char *) dst;
-
-	while (n-- > 0)
-		*d++ = *s++;
-
-	return dst;
-}
-
-void *
-memmove(void *dst, const void *src, size_t n)
-{
-	const char *s = (const char *) src;
-	char *d = (char *) dst;
-
-	if (s < d && s + n > d) {
-		s += n;
-		d += n;
-		while (n-- > 0)
-			*--d = *--s;
-	} else
-		while (n-- > 0)
-			*d++ = *s++;
-
-	return dst;
-}
-
-int
-memcmp(const void *v1, const void *v2, size_t n)
-{
-	const unsigned char *s1 = (const unsigned char *) v1;
-	const unsigned char *s2 = (const unsigned char *) v2;
-
-	while (n-- > 0) {
-		if (*s1 != *s2)
-			return *s1 - *s2;
-		s1++, s2++;
-	}
-	return 0;
-}
-
-void *
-memfind(const void *v, int c, size_t n)
-{
-	const unsigned char *s = (const unsigned char *) v;
-	
-	const unsigned char *ends = s + n;
-	for (; s < ends; s++)
-		if (*s == (unsigned char) c)
-			break;
-	return (void *) s;
-}
-
-long
-strtol(const char *s, char **endptr, int base)
+long 
+strtol ( const char *s, char **endptr, int base )
 {
 	int neg = 0;
 	long val = 0;
@@ -236,36 +174,30 @@ strtol(const char *s, char **endptr, int base)
 	if (endptr)
 		*endptr = (char *) s;
 	return (neg ? -val : val);
-}
+}//strtol()
 
 
 
 int64_t 
-str2num(char *str)
+str2num ( char *str )
 { 
-	int 	n=0, i=0;
-	
-	while ( str[i] != '\0' ) {
-		n = n * 10 + ((int)str[i] - '0');
-		i++;
-	}//while
-	
-	return n; 
+	return atoi(str); 
 }//str2num()
 
 
 
-int 
+uint 
 str2addr (char *str)
 {
-	int 	i=2, addr=0;
+	uint 		i=2;
+	uint 	addr=0;
 	
 	if ( str[0] != '0' || str[1] != 'x') {
 		return -1;
 	}//if
 
 	while ( str[i] != '\0' ) {
-		switch(str[i]) {
+		switch ( str[i] ) {
 			case 'f': case 'e': case 'd': case 'c': case 'b': case 'a':
 				addr = addr * 16 + ((int)str[i]-'a' + 10);
 				i++;
@@ -278,4 +210,4 @@ str2addr (char *str)
 	}//while
 	
 	return addr;
-}//str2addr
+}//str2addr()

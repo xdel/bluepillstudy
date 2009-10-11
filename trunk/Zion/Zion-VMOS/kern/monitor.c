@@ -103,7 +103,7 @@ mon_help(int argc, char **argv, struct Trapframe *tf)
 	int i;
 
 	for (i = 0; i < NCOMMANDS; i++)
-		cprintf("%s - %s\n", commands[i].name, commands[i].desc);
+		cprintf("\t%s - %s\n", commands[i].name, commands[i].desc);
 	return 0;
 }
 
@@ -291,7 +291,7 @@ mon_startvmx (int argc, char **argv, struct Trapframe *tf)
 int 
 mon_LoadKernel (int argc, char **argv, struct Trapframe *tf)
 {
-	u32 		KernFileBaseAddr = *((uint32_t *)MemSize_paddr) - (OffsetFromMemoryEnd_MB * 0x100000);
+	u32 		KernFileBaseAddr = *((uint32_t *)MemSize_paddr) - (OffsetFromMemoryEnd_MB * 0x100000) + ADDR_OFFSET;
 	u32 		KernFileSize;
 	u64 		NrStartSector;
 	char 		*cmdbuf;
@@ -343,8 +343,8 @@ mon_LoadKernel (int argc, char **argv, struct Trapframe *tf)
 	KernFileSize *= 0x800;			// Turn into sector unit.
 
 #ifdef __MONITOR_DEBUG__
-	cprintf("\tKernFileSize = %ld (sectors)\n", KernFileSize);
-	cprintf("\tNrStartSector = %ld\n", NrStartSector);
+	cprintf("\tKernFileSize=%ld (sectors), NrStartSector=%ld\n", KernFileSize, NrStartSector);
+	cprintf("\tKernFileBaseAddr=0x%08x\n", KernFileBaseAddr);
 #endif
 
 	LoadFile(NrStartSector, KernFileBaseAddr, KernFileSize);

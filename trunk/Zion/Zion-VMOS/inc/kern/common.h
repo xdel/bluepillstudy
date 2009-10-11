@@ -4,6 +4,6 @@
 #include <inc/types.h>
 
 void debug_warning(char const *msg);
-void output_buf ( u8 *buf, u32 size8_t );
+void output_buf ( void *__buf, u32 size8_t );
 
 #endif
