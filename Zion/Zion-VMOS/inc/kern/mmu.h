@@ -1,5 +1,5 @@
-#ifndef JOS_INC_MMU_H
-#define JOS_INC_MMU_H
+#ifndef __KERN_MMU_H
+#define __KERN_MMU_H
 
 /*
  * This file contains definitions for the x86 memory management unit (MMU),

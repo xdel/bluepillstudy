@@ -15,7 +15,6 @@ KERN_SRCFILES :=\
 			kern/monitor.c 			\
 			kern/pmap.c 				\
 			kern/printf.c 				\
-			kern/kclock.c 				\
 			kern/trap.c 					\
 			kern/trapentry.S 			\
 			kern/kdebug.c 				\

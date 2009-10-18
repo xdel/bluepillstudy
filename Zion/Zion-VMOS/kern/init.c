@@ -4,7 +4,6 @@
 #include <inc/kern/monitor.h>
 #include <inc/kern/console.h>
 #include <inc/kern/pmap.h>
-#include <inc/kern/kclock.h>
 #include <inc/kern/trap.h>
 #include <inc/vmx/vmxapi.h>
 
@@ -28,13 +27,11 @@ void i386_init(void)
 		((void(*)()) *--ctorva)();
 
 	// Print starting message.
-	cprintf("\n");
-	cprintf("    -----------------------------------------------------------------\n");
-	cprintf("    | ***** Zion Virtual Machine Operating System (Zion VMOS) ***** |\n");
-	cprintf("    | COPYRIGHT @ School of Software, Shanghai Jiao Tong University |\n");
-	cprintf("    | Version: 9.10.10                                              |\n");
-	cprintf("    -----------------------------------------------------------------\n");
-	cprintf("\n");
+	cprintf("\n\t-----------------------------------------------------------------\n");
+	cprintf("\t| ***** Zion Virtual Machine Operating System (Zion VMOS) ***** |\n");
+	cprintf("\t| COPYRIGHT @ School of Software, Shanghai Jiao Tong University |\n");
+	cprintf("\t| Version: 9.10.15                                              |\n");
+	cprintf("\t-----------------------------------------------------------------\n");
 
 	// Memory management initialization.
 	mem_init();

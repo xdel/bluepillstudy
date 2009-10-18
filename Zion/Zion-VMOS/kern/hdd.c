@@ -4,8 +4,8 @@
 #include <inc/lib/stdio.h>
 #include <inc/memlayout.h>
 #include <inc/arch/port_op.h>
-
-#define 	ADDR_OFFSET  	KERNBASE
+#include <inc/arch/x86.h>
+#include <inc/hardcoding_param.h>
 
 static void print_identify_info(u16* hdinfo);
 static void hd_cmd_out(struct hd_cmd* cmd);
@@ -164,22 +164,23 @@ hd_cmd_out ( struct hd_cmd* cmd )
 	}
 
 	/* Activate the Interrupt Enable (nIEN) bit */
-//	((void (*)(u16, u8 ))out_byte)(REG_DEV_CTRL, 0);
+//	outb(REG_DEV_CTRL, 0);
 
 	/* Load required parameters in the Command Block Registers */
-	((void (*)(u16, u8 ))out_byte)(REG_FEATURES, cmd->features);
-	((void (*)(u16, u8 ))out_byte)(REG_NSECTOR,  cmd->sector_cnt_8_15);
-	((void (*)(u16, u8 ))out_byte)(REG_NSECTOR,  cmd->sector_cnt_0_7);
-	((void (*)(u16, u8 ))out_byte)(REG_LBA_HIGH, cmd->lba_40_47);
-	((void (*)(u16, u8 ))out_byte)(REG_LBA_MID,  cmd->lba_32_39);
-	((void (*)(u16, u8 ))out_byte)(REG_LBA_LOW,  cmd->lba_24_31);
-	((void (*)(u16, u8 ))out_byte)(REG_LBA_HIGH, cmd->lba_16_23);
-	((void (*)(u16, u8 ))out_byte)(REG_LBA_MID,  cmd->lba_8_15);
-	((void (*)(u16, u8 ))out_byte)(REG_LBA_LOW,  cmd->lba_0_7);
-	((void (*)(u16, u8 ))out_byte)(REG_DEVICE,   cmd->device);
-	
+	outb(REG_FEATURES, cmd->features);
+	outb(REG_FEATURES, cmd->features);
+	outb(REG_NSECTOR,  cmd->sector_cnt_8_15);
+	outb(REG_NSECTOR,  cmd->sector_cnt_0_7);
+	outb(REG_LBA_HIGH, cmd->lba_40_47);
+	outb(REG_LBA_MID,  cmd->lba_32_39);
+	outb(REG_LBA_LOW,  cmd->lba_24_31);
+	outb(REG_LBA_HIGH, cmd->lba_16_23);
+	outb(REG_LBA_MID,  cmd->lba_8_15);
+	outb(REG_LBA_LOW,  cmd->lba_0_7);
+	outb(REG_DEVICE,   cmd->device);
+
 	/* Write the command code to the Command Register */
-	((void (*)(u16, u8 ))out_byte)(REG_CMD, cmd->command);
+	outb(REG_CMD, cmd->command);
 }//hd_cmd_out()
 
 
@@ -199,7 +200,7 @@ waitfor ( int mask, int val, uint timeout )
 	uint		t = 0;
 
 	while ( t++ < timeout ) {
-		status = ((u8 (*)(u16))in_byte)(REG_STATUS);
+		status = inb(REG_STATUS);
 #ifdef __HDD_DEBUG__
 		cprintf("HD_Status=0x%02x, mask=0x%02x, result=0x%02x\n", status, mask, (status & mask));
 #endif

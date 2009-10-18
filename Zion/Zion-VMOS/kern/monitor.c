@@ -1,4 +1,4 @@
-#define __MONITOR_DEBUG__
+//#define __MONITOR_DEBUG__
 
 #include <inc/lib/stdio.h>
 #include <inc/lib/string.h>
@@ -14,13 +14,9 @@
 #include <inc/kern/hdd.h>
 #include <inc/kern/dbg.h>
 #include <inc/kern/Loader.h>
+#include <inc/hardcoding_param.h>
 
-#define 	ADDR_OFFSET  	KERNBASE
 #define 	CMDBUF_SIZE	80	// enough for one VGA text line
-
-#define 	MemSize_paddr 			(0x8000 + ADDR_OFFSET)
-#define 	MCRNumber_paddr 		(0x8008 + ADDR_OFFSET)
-#define 	MemInfo_paddr 			(0x8010 + ADDR_OFFSET)
 
 struct Command {
 	const char *name;
@@ -34,33 +30,39 @@ static int test_dbg(int argc, char **argv, struct Trapframe *tf);
 static struct Command commands[] = {
 	{ "help", "Display this list of commands", mon_help },
 	{ "kerninfo", "Display information about the kernel", mon_kerninfo },
+#ifdef __MONITOR_DEBUG__
+	{ "int3", "Manually trigger an \"int3\" interrupt.", mon_int3 },
 	{ "backtrace", "Backtrace stack", mon_backtrace },
+	{ "testdbg", "test the k debugger", test_dbg},
+#endif
 	{ "exit", "Monitor exit", mon_exit },
 	{ "reboot", "Restart the system.", mon_reboot },
 	{ "cpuid", "Display processor identification values.", mon_cpuid },
 	{ "cpuinfo", "Display CPU feature information.", mon_cpuinfo },
 	{ "x", "Check the memory. ", mon_memcheck },
 	{ "meminfo", "Display memory information.", mon_meminfo },
-	{ "int3", "Manually trigger an \"int3\" interrupt.", mon_int3 },
 	{ "startvmx", "Start VMX.", mon_startvmx },
 	{ "loadkern", "Load kernel.", mon_LoadKernel },
 	{ "hdinfo", "Get hard disk information.", mon_GetHDInfo },
 	{ "hdread", "Read hard disk sectors.", mon_HDRead },
-	{ "testdbg", "test the k debugger", test_dbg},
 	{ "kdbg", "k debugger", dbg_dummy_console },
 };
 #define NCOMMANDS (int) (sizeof(commands)/sizeof(commands[0]))
 
-static int test_dbg(int argc, char **argv, struct Trapframe *tf)
+#ifdef __MONITOR_DEBUG__
+static int 
+test_dbg ( int argc, char **argv, struct Trapframe *tf )
 {
 	static int count = 0;
 	++count;
 	cprintf("hello debugger:%d i am @%08x \n", count, &test_dbg);
 	return 0;
-}
+}//test_dbg()
+#endif
+
 
 int 
-mon_cpuid( int argc, char **argv, struct Trapframe *tf )
+mon_cpuid ( int argc, char **argv, struct Trapframe *tf )
 {
 	uint32_t 		eax, ebx, ecx, edx;
 	uint32_t 		op, op_max_idx=2;
@@ -126,6 +128,7 @@ mon_kerninfo(int argc, char **argv, struct Trapframe *tf)
 
 
 
+#ifdef __MONITOR_DEBUG__
 #define 	FUNC_NAME_MAX_LEN 	100
 int mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 {
@@ -168,7 +171,7 @@ int mon_backtrace(int argc, char **argv, struct Trapframe *tf)
 
 	return 0;
 }//mon_backtrace()
-
+#endif
 
 
 /* 
@@ -265,12 +268,14 @@ mon_meminfo ( int argc, char **argv, struct Trapframe *tf )
 
 
 
+#ifdef __MONITOR_DEBUG__
 int 
 mon_int3 (int argc, char **argv, struct Trapframe *tf)
 {
 	__asm__ __volatile__("int3");
 	return 0;
 }//mon_int3()
+#endif
 
 
 int 
@@ -285,6 +290,7 @@ mon_startvmx (int argc, char **argv, struct Trapframe *tf)
 	}
 	return 0;
 }//mon_startvmx()
+
 
 
 #define OffsetFromMemoryEnd_MB		128 		// 距离内存高端的偏移量（单位：MB）

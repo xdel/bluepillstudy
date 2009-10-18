@@ -4,7 +4,8 @@
 #include <inc/lib/stdlib.h>
 #include <inc/assert.h>
 #include <inc/kern/pmap.h>
-#include <inc/kern/kclock.h>
+//#include <inc/kern/kclock.h>
+#include <inc/hardcoding_param.h>
 
 // These variables are set by i386_mem_detect()
 size_t npages;			// Amount of physical memory (in pages)
@@ -30,39 +31,24 @@ struct Segdesc gdt[] = {
 	SEG(STA_W, 0x0, 0xffffffff, 0),		// 0x10 - kernel data segment
 	SEG(STA_X | STA_R, 0x0, 0xffffffff, 3),	// 0x18 - user code segment
 	SEG(STA_W, 0x0, 0xffffffff, 3),		// 0x20 - user data segment
-	SEG_NULL				// 0x28 - tss, initialized in
-						// idt_init()
+	SEG_NULL				// 0x28 - tss, initialized in idt_init()
 };
 
 struct Pseudodesc gdt_pd = {
 	sizeof(gdt) - 1, (unsigned long) gdt
 };
 
-static int nvram_read(int r)
-{
-	return mc146818_read(r) | (mc146818_read(r + 1) << 8);
-}
 
-static void i386_mem_detect(void)
+
+static void 
+i386_mem_detect ( void )
 {
-	uint32_t n_extended_pages;
+	uint32_t 		MemSize = *((uint32_t *)MemSize_paddr);
 	
-	// Use CMOS calls to measure available base & extended memory.
-	// (CMOS calls return results in kilobytes.)
-	n_base_pages = nvram_read(NVRAM_BASELO) * 1024 / PGSIZE;
-	n_extended_pages = nvram_read(NVRAM_EXTLO) * 1024 / PGSIZE;
+	npages = MemSize / PGSIZE;
 
-	// Calculate the maximum physical address based on whether
-	// or not there is any extended memory.  See comment in <inc/mmu.h>.
-	if (n_extended_pages)
-		npages = (EXTPHYSMEM / PGSIZE) + n_extended_pages;
-	else
-		npages = n_base_pages;
-
-	cprintf("Physical memory: %uK available, ", npages * PGSIZE / 1024);
-	cprintf("base = %uK, extended = %uK\n", n_base_pages * PGSIZE / 1024,
-		n_extended_pages * PGSIZE / 1024);
-}
+	cprintf("\tPhysical memory: %u MB available.\n", npages * PGSIZE / 0x100000);
+}//i386_mem_detect()
 
 
 // --------------------------------------------------------------
@@ -92,7 +78,8 @@ static char *nextfree = 0;	// pointer to next byte of free mem
 //
 // From UTOP to ULIM, the user is allowed to read but not write.
 // Above ULIM the user cannot read (or write). 
-void mem_init(void)
+void 
+mem_init ( void )
 {
 	uint32_t cr0;
 	size_t n;
@@ -148,7 +135,7 @@ void mem_init(void)
 	// we just set up the mapping anyway.
 	// Permissions: kernel RW, user NONE
 	//
-	page_map_segment(kern_pgdir, KERNBASE, (0xffffffff)-KERNBASE+1, 0, PTE_W | PTE_P);
+	page_map_segment(kern_pgdir, KERNBASE, (npages * PGSIZE), 0, PTE_W | PTE_P);
 	
 	// On x86, segmentation maps a VA to a LA (linear addr) and
 	// paging maps the LA to a PA; we write VA => LA => PA.  If paging is
@@ -187,14 +174,10 @@ void mem_init(void)
 	asm volatile("ljmp %0,$1f\n 1:\n" :: "i" (GD_KT));  // reload cs
 	asm volatile("lldt %%ax" :: "a" (0));
 
-	// Final mapping: VA KERNBASE+x => LA KERNBASE+x => PA x.
-
-	// This mapping was only used after paging was turned on but
-	// before the segment registers were reloaded.
-	kern_pgdir[0] = 0;
 	// Flush the TLB for good measure, to kill the kern_pgdir[0] mapping.
 	lcr3(PADDR(kern_pgdir));
-}
+}//mem_init()
+
 
 
 // This simple physical memory allocator is used only while JOS is setting
@@ -210,7 +193,8 @@ void mem_init(void)
 // This function may ONLY be used during initialization,
 // before the free_pages list has been set up.
 
-static void * boot_alloc(uint32_t n)
+static void * 
+boot_alloc ( uint32_t n )
 {
 	extern char end[];
 	void *v;
@@ -222,23 +206,17 @@ static void * boot_alloc(uint32_t n)
 	// which points to the end of the kernel's bss segment:
 	// the first virtual address that the linker did *not* assign
 	// to any kernel code or global variables.
-	if (nextfree == 0)
-	{
-//		cprintf("TEST: ROUNDUP call : %x %x\n", end, PGSIZE);
+	if (nextfree == 0) {
 		nextfree = round_up((char *) end, PGSIZE);
-//		cprintf("TEST: boot_alloc() first nextfree: %x \n", nextfree);
-//		cprintf("TEST: test roundup(12,4096):\n", round_up((char *)12, 4096));
-	}
-//	cprintf("TEST: boot_alloc() nextfree1: %x \n", nextfree);
+	}//if
+	
 	// Allocate a chunk large enough to hold 'n' bytes, then update
 	// nextfree.  Make sure nextfree is kept aligned
 	// to a multiple of PGSIZE.
-	//
 	nextfree = round_up(nextfree, PGSIZE);	// Round up to be aligned properly.
-//	cprintf("TEST: boot_alloc() nextfree2: %x \n", nextfree);
 	v = nextfree;	// Save current value of "nextfree" as allocated chunk.
 	nextfree += n;	// Increase to record allocation.
-//	cprintf("TEST: boot_alloc() return: %x \n", v);
+	
 	return v;		// Return allocated chunk.
 }//boot_alloc()
 
@@ -247,7 +225,8 @@ static void * boot_alloc(uint32_t n)
 // defined by the page directory 'pgdir'.  The hardware normally performs
 // this functionality for us!  We define our own version to help
 // the boot_mem_check() function; it shouldn't be used elsewhere.
-static physaddr_t check_va2pa(pde_t *pgdir, uintptr_t va)
+static physaddr_t 
+check_va2pa ( pde_t *pgdir, uintptr_t va )
 {
 	pte_t *p;
 
@@ -258,7 +237,7 @@ static physaddr_t check_va2pa(pde_t *pgdir, uintptr_t va)
 	if (!(p[PTX(va)] & PTE_P))
 		return ~0;
 	return PTE_ADDR(p[PTX(va)]);
-}
+}//check_va2pa()
 		
 
 // --------------------------------------------------------------
@@ -271,7 +250,8 @@ static physaddr_t check_va2pa(pde_t *pgdir, uintptr_t va)
 // After this point, ONLY use the page_ functions
 // to allocate and deallocate physical memory via the free_pages list,
 // and NEVER use boot_alloc() or the related boot-time functions above.
-void page_init(void)
+void 
+page_init ( void )
 {
 	// The example code here marks all pages as free.
 	// However this is not truly the case.  What memory is free?
@@ -337,7 +317,8 @@ void page_init(void)
 //   kernel boots, a data structure gets corrupted because its containing page
 //   was used twice!  Note that erasing the page with a non-zero value is
 //   usually better than erasing it with 0.  (Why might this be?)
-struct Page * page_alloc()
+struct Page * 
+page_alloc ( void )
 {
 	// If there were no free pages, returns NULL.
 	if( free_pages==NULL ) {
@@ -351,6 +332,8 @@ struct Page * page_alloc()
 
 	return pp;		// Return the pointer of the allocated page.
 }//page_alloc()
+
+
 
 // Return a page to the free list.
 // (This function should only be called when pp->pp_ref reaches 0:
@@ -371,11 +354,14 @@ void page_free(struct Page *pp)
 
 // Decrement the reference count on a page.
 // Free it if there are no more refs afterwards.
-void page_decref(struct Page *pp)
+void 
+page_decref ( struct Page *pp )
 {
 	if (--pp->pp_ref == 0)
 		page_free(pp);
-}
+}//page_decref()
+
+
 
 // Given 'pgdir', a pointer to a page directory, pgdir_walk returns
 // a pointer to the page table entry (PTE) for linear address 'va'.

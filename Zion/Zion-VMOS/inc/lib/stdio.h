@@ -1,5 +1,5 @@
-#ifndef __STDIO_H
-#define __STDIO_H
+#ifndef __INC_LIB_STDIO_H
+#define __INC_LIB_STDIO_H
 
 #include <inc/types.h>
 #include <inc/stdarg.h>
