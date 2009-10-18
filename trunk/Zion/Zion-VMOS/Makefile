@@ -57,7 +57,7 @@ $(OBJDIR)/kernel: $(OBJS) kernel.ld
 
 $(OBJDIR)/Zion-VMOS: $(OBJDIR)/kernel
 	@echo + oc $@
-	$(V)$(OBJCOPY) --adjust-vma=0x40000000 $^ $@
+	$(V)$(OBJCOPY) --adjust-vma=$(KernelELF_VA_adjust) $^ $@
 
 bochs_image: bochs_debug $(OBJDIR)/Zion-VMOS
 	dd if=$(OBJDIR)/Zion-VMOS of=$(BochsImgName) bs=512 seek=$(StartSecOfKernalFile_bochs) count=$(SizeOfKernelFile) conv=notrunc

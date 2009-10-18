@@ -17,7 +17,7 @@
 #define GD_KD     0x10     // kernel data
 
 // All physical memory mapped at this address
-#define	KERNBASE	0xC0000000
+#define	KERNBASE	0x00000000
 
 // At IOPHYSMEM (640K) there is a 384K hole for I/O.  From the kernel,
 // IOPHYSMEM can be addressed at KERNBASE + IOPHYSMEM.  The hole ends

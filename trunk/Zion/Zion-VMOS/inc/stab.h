@@ -1,5 +1,5 @@
-#ifndef JOS_STAB_H
-#define JOS_STAB_H
+#ifndef __STAB_H
+#define __STAB_H
 #include <inc/types.h>
 
 // <inc/stab.h>
@@ -48,4 +48,4 @@ struct Stab {
 	uintptr_t n_value;	// value of symbol
 };
 
-#endif /* !JOS_STAB_H */
+#endif

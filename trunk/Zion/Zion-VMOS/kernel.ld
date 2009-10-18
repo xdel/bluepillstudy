@@ -5,7 +5,7 @@ ENTRY(_start)
 SECTIONS
 {
 	/* Load the kernel at this address: "." means the current address */
-	. = 0xC0100000;
+	. = 0x00100000;
 
 	.text : {
 		*(.text .stub .text.* .gnu.linkonce.t.*)

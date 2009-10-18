@@ -4,6 +4,9 @@ StartSecOfKernalFile 			= 71674000
 # 内核文件所在的bochs 磁盘镜像起始扇区号
 StartSecOfKernalFile_bochs 	= 64
 
+# Kernel ELF 文件中虚拟地址偏移
+KernelELF_VA_adjust = 0x00000000
+
 # 内核文件大小（单位：扇区）
 SizeOfKernelFile 					= 8192
 
