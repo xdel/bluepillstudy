@@ -12,7 +12,8 @@ ULONG64 __declspec(naked) NBPCall (ULONG32 knock) {
 	push esi
 	push edi
 
-	cpuid
+	cpuid ;force all previous instructions to complete
+
 	rdtsc
 	mov esi,edx
 	mov edi,eax ;Timer 1
