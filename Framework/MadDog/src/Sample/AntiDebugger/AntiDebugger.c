@@ -13,17 +13,28 @@
  */
 
 #include "AntiDebugger.h"
+#include "Hooker.h"
 
 //extern PHYSICAL_ADDRESS g_PageMapBasePhysicalAddress;
 //extern BOOLEAN g_bDisableComOutput;
 
+void *NTKNLBase;
+
 static NTSTATUS Initialization()
 {
-	FARPROC Func_addr;
-	HMODULE hModule = GetModuleHandle("kernel32.dll");
-	if (hModule==INVALID_HANDLE_VALUE)
-		return FALSE;
-	Func_addr =(FARPROC) GetProcAddress(hModule, "CheckRemoteDebuggerPresent");
+	PVOID KDEAddr;
+	UNICODE_STRING processName;
+	
+	/* get ntoskrnl base */
+	if ( (NTKNLBase = GetKernelBase()) == NULL ) {
+		DbgPrint("Kernel base not found\n");
+	}
+	DbgPrint("Initialization: NTKNLBase = 0x%llX\n", NTKNLBase);
+
+	RtlInitUnicodeString(&processName,L"KiDispatchException");
+	KDEAddr = MmGetSystemRoutineAddress(&processName);
+	DbgPrint("Initialization: KDEAddr = 0x%llX\n", KDEAddr);
+	return STATUS_SUCCESS;
 };
 
 static MadDog_Control md_Control = 
@@ -45,7 +56,7 @@ NTSTATUS DriverUnload (
 )
 {
     //FIXME: do not turn SVM/VMX when it has been turned on by the guest in the meantime (e.g. VPC, VMWare)
-    NTSTATUS Status;
+   /* NTSTATUS Status;
 
     Print(("\r\n"));
     Print(("NEWBLUEPILL: Unloading started\n"));
@@ -59,7 +70,7 @@ NTSTATUS DriverUnload (
 
     Print(("NEWBLUEPILL: Unloading finished\n"));
 
-	Finalize();
+	Finalize();*/
     return STATUS_SUCCESS;
 }
 
@@ -73,57 +84,39 @@ NTSTATUS DriverEntry (
    // ULONG ulOldCR3;
 
     DbgInitComponent();
-    __asm { int 3 }
+    //__asm { int 3 }
 
-    // test for our pagetabel
-    //__asm 
-    //{
-    //    mov eax, cr3
-    //    mov ulOldCR3, eax
-    //    mov eax, g_PageMapBasePhysicalAddress.LowPart
-    //    mov cr3, eax
-    //}
+	Initialization();
 	
-	Status = HvMmInitManager();
-    if (!NT_SUCCESS (Status)) 
-    {
-        Print(("HELLOWORLD: MadDog_MmInitManager() failed with status 0x%08hX\n", Status));
-        Finalize();
-		return Status;
-    }
+	//Status = HvMmInitManager();
+ //   if (!NT_SUCCESS (Status)) 
+ //   {
+ //			Print(("HELLOWORLD: MadDog_MmInitManager() failed with status 0x%08hX\n", Status));
+ //			Finalize();
+//			return Status;
+ //   }
 
-    if (!NT_SUCCESS (Status = MadDog_HypervisorInit())) 
-    {
-        Print(("HELLOWORLD: MadDog_HypervisorInit() failed with status 0x%08hX\n", Status));
-		Finalize();
-		return Status;
-    }
-	Print(("HELLOWORLD: Successful in execute HvmInit()"));
+ //   if (!NT_SUCCESS (Status = MadDog_HypervisorInit())) 
+ //   {
+ //       Print(("HELLOWORLD: MadDog_HypervisorInit() failed with status 0x%08hX\n", Status));
+	//	Finalize();
+	//	return Status;
+ //   }
+	//Print(("HELLOWORLD: Successful in execute HvmInit()"));
 
 
-    if (!NT_SUCCESS (Status = MadDog_InstallHypervisor(&md_Control,DriverObject))) //<------------------1 Finish
-    {
-        Print(("HELLOWORLD: InstallHypervisor() failed with status 0x%08hX\n", Status));
-		Finalize();
-		return Status;
-    }
-//
-//    // vt is on
-//    // make all the kernel memory not writable
-//    // MmProtectKernelMemory();
-//
-      DriverObject->DriverUnload = DriverUnload;
-//
-		Print(("HELLOWORLD: Initialization finished\n"));
-	#if DEBUG_LEVEL>1
-		Print(("HELLOWORLD: EFLAGS = %#x\n", RegGetRflags ()));
-	#endif
-////
-////    //__asm
-////    //{
-////    //    mov eax, ulOldCR3
-////    //    mov cr3, eax
-////    //}
-////
+ //   if (!NT_SUCCESS (Status = MadDog_InstallHypervisor(&md_Control,DriverObject))) //<------------------1 Finish
+ //   {
+ //       Print(("HELLOWORLD: InstallHypervisor() failed with status 0x%08hX\n", Status));
+	//	Finalize();
+	//	return Status;
+ //   }
+
+     DriverObject->DriverUnload = DriverUnload;
+	//Print(("HELLOWORLD: Initialization finished\n"));
+	//#if DEBUG_LEVEL>1
+	//	Print(("HELLOWORLD: EFLAGS = %#x\n", RegGetRflags ()));
+	//#endif
+
     return STATUS_SUCCESS;
 }
