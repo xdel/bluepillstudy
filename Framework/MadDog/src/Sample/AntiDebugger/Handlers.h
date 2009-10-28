@@ -2,6 +2,9 @@
 #include <ntddk.h>
 #include "HvCore.h"
 
+#define VMX_EXCEPTION_PAGEFAULT		( 1 << 14)
+#define VMX_EXCEPTION_INT1			( 1 << 1)
+#define VMX_EXCEPTION_INT3			( 1 << 3)
 NTSTATUS HvmSetupVMControlBlock (
     PCPU Cpu,
     PVOID GuestEip,

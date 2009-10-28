@@ -7,7 +7,7 @@ TARGETLIBS=$(FRAMEWORK_LIBRARY_ROOT)\VTCore.lib \
 	$(FRAMEWORK_LIBRARY_ROOT)\Memory.lib 
 INCLUDES=.; $(FRAMEWORK_HEADERS_ROOT)\;
 SOURCES=\
-    newbp.c \
+    AntiDebugger.c \
     handlers.c \
     Vmxtraps.c \
       

@@ -12,14 +12,23 @@
  *
  */
 
-#include "newbp.h"
+#include "AntiDebugger.h"
 
 //extern PHYSICAL_ADDRESS g_PageMapBasePhysicalAddress;
 //extern BOOLEAN g_bDisableComOutput;
 
+static NTSTATUS Initialization()
+{
+	FARPROC Func_addr;
+	HMODULE hModule = GetModuleHandle("kernel32.dll");
+	if (hModule==INVALID_HANDLE_VALUE)
+		return FALSE;
+	Func_addr =(FARPROC) GetProcAddress(hModule, "CheckRemoteDebuggerPresent");
+};
+
 static MadDog_Control md_Control = 
 {
-	NULL,
+	&Initialization,
 	NULL,
 	&HvmSetupVMControlBlock,
 	&VmxRegisterTraps
@@ -64,7 +73,7 @@ NTSTATUS DriverEntry (
    // ULONG ulOldCR3;
 
     DbgInitComponent();
-    //__asm { int 3 }
+    __asm { int 3 }
 
     // test for our pagetabel
     //__asm 

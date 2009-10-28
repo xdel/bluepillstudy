@@ -1,5 +1,7 @@
 #include "vmxtraps.h"
 
+BOOLEAN MonitorCR3 = FALSE;
+
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
@@ -48,6 +50,22 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
   ...
 );
 
+static BOOLEAN NTAPI VmxDispatchException (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+);
+
+static BOOLEAN NTAPI VmxDispatchInterrupt (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+);
+
 /**
  * effects: Register traps in this function
  * requires: <Cpu> is valid
@@ -56,134 +74,165 @@ NTSTATUS NTAPI VmxRegisterTraps (
   PCPU Cpu
 )
 {//Finished
-  NTSTATUS Status;
-  PNBP_TRAP Trap;
+	NTSTATUS Status;
+	PNBP_TRAP Trap;
 
-  // used to set dummy handler for all VMX intercepts when we compile without nested support
-  ULONG32 i, TableOfVmxExits[] = {
-    EXIT_REASON_VMCALL,
-    EXIT_REASON_VMCLEAR,
-    EXIT_REASON_VMLAUNCH,
-    EXIT_REASON_VMRESUME,
-    EXIT_REASON_VMPTRLD,
-    EXIT_REASON_VMPTRST,
-    EXIT_REASON_VMREAD,
-    EXIT_REASON_VMWRITE,
-    EXIT_REASON_VMXON,
-    EXIT_REASON_VMXOFF
-  };
-    Status = HvInitializeGeneralTrap ( //<----------------4.1 Finish
-        Cpu, 
-        EXIT_REASON_CPUID, 
-        FALSE,
-        0, // length of the instruction, 0 means length need to be get from vmcs later. 
-        VmxDispatchCpuid, //<----------------4.2 Finish
-        &Trap,
+	// used to set dummy handler for all VMX intercepts when we compile without nested support
+	ULONG32 i, TableOfVmxExits[] = {
+		EXIT_REASON_VMCALL,
+		EXIT_REASON_VMCLEAR,
+		EXIT_REASON_VMLAUNCH,
+		EXIT_REASON_VMRESUME,
+		EXIT_REASON_VMPTRLD,
+		EXIT_REASON_VMPTRST,
+		EXIT_REASON_VMREAD,
+		EXIT_REASON_VMWRITE,
+		EXIT_REASON_VMXON,
+		EXIT_REASON_VMXOFF
+	};
+
+	Status = HvInitializeGeneralTrap ( //<----------------4.1 Finish
+		Cpu, 
+		EXIT_REASON_EXCEPTION_NMI, //Exception or NMI
+		FALSE,
+		0, // length of the instruction, 0 means length need to be get from vmcs later. 
+		VmxDispatchException, //<----------------4.2 Finish
+		&Trap,
 		LAB_TAG);
-  if (!NT_SUCCESS (Status)) 
-  {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchCpuid with status 0x%08hX\n", Status));
-    return Status;
-  }
-  MadDog_RegisterTrap (Cpu, Trap);//<----------------4.3//Finish
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchException with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
 
-    Status = HvInitializeGeneralTrap (
-        Cpu, 
-        EXIT_REASON_MSR_READ,
-        FALSE,
-        0, // length of the instruction, 0 means length need to be get from vmcs later. 
-        VmxDispatchMsrRead, 
+	Status = HvInitializeGeneralTrap ( //<----------------4.1 Finish
+		Cpu, 
+		EXIT_REASON_EXTERNAL_INTERRUPT, //Exception or NMI
+		FALSE,
+		0, // length of the instruction, 0 means length need to be get from vmcs later. 
+		VmxDispatchInterrupt, //<----------------4.2 Finish
+		&Trap,
+		LAB_TAG);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchException with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
+
+	Status = HvInitializeGeneralTrap ( 
+		Cpu, 
+		EXIT_REASON_CPUID, 
+		FALSE,
+		0,
+		VmxDispatchCpuid, 
+		&Trap,
+		LAB_TAG);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchCpuid with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
+
+	Status = HvInitializeGeneralTrap (
+		Cpu, 
+		EXIT_REASON_MSR_READ,
+		FALSE,
+		0,
+		VmxDispatchMsrRead, 
 		//VmxDispatchVmxInstrDummy,
-        &Trap,
+		&Trap,
 		LAB_TAG);
-  if (!NT_SUCCESS (Status)) 
-  {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status));
-    return Status;
-  }
-  MadDog_RegisterTrap (Cpu, Trap);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrRead with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = HvInitializeGeneralTrap (
-      Cpu, 
-      EXIT_REASON_MSR_WRITE, 
-      FALSE,
-      0,   // length of the instruction, 0 means length need to be get from vmcs later. 
-      VmxDispatchMsrWrite, 
-	  //VmxDispatchVmxInstrDummy,
-      &Trap,
-	  LAB_TAG);
-  if (!NT_SUCCESS (Status)) 
-  {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status));
-    return Status;
-  }
-  MadDog_RegisterTrap (Cpu, Trap);
+	Status = HvInitializeGeneralTrap (
+		Cpu, 
+		EXIT_REASON_MSR_WRITE, 
+		FALSE,
+		0,   // length of the instruction, 0 means length need to be get from vmcs later. 
+		VmxDispatchMsrWrite, 
+		//VmxDispatchVmxInstrDummy,
+		&Trap,
+		LAB_TAG);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchMsrWrite with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = HvInitializeGeneralTrap (
-      Cpu, 
-      EXIT_REASON_CR_ACCESS,
-      FALSE,
-      0,  // length of the instruction, 0 means length need to be get from vmcs later. 
-      VmxDispatchCrAccess, 
-      &Trap,
-	  LAB_TAG);
-  if (!NT_SUCCESS (Status)) 
-  {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status));
-    return Status;
-  }
-  MadDog_RegisterTrap (Cpu, Trap);
+	Status = HvInitializeGeneralTrap (
+		Cpu, 
+		EXIT_REASON_CR_ACCESS,
+		FALSE,
+		0,  // length of the instruction, 0 means length need to be get from vmcs later. 
+		VmxDispatchCrAccess, 
+		&Trap,
+		LAB_TAG);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchCrAccess with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = HvInitializeGeneralTrap (
-      Cpu, 
-      EXIT_REASON_INVD, 
-      FALSE,
-      0,  // length of the instruction, 0 means length need to be get from vmcs later. 
-      VmxDispatchINVD, 
-      &Trap,
-	  LAB_TAG);
-  if (!NT_SUCCESS (Status)) 
-  {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchINVD with status 0x%08hX\n", Status));
-    return Status;
-  }
-  MadDog_RegisterTrap (Cpu, Trap);
+	Status = HvInitializeGeneralTrap (
+		Cpu, 
+		EXIT_REASON_INVD, 
+		FALSE,
+		0,  // length of the instruction, 0 means length need to be get from vmcs later. 
+		VmxDispatchINVD, 
+		&Trap,
+		LAB_TAG);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchINVD with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
 
-  Status = HvInitializeGeneralTrap (
-      Cpu, 
-      EXIT_REASON_EXCEPTION_NMI,
-      FALSE,
-      0,  // length of the instruction, 0 means length need to be get from vmcs later. 
-      VmxDispatchVmxInstrDummy,//VmxDispatchPageFault, 
-      &Trap,
-	  LAB_TAG);
-  if (!NT_SUCCESS (Status)) 
-  {
-    Print(("VmxRegisterTraps(): Failed to register VmxDispatchPageFault with status 0x%08hX\n", Status));
-    return Status;
-  }
-  MadDog_RegisterTrap (Cpu, Trap);
+	Status = HvInitializeGeneralTrap (
+		Cpu, 
+		EXIT_REASON_EXCEPTION_NMI,
+		FALSE,
+		0,  // length of the instruction, 0 means length need to be get from vmcs later. 
+		VmxDispatchVmxInstrDummy,//VmxDispatchPageFault, 
+		&Trap,
+		LAB_TAG);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchPageFault with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
 
-  // set dummy handler for all VMX intercepts if we compile without nested support
-  for (i = 0; i < sizeof (TableOfVmxExits) / sizeof (ULONG32); i++) 
-  {
-      Status = HvInitializeGeneralTrap (
-          Cpu, 
-          TableOfVmxExits[i],
-          FALSE,
-          0,    // length of the instruction, 0 means length need to be get from vmcs later. 
-          VmxDispatchVmxInstrDummy, 
-          &Trap,
-		  LAB_TAG);
-    if (!NT_SUCCESS (Status)) 
-    {
-      Print(("VmxRegisterTraps(): Failed to register VmxDispatchVmon with status 0x%08hX\n", Status));
-      return Status;
-    }
-    MadDog_RegisterTrap (Cpu, Trap);
-  }
+	// set dummy handler for all VMX intercepts if we compile without nested support
+	for (i = 0; i < sizeof (TableOfVmxExits) / sizeof (ULONG32); i++) 
+	{
+		Status = HvInitializeGeneralTrap (
+			Cpu, 
+			TableOfVmxExits[i],
+			FALSE,
+			0,    // length of the instruction, 0 means length need to be get from vmcs later. 
+			VmxDispatchVmxInstrDummy, 
+			&Trap,
+			LAB_TAG);
+		if (!NT_SUCCESS (Status)) 
+		{
+			Print(("VmxRegisterTraps(): Failed to register VmxDispatchVmon with status 0x%08hX\n", Status));
+			return Status;
+		}
+		MadDog_RegisterTrap (Cpu, Trap);
+	}
 
-  return STATUS_SUCCESS;
+	return STATUS_SUCCESS;
 }
 
 
@@ -568,3 +617,62 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 }
 
 
+static BOOLEAN NTAPI VmxDispatchException(
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+)
+{
+	ULONG32 fn, eax, ebx, ecx, edx;
+	ULONG inst_len;
+
+	if (!Cpu || !GuestRegs)
+		return TRUE;
+	fn = GuestRegs->eax;
+
+	DbgPrint("Helloworld:VmxDispatchException(): Passing in Value(Fn): 0x%x\n", fn);
+
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	if (Trap->RipDelta == 0)
+		Trap->RipDelta = inst_len;
+	
+		return TRUE;
+	
+}
+
+static BOOLEAN NTAPI VmxDispatchInterrupt(
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+)
+{
+	ULONG32 fn, eax, ebx, ecx, edx;
+	ULONG inst_len, intrInfo,intrErrCode;
+	ULONG32 intrID, intrType;
+
+	if (!Cpu || !GuestRegs)
+		return TRUE;
+	fn = GuestRegs->eax;
+
+	intrErrCode = VmxRead(VM_EXIT_INTR_ERROR_CODE);
+ 	intrInfo = VmxRead(VM_EXIT_INTR_INFO);
+	intrID = intrInfo & INTR_ID_MASK;
+	intrType = intrInfo & INTR_TYPE_MASK;
+
+	if(intrID ==0x2d)
+		DbgPrint("Helloworld:VmxDispatchInterrupt(): Int2d\n");
+
+	VmxWrite(VM_ENTRY_INTR_INFO_FIELD,intrInfo);
+	VmxWrite(VM_ENTRY_EXCEPTION_ERROR_CODE,intrErrCode);
+	
+	//inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	//if (Trap->RipDelta == 0)
+	//	Trap->RipDelta = inst_len;
+	
+		return TRUE;
+	
+}
