@@ -15,6 +15,8 @@
 	//#define BP_EXIT_EAX		200
 #endif // BP_KNOCK
 
+#define INTR_ID_MASK		0xff
+#define INTR_TYPE_MASK		( 0x7 << 8 )
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
 /**

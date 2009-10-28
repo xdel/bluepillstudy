@@ -58,7 +58,9 @@ NTSTATUS HvmSetupVMControlBlock (
     /*32BIT Control Fields. */
     //disable Vmexit by Extern-interrupt,NMI and Virtual NMI
     // Pin-based VM-execution controls
-    VmxWrite (PIN_BASED_VM_EXEC_CONTROL, PtVmxAdjustControls (0, MSR_IA32_VMX_PINBASED_CTLS));//<------------------5.1 Finished
+   // Interceptions = PIN_BASED_EXT_INTR_MASK;
+	Interceptions = 0;
+    VmxWrite (PIN_BASED_VM_EXEC_CONTROL, PtVmxAdjustControls (Interceptions, MSR_IA32_VMX_PINBASED_CTLS));//<------------------5.1 Finished
 
     Interceptions = CPU_BASED_ACTIVATE_MSR_BITMAP;
     // Primary processor-based VM-execution controls
@@ -66,7 +68,7 @@ NTSTATUS HvmSetupVMControlBlock (
       CPU_BASED_VM_EXEC_CONTROL, 
       PtVmxAdjustControls (Interceptions, MSR_IA32_VMX_PROCBASED_CTLS) );
 
-    VmxWrite (EXCEPTION_BITMAP, (ULONG)1 << 14);
+    VmxWrite (EXCEPTION_BITMAP, (ULONG)(VMX_EXCEPTION_PAGEFAULT | VMX_EXCEPTION_INT1 | VMX_EXCEPTION_INT3));//Intercept int1 & int3
 
     //VmxWrite (PAGE_FAULT_ERROR_CODE_MASK, 2);   // W/R
     //VmxWrite (PAGE_FAULT_ERROR_CODE_MATCH, 2);  // write cause the fault
