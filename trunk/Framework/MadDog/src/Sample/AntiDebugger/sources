@@ -10,8 +10,5 @@ SOURCES=\
     AntiDebugger.c \
     handlers.c \
     Vmxtraps.c \
+    Hooker.c \
       
-
-
-
-
