@@ -26,13 +26,14 @@ static NTSTATUS Initialization()
 	UNICODE_STRING processName;
 	
 	/* get ntoskrnl base */
-	if ( (NTKNLBase = GetKernelBase()) == NULL ) {
-		DbgPrint("Kernel base not found\n");
-	}
-	DbgPrint("Initialization: NTKNLBase = 0x%llX\n", NTKNLBase);
+	//if ( (NTKNLBase = GetKernelBase()) == NULL ) {
+	//	DbgPrint("Kernel base not found\n");
+	//}
+	//DbgPrint("Initialization: NTKNLBase = 0x%llX\n", NTKNLBase);
 
-	RtlInitUnicodeString(&processName,L"KiDispatchException");
-	KDEAddr = MmGetSystemRoutineAddress(&processName);
+	//RtlInitUnicodeString(&processName,L"KiDispatchException");
+	//KDEAddr = MmGetSystemRoutineAddress(&processName);
+	KDEAddr = GetKeDispatchExceptionAddr();
 	DbgPrint("Initialization: KDEAddr = 0x%llX\n", KDEAddr);
 	return STATUS_SUCCESS;
 };

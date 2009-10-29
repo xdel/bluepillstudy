@@ -1,6 +1,6 @@
 #pragma once
 #include <ntddk.h>
-
+#include <windef.h>
 typedef struct _SYSTEM_MODULE_INFORMATION { // Information Class 11
 	ULONG Reserved[2];
 	PVOID Base;
@@ -100,3 +100,4 @@ ZwQueryInformationProcess(
 
 
 PVOID GetKernelBase();
+PVOID GetKeDispatchExceptionAddr();
