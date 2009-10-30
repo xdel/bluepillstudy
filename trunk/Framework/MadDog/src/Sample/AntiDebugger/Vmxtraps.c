@@ -612,11 +612,11 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
         {
 			if(KDEHappen && INTDebugHappen)
 			{
-				DbgPrint("Kernel Debugger Detected!\n");
+				//DbgPrint("Kernel Debugger Detected!\n");
 			}
 			else if (INTDebugHappen &&  !KDEHappen)
 			{
-				DbgPrint("Ice Debugger Detected!\n");
+				//DbgPrint("Ice Debugger Detected!\n");
 			}
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
@@ -682,21 +682,29 @@ static BOOLEAN NTAPI VmxDispatchException(
 )
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
-	ULONG inst_len,intrInfo,intrErrCode;
+	ULONG inst_len,intrInfo,intrErrCode,dummy;
+	PINTERUPTION_INFORMATION_FIELD pinject_event;
+       PINTERUPTION_INFORMATION_FIELD pint;
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
 
-	intrErrCode = VmxRead(VM_EXIT_INTR_ERROR_CODE);
- 	intrInfo = VmxRead(VM_EXIT_INTR_INFO);
+	//pint = (PINTERUPTION_INFORMATION_FIELD)&dummy;
+       dummy = VmxRead(VM_EXIT_INTR_INFO);
 
-	//fn = GuestRegs->eax;
+	pinject_event = (PINTERUPTION_INFORMATION_FIELD)&dummy;
+                                pinject_event->Vector = 3;
+                                pinject_event->InteruptionType = 4;             //software 
+                                pinject_event->DeliverErrorCode = 0;
+                                pinject_event->Valid = 1;
+       VmxWrite(VM_ENTRY_INTR_INFO_FIELD, dummy);
+	//intrErrCode = VmxRead(VM_EXIT_INTR_ERROR_CODE);
+ 	//intrInfo = VmxRead(VM_EXIT_INTR_INFO);
 
-	//DbgPrint("Helloworld:VmxDispatchException(): Passing in Value(Fn): 0x%x\n", fn);
 	INTDebugHappen = TRUE;
 
-	VmxWrite(VM_ENTRY_INTR_INFO_FIELD,intrInfo);
-	VmxWrite(VM_ENTRY_EXCEPTION_ERROR_CODE,intrErrCode);
+	//VmxWrite(VM_ENTRY_INTR_INFO_FIELD,intrInfo);
+	//VmxWrite(VM_ENTRY_EXCEPTION_ERROR_CODE,intrErrCode);
 	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
 	if (Trap->RipDelta == 0)
 		Trap->RipDelta = inst_len;

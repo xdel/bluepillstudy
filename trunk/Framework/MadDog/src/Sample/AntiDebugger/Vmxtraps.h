@@ -17,6 +17,15 @@
 
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
+typedef struct{
+        unsigned Vector:8;
+        unsigned InteruptionType:3;
+        unsigned DeliverErrorCode:1;
+        unsigned NMIUnblocking:1;
+        unsigned Reserved:18;
+        unsigned Valid:1;
+}INTERUPTION_INFORMATION_FIELD, *PINTERUPTION_INFORMATION_FIELD;
+
 /**
  * effects: Register traps in this function
  * requires: <Cpu> is valid
