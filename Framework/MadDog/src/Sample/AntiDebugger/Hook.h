@@ -76,6 +76,7 @@ typedef enum _SYSTEM_INFORMATION_CLASS {
 	SystemSessionProcessesInformation // 53 Y N
 } SYSTEM_INFORMATION_CLASS;
 
+
 NTSYSAPI
 NTSTATUS
 NTAPI ZwQuerySystemInformation(
@@ -98,6 +99,6 @@ ZwQueryInformationProcess(
 
 
 
-
-PVOID GetKernelBase();
-PVOID GetKeDispatchExceptionAddr();
+PVOID GetKiDispatchExceptionAddr();
+PVOID Hook(PVOID fnaddr, PVOID newFunc);
+VOID UnHook(PVOID fnaddr);

@@ -5,18 +5,19 @@
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 // BPKNOCK backdoor
-#define BP_KNOCK
-#ifdef BP_KNOCK
-	#define BP_KNOCK_EAX	100
-	#define BP_KNOCK_EAX_ANSWER 0x6c6c6548	//Hell
-	#define BP_KNOCK_EBX_ANSWER 0x6f57206f  //o Wo
-	#define BP_KNOCK_EDX_ANSWER 0x21646c72	//rld!
+	#define FN_ENTERKDE			0x1000
+	#define FN_EXITKDE			0x2000
 
 	//#define BP_EXIT_EAX		200
-#endif // BP_KNOCK
 
 #define INTR_ID_MASK		0xff
 #define INTR_TYPE_MASK		( 0x7 << 8 )
+
+#define     GET_PDE_VADDRESS(va) ((((ULONG)(va) >> 22) << 2) + PDE_BASE)
+#define     GET_PTE_VADDRESS(va) ((((ULONG)(va) >> 12) << 2) + PTE_BASE)
+#define     PTE_BASE        0xC0000000
+#define     PDE_BASE        0xc0300000
+
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
 /**

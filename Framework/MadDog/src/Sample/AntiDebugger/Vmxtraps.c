@@ -1,6 +1,14 @@
 #include "vmxtraps.h"
+#include "Hook.h"
+#include "Util.h"
 
 BOOLEAN MonitorCR3 = FALSE;
+BOOLEAN ModifyKDE = FALSE;
+PBYTE KDEEntryAddr,KDERetAddr;
+PVOID JmpBackAddr;
+UCHAR OriginFuncHeader[10];
+
+ULONG timer;
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
@@ -65,6 +73,13 @@ static BOOLEAN NTAPI VmxDispatchInterrupt (
   BOOLEAN WillBeAlsoHandledByGuestHv,
   ...
 );
+static void myFunc(
+    IN PVOID ExceptionRecord,
+    IN PVOID ExceptionFrame,
+    IN PVOID TrapFrame,
+    IN KPROCESSOR_MODE PreviousMode,
+    IN BOOLEAN FirstChance
+	);
 
 /**
  * effects: Register traps in this function
@@ -235,7 +250,9 @@ NTSTATUS NTAPI VmxRegisterTraps (
 	return STATUS_SUCCESS;
 }
 
-
+ULONG32 currentESP,currentEBP;
+ULONG32 guestESP;
+GUEST_REGS GuestRegsBackup;
 //+++++++++++++++++++++Static Functions++++++++++++++++++++++++
 /**
  * effects: Defines the handler of the VM Exit Event which is caused by CPUID.
@@ -250,7 +267,8 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   ...
 )//Finished//same
 {
-	ULONG32 fn, eax, ebx, ecx, edx;
+	ULONG32 fn, eax1, ebx1, ecx1, edx1;
+	
 	ULONG inst_len;
 
 	if (!Cpu || !GuestRegs)
@@ -265,12 +283,75 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	if (Trap->RipDelta == 0)
 		Trap->RipDelta = inst_len;
 
-	if (fn == BP_KNOCK_EAX) 
+	if (fn == FN_ENTERKDE) 
 	{
-		Print(("Helloworld:Magic knock received: %p\n", BP_KNOCK_EAX));
-		GuestRegs->eax = BP_KNOCK_EAX_ANSWER;
-		GuestRegs->ebx = BP_KNOCK_EBX_ANSWER;
-		GuestRegs->edx = BP_KNOCK_EDX_ANSWER;
+		AcquireSpinLock();
+
+		GuestRegsBackup = *GuestRegs;
+
+
+		//timer++;
+		guestESP = (ULONG32) VmxRead(GUEST_RSP);
+		//Step 1. Restor Guest GP regs. to invoke stolen instructions
+		__asm
+		{
+			pushfd;
+			pushad;
+			mov currentESP, esp;
+			mov currentEBP, ebp;
+		}
+		__asm
+		{
+			pushfd;
+			mov eax,[GuestRegsBackup+0x20];
+			mov [esp],eax;
+			popfd; //Restore guest eflags
+
+			mov esp,guestESP; //Restore guest esp
+
+			mov eax,[GuestRegsBackup+0x00];
+			mov ecx,[GuestRegsBackup+0x04];
+			mov edx,[GuestRegsBackup+0x08];
+			mov ebx,[GuestRegsBackup+0x0C];
+			mov ebp,[GuestRegsBackup+0x14];
+			mov esi,[GuestRegsBackup+0x18];
+			mov edi,[GuestRegsBackup+0x1C];//Restore GP regs.
+		}
+		((__declspec (naked) VOID (*)()) &OriginFuncHeader)();
+		
+		__asm
+		{
+			mov [GuestRegsBackup+0x00],eax;
+			mov [GuestRegsBackup+0x04],ecx;
+			mov [GuestRegsBackup+0x08],edx;
+			mov [GuestRegsBackup+0x0C],ebx;
+			mov [GuestRegsBackup+0x14],ebp;
+			mov [GuestRegsBackup+0x18],esi;
+			mov [GuestRegsBackup+0x1C],edi;//Save back GP regs.
+
+			mov guestESP,esp; //Save back guest esp
+
+			mov esp, currentESP;
+			mov ebp, currentEBP;
+			pushfd;
+			mov eax,[esp];
+			mov [GuestRegsBackup+0x20],eax;
+			popfd; //Save back guest eflags
+		
+		}
+
+		VmxWrite(GUEST_RSP,guestESP);
+
+		__asm
+		{
+			popad;
+			popfd;
+		}
+
+		*GuestRegs = GuestRegsBackup;
+
+		ReleaseSpinLock();
+
 		return TRUE;
 	}
 	//else if(fn == 1)
@@ -284,15 +365,14 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	//return TRUE;
 	//}
 
-	ecx = (ULONG) GuestRegs->ecx;
-	MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
-	GuestRegs->eax = eax;
-	GuestRegs->ebx = ebx;
-	GuestRegs->ecx = ecx;
-	GuestRegs->edx = edx;
+	//ecx = (ULONG) GuestRegs->ecx;
+	//MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
+	//GuestRegs->eax = eax;
+	//GuestRegs->ebx = ebx;
+	//GuestRegs->ecx = ecx;
+	//GuestRegs->edx = edx;
 
-	//VmxDumpVmcs()();
-	Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
+	//Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
 	return TRUE;
 }
 
@@ -479,13 +559,42 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
     ULONG32 gp, cr;
     ULONG value;
     ULONG inst_len;
+	PULONG pKDEEntryPte;
 
     if (!Cpu || !GuestRegs)
         return TRUE;
+	
+	if(!ModifyKDE)
+	{
+		//Hook KiDispatchException by insert an CPUID
+		KDEEntryAddr = (PBYTE)GetKiDispatchExceptionAddr();
+		Print(("VmxDispatchCrAccess:Initialization: KDEEntryAddr = 0x%llX\n", KDEEntryAddr));
 
-#if DEBUG_LEVEL>2
-    Print(("VmxDispatchCrAccess()\n"));
-#endif
+		//pKDEEntryPte  = (PULONG)GET_PTE_VADDRESS(KDEEntryAddr);
+		//Print(("VmxDispatchCrAccess:Initialization: KDEEntryPte = 0x%llX\n", *pKDEEntryPte));
+
+		//Backup the origin function header.
+		Memcpy(OriginFuncHeader,KDEEntryAddr,10);
+		
+		AcquireSpinLock();
+		WPOFF();
+
+		KDEEntryAddr[0] =0xB8;
+		KDEEntryAddr[1] =0x00;
+		KDEEntryAddr[2] =0x10;
+		KDEEntryAddr[3] =0x00;
+		KDEEntryAddr[4] =0x00; //Write a "mov eax,0x1000"
+		KDEEntryAddr[5] =0x0F; 
+		KDEEntryAddr[6] =0xA2; //Write a "cpuid"
+		KDEEntryAddr[7] =0x90; //Write a "nop"
+		KDEEntryAddr[8] =0x90; //Write a "nop"
+		KDEEntryAddr[9] =0x90; //Write a "nop"
+
+		WPON();
+		ReleaseSpinLock();
+
+		ModifyKDE = TRUE;
+	}
 
     inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
     if (Trap->RipDelta == 0)
@@ -676,3 +785,41 @@ static BOOLEAN NTAPI VmxDispatchInterrupt(
 		return TRUE;
 	
 }
+
+
+__declspec(naked) void myFunc(
+    IN PVOID ExceptionRecord,
+    IN PVOID ExceptionFrame,
+    IN PVOID TrapFrame,
+    IN KPROCESSOR_MODE PreviousMode,
+    IN BOOLEAN FirstChance)
+
+{
+
+         //print("i am here");
+	__asm
+	{
+		pushfd;
+		pushad;
+		
+		cpuid;
+
+		popad;
+		popfd;
+
+	}
+	__asm
+	{
+		jmp JmpBackAddr;
+	}
+}
+
+//NTSTATUS Initialization()
+//{	
+//	InitSpinLock();
+//
+//	
+//	
+//	JmpBackAddr = Hook(KDEAddr, myFunc);
+//	return STATUS_SUCCESS;
+//}

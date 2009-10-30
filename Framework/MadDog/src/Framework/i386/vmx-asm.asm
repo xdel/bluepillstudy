@@ -75,7 +75,7 @@ ENDM
 
 
 HVM_SAVE_ALL_NOSEGREGS MACRO
-	;pushfd 
+	pushfd 
         push edi
         push esi
         push ebp
@@ -95,7 +95,7 @@ HVM_RESTORE_ALL_NOSEGREGS MACRO
         pop ebp
         pop esi
         pop edi    
-        ;popfd
+        popfd
 ENDM
 
 
@@ -236,7 +236,7 @@ VmxVmexitHandler PROC   StdCall
 	HVM_SAVE_ALL_NOSEGREGS
 
 	;mov	bCurrentMachineState, 0 ; The definition is in HvCoreDefs.h 
-	mov     ecx,[esp + 20h]     ;PCUP
+	mov     ecx,[esp + 24h]     ;PCUP
 	mov 	ebx,esp		;ebx=GuestRegs
 	
 	push	ebx     ;GuestRegs	
