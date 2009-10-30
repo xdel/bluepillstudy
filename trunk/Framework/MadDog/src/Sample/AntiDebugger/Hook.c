@@ -1,104 +1,33 @@
 #include "Hook.h"
 #include <string.h>
 #include "Util.h"
+#include "Vmxtraps.h"
 
-static PVOID pfn_Target;//Target func. address
+PVOID KDEEntryAddr;
+ULONG g_uCr0;
 
-static UCHAR orign_code[5]={0x00,0x00,0x00,0x00,0x00};//Used to store the origin func. header
+BYTE g_HookCode[5] = { 0xe9, 0, 0, 0, 0 };
+BYTE g_OrigCode[5] = { 0 }; 
+BYTE jmp_orig_code[7] = { 0xEA, 0, 0, 0, 0, 0x08, 0x00 }; 
 
-static UCHAR myjmp_code[5]={0xE9,0x00,0x00,0x00,0x00};//The jump inst. to be written
+BOOL g_bHooked = FALSE;
 
-static UCHAR jmpToOrign_code[5]={0xE9,0x00,0x00,0x00,0x00};
+PVOID KDECallRetAddr;
 
-static ULONG offset_jmpToMyFunc;
+VOID fake_KiDispatchException (
+    IN PVOID ExceptionRecord,
+    IN PVOID ExceptionFrame,
+    IN PVOID TrapFrame,
+    IN KPROCESSOR_MODE PreviousMode,
+    IN BOOLEAN FirstChance);
+   
+VOID Proxy_KiDispatchException (
+     IN PVOID ExceptionRecord,
+    IN PVOID ExceptionFrame,
+    IN PVOID TrapFrame,
+    IN KPROCESSOR_MODE PreviousMode,
+    IN BOOLEAN FirstChance);
 
-static ULONG offset_jmpToOrign;
-
-static PUCHAR pfn_jmpbk;
-ULONG dummy_fn[] = {0x90909090, 0x90909090, 0x90909090};
-
-
-static void copyfnHeader(PVOID fnaddr, PVOID newFunc)
-
-{
-
-         pfn_jmpbk=(PUCHAR)dummy_fn;
-
-         RtlCopyMemory(orign_code,fnaddr,5);//保存原始指令
-
-         //计算跳转偏移
-
-         offset_jmpToMyFunc =(ULONG)newFunc-(ULONG)fnaddr-5;
-
-        /*
-       */
-
-         offset_jmpToOrign =(ULONG)fnaddr-(ULONG)pfn_jmpbk-5;
-
-         RtlCopyMemory(myjmp_code+1,&offset_jmpToMyFunc,4);
-
-         RtlCopyMemory(jmpToOrign_code+1,&offset_jmpToOrign,4);
-
-}
-
-PVOID Hook(PVOID fnaddr, PVOID newFunc)
-
-{
-
-	NTSTATUS status = STATUS_SUCCESS;
-
-	//KIRQL old_irql;         
-
-	if (fnaddr==NULL|| newFunc==NULL)
-		return NULL;
-
-	copyfnHeader(fnaddr, newFunc);
-
-
-	//old_irql=KeRaiseIrqlToDpcLevel();
-	AcquireSpinLock();
-
-	//__asm {cli}
-
-	RtlCopyMemory(pfn_jmpbk,orign_code,5);//Origin func header
-
-	RtlCopyMemory(pfn_jmpbk+5,jmpToOrign_code,5);
-
-	RtlCopyMemory(fnaddr,myjmp_code,5);
-
-	//__asm {sti}
-
-	//KeLowerIrql(old_irql);
-	ReleaseSpinLock();
-
-	return (PVOID)dummy_fn;
-
-}
-
-VOID UnHook(PVOID fnaddr)
-
-{
-
-	//KIRQL old_irql;         
-
-
-	if (fnaddr==NULL)
-		return;
-	//old_irql=KeRaiseIrqlToDpcLevel();
-	AcquireSpinLock();
-
-	// __asm {cli}
-
-	RtlCopyMemory(fnaddr,orign_code,5);//Restore func header
-
-	//__asm {sti}
-
-	//KeLowerIrql(old_irql);
-	ReleaseSpinLock();
-
-	return;
-
-}
 
 PVOID GetKiDispatchExceptionAddr()
 {
@@ -137,6 +66,177 @@ PVOID GetKiDispatchExceptionAddr()
 	return 0;
 
 	
+}
+
+//
+// inline hook --  KiDispatchException
+//
+VOID HookKiDispatchException ()
+{
+	AcquireSpinLock();
+
+	if(g_bHooked)
+		return;
+
+	KDEEntryAddr = GetKiDispatchExceptionAddr();
+	DbgPrint("Initialization: KDEEntryAddr = 0x%llX\n", KDEEntryAddr);
+
+    if (KDEEntryAddr == 0) {
+        DbgPrint("KiDispatchException == NULL\n");
+        return;
+    }
+
+    Memcpy (g_OrigCode, (BYTE*)KDEEntryAddr, 5);//&iexcl;&iuml;
+    *( (ULONG*)(g_HookCode + 1) ) = (ULONG)fake_KiDispatchException - (ULONG)KDEEntryAddr - 5;//&iexcl;&iuml;
+     
+	WPOFF();
+ 
+    Memcpy ( (BYTE*)KDEEntryAddr, g_HookCode, 5 );
+    *( (ULONG*)(jmp_orig_code + 1) ) = (ULONG) ( (BYTE*)KDEEntryAddr + 5 );//&iexcl;&iuml;
+   
+    Memcpy ( (BYTE*)Proxy_KiDispatchException, g_OrigCode, 5);
+    Memcpy ( (BYTE*)Proxy_KiDispatchException + 5, jmp_orig_code, 7);
+    
+    WPON();
+	
+
+    g_bHooked = TRUE;
+
+	ReleaseSpinLock();
+}
+
+//
+//
+VOID UnHookKiDispatchException ()
+{
+
+	//AcquireSpinLock();
+
+	if(!g_bHooked)
+		return;
+
+    WPOFF();
+      
+    Memcpy ( (BYTE*)KDEEntryAddr, g_OrigCode, 5 );
+
+    WPON();
+	
+    g_bHooked = FALSE;
+
+	//ReleaseSpinLock();
+}
+
+__declspec (naked) VOID KDEReturnTo()
+{
+
+	__asm
+	{
+		pushfd;
+		pushad; //Backup 
+	}
+
+	//Hypercall
+	__asm
+	{
+		mov eax,FN_EXITKDE; //FN_EXITKDE Hypercall
+		cpuid;
+	}
+
+	 DbgPrint("inline hook --  KiDispatchException Exit\n");
+
+	__asm
+	{
+		popad;
+		popfd; //Restore
+	}
+	__asm
+	{
+		jmp KDECallRetAddr;//Jump to the KDE function caller.
+	}
+}
+//
+//
+ULONG KDEEnterESP;
+__declspec (naked)
+VOID
+fake_KiDispatchException (
+    IN PVOID ExceptionRecord,
+    IN PVOID ExceptionFrame,
+    IN PVOID TrapFrame,
+    IN KPROCESSOR_MODE PreviousMode,
+    IN BOOLEAN FirstChance)
+{
+	__asm
+	{
+		mov KDEEnterESP,esp;
+	}
+	__asm
+	{
+		pushfd;
+		pushad;
+	}
+	__asm
+	{
+		mov ebx,esp; //Backup esp, restore it later.
+
+		mov esp,KDEEnterESP;
+
+		mov eax,[esp];
+		mov KDECallRetAddr,eax;//Store the KiDispatchException return address
+
+		mov eax, KDEReturnTo
+		mov [esp],eax ;//Modify Return Address
+
+		mov esp,ebx; //Restore esp to point to the top of 'pushad' 
+		
+	}
+
+
+	//Hypercall
+	__asm
+	{
+		mov eax,FN_ENTERKDE; //FN_ENTERKDE Hypercall
+		cpuid;
+	}
+
+    DbgPrint("inline hook --  KiDispatchException Entry\n");
+ 
+
+	//Restore & Jump to KDE
+    __asm
+    {
+		popad;
+		popfd;
+               jmp Proxy_KiDispatchException   
+    }
+}
+
+//
+//
+__declspec (naked)
+VOID
+Proxy_KiDispatchException (
+    IN PVOID ExceptionRecord,
+    IN PVOID ExceptionFrame,
+    IN PVOID TrapFrame,
+    IN KPROCESSOR_MODE PreviousMode,
+    IN BOOLEAN FirstChance)
+{
+ 
+    __asm {  
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90  //
+            _emit 0x90  //
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90 
+            _emit 0x90 
+            _emit 0x90 // 
+    }
 }
 
 

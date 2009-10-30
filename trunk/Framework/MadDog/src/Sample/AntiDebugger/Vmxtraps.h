@@ -4,11 +4,8 @@
 #include "HvCore.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
-// BPKNOCK backdoor
-	#define FN_ENTERKDE			0x1000
-	#define FN_EXITKDE			0x2000
-
-	//#define BP_EXIT_EAX		200
+#define FN_ENTERKDE			0x1000
+#define FN_EXITKDE			0x2000
 
 #define INTR_ID_MASK		0xff
 #define INTR_TYPE_MASK		( 0x7 << 8 )

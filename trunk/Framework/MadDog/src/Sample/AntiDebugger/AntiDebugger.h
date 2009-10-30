@@ -21,12 +21,4 @@
 //#include "version.h"
 #include <windef.h>
 
-	
-//typedef struct{
-//	BYTE cpuid;
-//	BYTE mov_eax;
-//	LPVOID address;
-//	WORD jump_eax;
-//}ASMJUMP, *PASMJUMP;//0xB8//0xE0FF
-
 typedef CCHAR KPROCESSOR_MODE;

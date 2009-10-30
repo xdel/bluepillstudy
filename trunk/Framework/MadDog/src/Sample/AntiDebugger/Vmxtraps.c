@@ -2,11 +2,13 @@
 #include "Hook.h"
 #include "Util.h"
 
-BOOLEAN MonitorCR3 = FALSE;
-BOOLEAN ModifyKDE = FALSE;
-PBYTE KDEEntryAddr,KDERetAddr;
-PVOID JmpBackAddr;
-UCHAR OriginFuncHeader[10];
+BOOLEAN KDEHappen = FALSE;
+BOOLEAN INTDebugHappen = FALSE;
+
+//BOOLEAN ModifyKDE = FALSE;
+//PBYTE KDEEntryAddr,KDERetAddr;
+//PVOID JmpBackAddr;
+//UCHAR OriginFuncHeader[10];
 
 ULONG timer;
 
@@ -250,9 +252,6 @@ NTSTATUS NTAPI VmxRegisterTraps (
 	return STATUS_SUCCESS;
 }
 
-ULONG32 currentESP,currentEBP;
-ULONG32 guestESP;
-GUEST_REGS GuestRegsBackup;
 //+++++++++++++++++++++Static Functions++++++++++++++++++++++++
 /**
  * effects: Defines the handler of the VM Exit Event which is caused by CPUID.
@@ -267,7 +266,7 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
   ...
 )//Finished//same
 {
-	ULONG32 fn, eax1, ebx1, ecx1, edx1;
+	ULONG32 fn, eax, ebx, ecx, edx;
 	
 	ULONG inst_len;
 
@@ -285,75 +284,15 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 
 	if (fn == FN_ENTERKDE) 
 	{
-		AcquireSpinLock();
-
-		GuestRegsBackup = *GuestRegs;
-
-
-		//timer++;
-		guestESP = (ULONG32) VmxRead(GUEST_RSP);
-		//Step 1. Restor Guest GP regs. to invoke stolen instructions
-		__asm
-		{
-			pushfd;
-			pushad;
-			mov currentESP, esp;
-			mov currentEBP, ebp;
-		}
-		__asm
-		{
-			pushfd;
-			mov eax,[GuestRegsBackup+0x20];
-			mov [esp],eax;
-			popfd; //Restore guest eflags
-
-			mov esp,guestESP; //Restore guest esp
-
-			mov eax,[GuestRegsBackup+0x00];
-			mov ecx,[GuestRegsBackup+0x04];
-			mov edx,[GuestRegsBackup+0x08];
-			mov ebx,[GuestRegsBackup+0x0C];
-			mov ebp,[GuestRegsBackup+0x14];
-			mov esi,[GuestRegsBackup+0x18];
-			mov edi,[GuestRegsBackup+0x1C];//Restore GP regs.
-		}
-		((__declspec (naked) VOID (*)()) &OriginFuncHeader)();
-		
-		__asm
-		{
-			mov [GuestRegsBackup+0x00],eax;
-			mov [GuestRegsBackup+0x04],ecx;
-			mov [GuestRegsBackup+0x08],edx;
-			mov [GuestRegsBackup+0x0C],ebx;
-			mov [GuestRegsBackup+0x14],ebp;
-			mov [GuestRegsBackup+0x18],esi;
-			mov [GuestRegsBackup+0x1C],edi;//Save back GP regs.
-
-			mov guestESP,esp; //Save back guest esp
-
-			mov esp, currentESP;
-			mov ebp, currentEBP;
-			pushfd;
-			mov eax,[esp];
-			mov [GuestRegsBackup+0x20],eax;
-			popfd; //Save back guest eflags
-		
-		}
-
-		VmxWrite(GUEST_RSP,guestESP);
-
-		__asm
-		{
-			popad;
-			popfd;
-		}
-
-		*GuestRegs = GuestRegsBackup;
-
-		ReleaseSpinLock();
-
+		KDEHappen = TRUE;
+		return TRUE;
+	}else if (fn == FN_EXITKDE) 
+	{
+		KDEHappen = FALSE;
+		INTDebugHappen = FALSE;
 		return TRUE;
 	}
+
 	//else if(fn == 1)
 	//{
 	//MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
@@ -365,12 +304,12 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	//return TRUE;
 	//}
 
-	//ecx = (ULONG) GuestRegs->ecx;
-	//MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
-	//GuestRegs->eax = eax;
-	//GuestRegs->ebx = ebx;
-	//GuestRegs->ecx = ecx;
-	//GuestRegs->edx = edx;
+	ecx = (ULONG) GuestRegs->ecx;
+	MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
+	GuestRegs->eax = eax;
+	GuestRegs->ebx = ebx;
+	GuestRegs->ecx = ecx;
+	GuestRegs->edx = edx;
 
 	//Print(("Helloworld:Missed Magic knock:EXIT_REASON_CPUID fn 0x%x 0x%x 0x%x 0x%x 0x%x \n", fn, eax, ebx, ecx, edx));
 	return TRUE;
@@ -563,38 +502,38 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 
     if (!Cpu || !GuestRegs)
         return TRUE;
-	
-	if(!ModifyKDE)
-	{
-		//Hook KiDispatchException by insert an CPUID
-		KDEEntryAddr = (PBYTE)GetKiDispatchExceptionAddr();
-		Print(("VmxDispatchCrAccess:Initialization: KDEEntryAddr = 0x%llX\n", KDEEntryAddr));
+	//
+	//if(!ModifyKDE)
+	//{
+	//	//Hook KiDispatchException by insert an CPUID
+	//	KDEEntryAddr = (PBYTE)GetKiDispatchExceptionAddr();
+	//	Print(("VmxDispatchCrAccess:Initialization: KDEEntryAddr = 0x%llX\n", KDEEntryAddr));
 
-		//pKDEEntryPte  = (PULONG)GET_PTE_VADDRESS(KDEEntryAddr);
-		//Print(("VmxDispatchCrAccess:Initialization: KDEEntryPte = 0x%llX\n", *pKDEEntryPte));
+	//	//pKDEEntryPte  = (PULONG)GET_PTE_VADDRESS(KDEEntryAddr);
+	//	//Print(("VmxDispatchCrAccess:Initialization: KDEEntryPte = 0x%llX\n", *pKDEEntryPte));
 
-		//Backup the origin function header.
-		Memcpy(OriginFuncHeader,KDEEntryAddr,10);
-		
-		AcquireSpinLock();
-		WPOFF();
+	//	//Backup the origin function header.
+	//	Memcpy(OriginFuncHeader,KDEEntryAddr,10);
+	//	
+	//	AcquireSpinLock();
+	//	WPOFF();
 
-		KDEEntryAddr[0] =0xB8;
-		KDEEntryAddr[1] =0x00;
-		KDEEntryAddr[2] =0x10;
-		KDEEntryAddr[3] =0x00;
-		KDEEntryAddr[4] =0x00; //Write a "mov eax,0x1000"
-		KDEEntryAddr[5] =0x0F; 
-		KDEEntryAddr[6] =0xA2; //Write a "cpuid"
-		KDEEntryAddr[7] =0x90; //Write a "nop"
-		KDEEntryAddr[8] =0x90; //Write a "nop"
-		KDEEntryAddr[9] =0x90; //Write a "nop"
+	//	KDEEntryAddr[0] =0xB8;
+	//	KDEEntryAddr[1] =0x00;
+	//	KDEEntryAddr[2] =0x10;
+	//	KDEEntryAddr[3] =0x00;
+	//	KDEEntryAddr[4] =0x00; //Write a "mov eax,0x1000"
+	//	KDEEntryAddr[5] =0x0F; 
+	//	KDEEntryAddr[6] =0xA2; //Write a "cpuid"
+	//	KDEEntryAddr[7] =0x90; //Write a "nop"
+	//	KDEEntryAddr[8] =0x90; //Write a "nop"
+	//	KDEEntryAddr[9] =0x90; //Write a "nop"
 
-		WPON();
-		ReleaseSpinLock();
+	//	WPON();
+	//	ReleaseSpinLock();
 
-		ModifyKDE = TRUE;
-	}
+	//	ModifyKDE = TRUE;
+	//}
 
     inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
     if (Trap->RipDelta == 0)
@@ -671,6 +610,14 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 
         if (cr == 3) 
         {
+			if(KDEHappen && INTDebugHappen)
+			{
+				DbgPrint("Kernel Debugger Detected!\n");
+			}
+			else if (INTDebugHappen &&  !KDEHappen)
+			{
+				DbgPrint("Ice Debugger Detected!\n");
+			}
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
             if (Cpu->Vmx.GuestCR0 & X86_CR0_PG)       //enable paging
@@ -735,14 +682,21 @@ static BOOLEAN NTAPI VmxDispatchException(
 )
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
-	ULONG inst_len;
+	ULONG inst_len,intrInfo,intrErrCode;
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
-	fn = GuestRegs->eax;
 
-	DbgPrint("Helloworld:VmxDispatchException(): Passing in Value(Fn): 0x%x\n", fn);
+	intrErrCode = VmxRead(VM_EXIT_INTR_ERROR_CODE);
+ 	intrInfo = VmxRead(VM_EXIT_INTR_INFO);
 
+	//fn = GuestRegs->eax;
+
+	//DbgPrint("Helloworld:VmxDispatchException(): Passing in Value(Fn): 0x%x\n", fn);
+	INTDebugHappen = TRUE;
+
+	VmxWrite(VM_ENTRY_INTR_INFO_FIELD,intrInfo);
+	VmxWrite(VM_ENTRY_EXCEPTION_ERROR_CODE,intrErrCode);
 	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
 	if (Trap->RipDelta == 0)
 		Trap->RipDelta = inst_len;
@@ -787,39 +741,3 @@ static BOOLEAN NTAPI VmxDispatchInterrupt(
 }
 
 
-__declspec(naked) void myFunc(
-    IN PVOID ExceptionRecord,
-    IN PVOID ExceptionFrame,
-    IN PVOID TrapFrame,
-    IN KPROCESSOR_MODE PreviousMode,
-    IN BOOLEAN FirstChance)
-
-{
-
-         //print("i am here");
-	__asm
-	{
-		pushfd;
-		pushad;
-		
-		cpuid;
-
-		popad;
-		popfd;
-
-	}
-	__asm
-	{
-		jmp JmpBackAddr;
-	}
-}
-
-//NTSTATUS Initialization()
-//{	
-//	InitSpinLock();
-//
-//	
-//	
-//	JmpBackAddr = Hook(KDEAddr, myFunc);
-//	return STATUS_SUCCESS;
-//}

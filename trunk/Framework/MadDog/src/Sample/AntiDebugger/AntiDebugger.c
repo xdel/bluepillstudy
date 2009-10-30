@@ -23,7 +23,7 @@ static NTSTATUS Initialization();
 
 static MadDog_Control md_Control = 
 {
-	NULL,
+	&Initialization,
 	NULL,
 	&HvmSetupVMControlBlock,
 	&VmxRegisterTraps
@@ -33,7 +33,17 @@ VOID NTAPI Finalize()
 {
 	HvMmShutdownManager();
 	DbgDisposeComponent();
+	UnHookKiDispatchException();
 }
+
+NTSTATUS Initialization()
+{	
+	InitSpinLock();	
+		
+	HookKiDispatchException();
+	return STATUS_SUCCESS;
+}
+
 
 NTSTATUS DriverUnload (
     PDRIVER_OBJECT DriverObject
@@ -55,7 +65,6 @@ NTSTATUS DriverUnload (
     Print(("NEWBLUEPILL: Unloading finished\n"));
 
 	Finalize();
-	//UnHook(KDEAddr);
     return STATUS_SUCCESS;
 }
 
@@ -69,10 +78,7 @@ NTSTATUS DriverEntry (
    // ULONG ulOldCR3;
 
     DbgInitComponent();
-	InitSpinLock();
     //__asm { int 3 }
-
-	//Initialization();
 	
 	Status = HvMmInitManager();
     if (!NT_SUCCESS (Status)) 
