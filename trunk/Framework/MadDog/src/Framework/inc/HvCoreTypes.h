@@ -145,11 +145,11 @@ typedef struct _GUEST_REGS
   ULONG32 ecx;
   ULONG32 edx;                  // 0x08
   ULONG32 ebx;
-  ULONG32 esp;                  // esp is not stored here on SVM
+  ULONG32 esp;                  // esp is not stored here on SVM 0x10
   ULONG32 ebp;
-  ULONG32 esi;
+  ULONG32 esi;		      //0x18
   ULONG32 edi;
- // ULONG32 eflags;
+  ULONG32 eflags;            //0x20
 } GUEST_REGS;
 
 //+++++++++++++++++++++Traps Structs++++++++++++++++++++++++++++++++
