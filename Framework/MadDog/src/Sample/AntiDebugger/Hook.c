@@ -142,7 +142,7 @@ __declspec (naked) VOID KDEReturnTo()
 		cpuid;
 	}
 
-	 DbgPrint("inline hook --  KiDispatchException Exit\n");
+	 //DbgPrint("inline hook --  KiDispatchException Exit\n");
 
 	__asm
 	{
@@ -199,7 +199,7 @@ fake_KiDispatchException (
 		cpuid;
 	}
 
-    DbgPrint("inline hook --  KiDispatchException Entry\n");
+    //DbgPrint("inline hook --  KiDispatchException Entry\n");
  
 
 	//Restore & Jump to KDE
