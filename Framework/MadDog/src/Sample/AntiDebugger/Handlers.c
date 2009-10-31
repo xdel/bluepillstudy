@@ -58,7 +58,7 @@ NTSTATUS HvmSetupVMControlBlock (
     /*32BIT Control Fields. */
     //disable Vmexit by Extern-interrupt,NMI and Virtual NMI
     // Pin-based VM-execution controls
-   // Interceptions = PIN_BASED_EXT_INTR_MASK;
+    //Interceptions = PIN_BASED_EXT_INTR_MASK;
 	Interceptions = 0;
     VmxWrite (PIN_BASED_VM_EXEC_CONTROL, PtVmxAdjustControls (Interceptions, MSR_IA32_VMX_PINBASED_CTLS));//<------------------5.1 Finished
 

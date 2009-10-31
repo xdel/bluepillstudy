@@ -133,7 +133,7 @@ NTSTATUS NTAPI VmxRegisterTraps (
 		LAB_TAG);
 	if (!NT_SUCCESS (Status)) 
 	{
-		Print(("VmxRegisterTraps(): Failed to register VmxDispatchException with status 0x%08hX\n", Status));
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchInterrupt with status 0x%08hX\n", Status));
 		return Status;
 	}
 	MadDog_RegisterTrap (Cpu, Trap);
@@ -612,11 +612,11 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
         {
 			if(KDEHappen && INTDebugHappen)
 			{
-				//DbgPrint("Kernel Debugger Detected!\n");
+				DbgPrint("Kernel Debugger Detected!\n");
 			}
 			else if (INTDebugHappen &&  !KDEHappen)
 			{
-				//DbgPrint("Ice Debugger Detected!\n");
+				DbgPrint("Ice Debugger Detected!\n");
 			}
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
@@ -682,35 +682,48 @@ static BOOLEAN NTAPI VmxDispatchException(
 )
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
-	ULONG inst_len,intrInfo,intrErrCode,dummy;
+	ULONG inst_len,intrInfo;
 	PINTERUPTION_INFORMATION_FIELD pinject_event;
        PINTERUPTION_INFORMATION_FIELD pint;
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
-
-	//pint = (PINTERUPTION_INFORMATION_FIELD)&dummy;
-       dummy = VmxRead(VM_EXIT_INTR_INFO);
-
-	pinject_event = (PINTERUPTION_INFORMATION_FIELD)&dummy;
-                                pinject_event->Vector = 3;
-                                pinject_event->InteruptionType = 4;             //software 
-                                pinject_event->DeliverErrorCode = 0;
-                                pinject_event->Valid = 1;
-       VmxWrite(VM_ENTRY_INTR_INFO_FIELD, dummy);
-	//intrErrCode = VmxRead(VM_EXIT_INTR_ERROR_CODE);
- 	//intrInfo = VmxRead(VM_EXIT_INTR_INFO);
+	
+	intrInfo = VmxRead(VM_EXIT_INTR_INFO);
+	pinject_event = (PINTERUPTION_INFORMATION_FIELD)&intrInfo;
 
 	INTDebugHappen = TRUE;
 
-	//VmxWrite(VM_ENTRY_INTR_INFO_FIELD,intrInfo);
-	//VmxWrite(VM_ENTRY_EXCEPTION_ERROR_CODE,intrErrCode);
+	VmxWrite(VM_ENTRY_INTR_INFO_FIELD, intrInfo);//Event inject back
+
 	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-	if (Trap->RipDelta == 0)
-		Trap->RipDelta = inst_len;
+	VmxWrite(VM_ENTRY_INSTRUCTION_LEN,inst_len);  //softice properly catches int3
+
+	Trap->RipDelta = 0;//Don't modify guest eip
+	return TRUE;
 	
-		return TRUE;
-	
+}
+
+VOID InjectNMI(VOID){
+        ULONG dummy;
+        PINTERUPTION_INFORMATION_FIELD pinject_event;
+        
+        //nmi was delivered from 2nd CPU while we were in vmx-root 
+        //so inject NMI to this processor so it can be handled by
+        //NMI in vmx-non-root code... 
+        
+        dummy = 0;
+        pinject_event = (PINTERUPTION_INFORMATION_FIELD)&dummy;     
+        pinject_event->Vector = 2;
+        pinject_event->InteruptionType = 2;    //NMI
+        pinject_event->DeliverErrorCode = 0;
+        pinject_event->Valid = 1;
+        VmxWrite(VM_ENTRY_INTR_INFO_FIELD, dummy); 
+        
+        //dummy = VmRead(0x4824);
+        //__asm bts dummy, 3
+        //VmWrite(0x4824, dummy); 
+        //inject_nmi[ccpu] = 0;    
 }
 
 static BOOLEAN NTAPI VmxDispatchInterrupt(
@@ -722,29 +735,31 @@ static BOOLEAN NTAPI VmxDispatchInterrupt(
 )
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
-	ULONG inst_len, intrInfo,intrErrCode;
-	ULONG32 intrID, intrType;
+	ULONG inst_len,intrInfo;
+	PINTERUPTION_INFORMATION_FIELD pinject_event;
+       PINTERUPTION_INFORMATION_FIELD pint;
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
-	fn = GuestRegs->eax;
-
-	intrErrCode = VmxRead(VM_EXIT_INTR_ERROR_CODE);
- 	intrInfo = VmxRead(VM_EXIT_INTR_INFO);
-	intrID = intrInfo & INTR_ID_MASK;
-	intrType = intrInfo & INTR_TYPE_MASK;
-
-	if(intrID ==0x2d)
-		DbgPrint("Helloworld:VmxDispatchInterrupt(): Int2d\n");
-
-	VmxWrite(VM_ENTRY_INTR_INFO_FIELD,intrInfo);
-	VmxWrite(VM_ENTRY_EXCEPTION_ERROR_CODE,intrErrCode);
 	
-	//inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-	//if (Trap->RipDelta == 0)
-	//	Trap->RipDelta = inst_len;
-	
-		return TRUE;
+	intrInfo = VmxRead(VM_EXIT_INTR_INFO);
+	pinject_event = (PINTERUPTION_INFORMATION_FIELD)&intrInfo;
+
+
+	if (pinject_event->InteruptionType == 2)
+		InjectNMI();
+
+	if(pinject_event->Vector ==0x2d);
+		INTDebugHappen = TRUE;
+
+	VmxWrite(VM_ENTRY_INTR_INFO_FIELD, intrInfo);//Event inject back
+
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	VmxWrite(VM_ENTRY_INSTRUCTION_LEN,inst_len);  //softice properly catches int3
+
+       if (Trap->RipDelta == 0)
+             Trap->RipDelta = inst_len;
+	return TRUE;
 	
 }
 
