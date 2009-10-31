@@ -285,11 +285,23 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	if (fn == FN_ENTERKDE) 
 	{
 		KDEHappen = TRUE;
+
+		MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
+		GuestRegs->eax = eax;
+		GuestRegs->ebx = ebx;
+		GuestRegs->ecx = ecx;
+		GuestRegs->edx = edx;
 		return TRUE;
 	}else if (fn == FN_EXITKDE) 
 	{
 		KDEHappen = FALSE;
 		INTDebugHappen = FALSE;
+
+		MadDog_GetCpuIdInfo (fn, &eax, &ebx, &ecx, &edx);
+		GuestRegs->eax = eax;
+		GuestRegs->ebx = ebx;
+		GuestRegs->ecx = ecx;
+		GuestRegs->edx = edx;
 		return TRUE;
 	}
 
@@ -612,15 +624,15 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
         {
 			if(KDEHappen && INTDebugHappen)
 			{
-				DbgPrint("Kernel Debugger Detected!\n");
+				Print(("Kernel Debugger Detected!\n"));
 			}
 			else if (INTDebugHappen &&  !KDEHappen)
 			{
-				DbgPrint("Ice Debugger Detected!\n");
+				DbgPrint(("Ice Debugger Detected!\n"));
 			}
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
-            if (Cpu->Vmx.GuestCR0 & X86_CR0_PG)       //enable paging
+            //if (Cpu->Vmx.GuestCR0 & X86_CR0_PG)       //enable paging
             {
 #if DEBUG_LEVEL>2
                 Print(("VmxDispatchCrAccess(): TYPE_MOV_TO_CR cr3:0x%x\n", *(((PULONG64) GuestRegs) + gp)));

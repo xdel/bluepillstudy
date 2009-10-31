@@ -69,6 +69,7 @@ NTSTATUS HvmSetupVMControlBlock (
       PtVmxAdjustControls (Interceptions, MSR_IA32_VMX_PROCBASED_CTLS) );
 
     VmxWrite (EXCEPTION_BITMAP, (ULONG)(VMX_EXCEPTION_PAGEFAULT | VMX_EXCEPTION_INT1 | VMX_EXCEPTION_INT3));//Intercept int1 & int3
+	//VmxWrite (EXCEPTION_BITMAP, (ULONG)(VMX_EXCEPTION_PAGEFAULT));//Intercept int1 & int3
 
     //VmxWrite (PAGE_FAULT_ERROR_CODE_MASK, 2);   // W/R
     //VmxWrite (PAGE_FAULT_ERROR_CODE_MATCH, 2);  // write cause the fault
