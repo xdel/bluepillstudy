@@ -64,7 +64,7 @@ NTSTATUS NTAPI TrInitializeMSROpTrap (
     PNBP_TRAP Trap;
 	PALLOCATED_PAGE AllocatedPage;
 
-	Print(("Fairy:TrInitializeMSROpTrap():TrappedVmExit 0x%x\n", TrappedVmExit));
+	//Print(("Fairy:TrInitializeMSROpTrap():TrappedVmExit 0x%x\n", TrappedVmExit));
     if (!Cpu || 
         !TrapCallback || 
         !pInitializedTrap)

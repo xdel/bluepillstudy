@@ -3,7 +3,7 @@
 #include <ntddk.h>
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
-
+#define USE_DEBUG_LIBRUARY
 #ifdef USE_DEBUG_LIBRUARY
 #define Print(x) DbgPrintInfo x
 #else

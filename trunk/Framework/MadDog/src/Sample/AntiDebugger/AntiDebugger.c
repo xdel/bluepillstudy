@@ -77,8 +77,10 @@ NTSTATUS DriverEntry (
     //CmDebugBreak();
    // ULONG ulOldCR3;
 
+	//__asm { int 3 }
     DbgInitComponent();
-   // __asm { int 3 }
+   
+	Print(("HELLOWORLD: Initialization started\n"));
 	
 	Status = HvMmInitManager();
     if (!NT_SUCCESS (Status)) 
