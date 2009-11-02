@@ -423,7 +423,7 @@ static VOID NTAPI PtVmxDispatchEvent (
     PGUEST_REGS GuestRegs
 )
 {//Finished
-  Print(("VmxDispatchEvent(): exitcode = %x\n", VmxRead (VM_EXIT_REASON)));
+ // Print(("VmxDispatchEvent(): exitcode = %x\n", VmxRead (VM_EXIT_REASON)));
 
   VmxHandleInterception(
       Cpu, 
@@ -568,7 +568,7 @@ static VOID VmxHandleInterception (
 )
 { //Finished
     NTSTATUS Status;
-    ULONG Exitcode;
+    ULONG32 Exitcode;
     PNBP_TRAP Trap;
 
     if (!Cpu || !GuestRegs)
@@ -576,7 +576,7 @@ static VOID VmxHandleInterception (
 
     Exitcode = VmxRead (VM_EXIT_REASON);
 
-    Print(("VmxHandleInterception(): Exitcode %x\n", Exitcode));
+    //Print(("VmxHandleInterception(): Exitcode %x\n", Exitcode));
 
     if (Exitcode == EXIT_REASON_CR_ACCESS
         && GuestRegs->eax == MADDOG_EXIT_EAX)

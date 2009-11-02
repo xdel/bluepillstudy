@@ -88,7 +88,7 @@ static NTSTATUS _CreateDebugWindow(ULONG32 numContinuousPages)
 		return STATUS_UNSUCCESSFUL;
 	}
 
-	DbgPrint("_CreateDebugWindow:g_debugWindowAddrVA :0x%llX\n",g_debugWindowAddrVA);
+	DbgPrint("debugWindowAddrVA :0x%llX\n",g_debugWindowAddrVA);
 	bufferLength = numContinuousPages * PAGE_SIZE;
 	return STATUS_SUCCESS;
 }

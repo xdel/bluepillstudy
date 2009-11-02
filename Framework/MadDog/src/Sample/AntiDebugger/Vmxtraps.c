@@ -75,14 +75,21 @@ static BOOLEAN NTAPI VmxDispatchInterrupt (
   BOOLEAN WillBeAlsoHandledByGuestHv,
   ...
 );
-static void myFunc(
-    IN PVOID ExceptionRecord,
-    IN PVOID ExceptionFrame,
-    IN PVOID TrapFrame,
-    IN KPROCESSOR_MODE PreviousMode,
-    IN BOOLEAN FirstChance
+
+static BOOLEAN NTAPI VmxDispatchVmxTaskDispatch(
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+);
+
+static void HandleTaskSwitch(
+	PPUSHAD_REGS x86, 
+	PTASK_SWITCH_EQUALIFICATION ts
 	);
 
+static ULONG GetSegmentLimitGuest(ULONG SegmentSelector);
 /**
  * effects: Register traps in this function
  * requires: <Cpu> is valid
@@ -129,6 +136,21 @@ NTSTATUS NTAPI VmxRegisterTraps (
 		FALSE,
 		0, // length of the instruction, 0 means length need to be get from vmcs later. 
 		VmxDispatchInterrupt, //<----------------4.2 Finish
+		&Trap,
+		LAB_TAG);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchInterrupt with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
+
+	Status = HvInitializeGeneralTrap ( //<----------------4.1 Finish
+		Cpu, 
+		EXIT_REASON_TASK_SWITCH, //Task switch
+		FALSE,
+		0, // length of the instruction, 0 means length need to be get from vmcs later. 
+		VmxDispatchVmxTaskDispatch, //<----------------4.2 Finish
 		&Trap,
 		LAB_TAG);
 	if (!NT_SUCCESS (Status)) 
@@ -274,10 +296,6 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 		return TRUE;
 	fn = GuestRegs->eax;
 
-	#if DEBUG_LEVEL>1
-		Print(("Helloworld:VmxDispatchCpuid(): Passing in Value(Fn): 0x%x\n", fn));
-	#endif
-
 	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
 	if (Trap->RipDelta == 0)
 		Trap->RipDelta = inst_len;
@@ -336,7 +354,6 @@ static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
 )
 {
 	ULONG32 inst_len;
-	ULONG32 addr;
 
 	if (!Cpu || !GuestRegs)
 		return TRUE;
@@ -345,14 +362,46 @@ static BOOLEAN NTAPI VmxDispatchVmxInstrDummy (
 	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
 	Trap->RipDelta = inst_len;
 
-	addr = GUEST_RIP;
-	Print(("VmxDispatchVminstructionDummy(): GUEST_RIP 0x%X: 0x%llX\n", addr, VmxRead (addr)));
-	addr = VM_EXIT_INTR_INFO;
-	Print(("VmxDispatchVminstructionDummy(): EXIT_INTR 0x%X: 0x%llX\n", addr, VmxRead (addr)));
-	addr = EXIT_QUALIFICATION;
-	Print(("VmxDispatchVminstructionDummy(): QUALIFICATION 0x%X: 0x%llX\n", addr, VmxRead (addr)));
-	addr = EXCEPTION_BITMAP;
-	Print(("VmxDispatchVminstructionDummy(): EXCEPTION_BITMAP 0x%X: 0x%llX\n", addr, VmxRead (addr)));
+	//VmxWrite (GUEST_RFLAGS, VmxRead (GUEST_RFLAGS) & (~0x8d5) | 0x1 /* VMFailInvalid */ );
+	return TRUE;
+}
+
+static BOOLEAN NTAPI VmxDispatchVmxTaskDispatch(
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+)
+{
+	ULONG32 ExitQualification;
+	PUSHAD_REGS regs;
+	if (!Cpu || !GuestRegs)
+		return TRUE;
+
+	ExitQualification= VmxRead(0x6400);
+
+	regs.regEdi = GuestRegs->edi;
+    regs.regEsi = GuestRegs->esi;
+    regs.regEbp = GuestRegs->ebp;
+    regs.regEsp = VmxRead(GUEST_RSP);
+    regs.regEbx = GuestRegs->ebx;
+    regs.regEdx = GuestRegs->edx;
+    regs.regEcx = GuestRegs->ecx;
+    regs.regEax = GuestRegs->eax;
+	HandleTaskSwitch(&regs,(PTASK_SWITCH_EQUALIFICATION)&ExitQualification);
+
+	VmxWrite(GUEST_RSP,regs.regEsp);
+	GuestRegs->edi = regs.regEdi;
+    GuestRegs->esi = regs.regEsi;
+    GuestRegs->ebp = regs.regEbp;
+    GuestRegs->ebx = regs.regEbx;
+    GuestRegs->edx = regs.regEdx;
+    GuestRegs->ecx = regs.regEcx;
+    GuestRegs->eax = regs.regEax;
+
+	//inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+	//Trap->RipDelta = inst_len;
 
 	//VmxWrite (GUEST_RFLAGS, VmxRead (GUEST_RFLAGS) & (~0x8d5) | 0x1 /* VMFailInvalid */ );
 	return TRUE;
@@ -409,9 +458,9 @@ static BOOLEAN NTAPI VmxDispatchMsrRead (
 			break;
 		case MSR_IA32_SYSENTER_EIP:
 			MsrValue.QuadPart = VmxRead (GUEST_SYSENTER_EIP);
-			Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
-				VmxRead(GUEST_RIP), 
-				MsrValue.QuadPart));
+			//Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x read MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
+				//VmxRead(GUEST_RIP), 
+				//MsrValue.QuadPart));
 			break;
 		case MSR_GS_BASE:
 			MsrValue.QuadPart = VmxRead (GUEST_GS_BASE);
@@ -472,9 +521,9 @@ static BOOLEAN NTAPI VmxDispatchMsrWrite (
     break;
   case MSR_IA32_SYSENTER_EIP:
     VmxWrite (GUEST_SYSENTER_EIP, MsrValue.QuadPart);
-    Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x want to write MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
-        VmxRead(GUEST_RIP), 
-        MsrValue.QuadPart));
+    //Print(("VmxDispatchMsrRead(): Guest EIP: 0x%x want to write MSR_IA32_SYSENTER_EIP value: 0x%x \n", 
+        //VmxRead(GUEST_RIP), 
+        //MsrValue.QuadPart));
     break;
   case MSR_GS_BASE:
     VmxWrite (GUEST_GS_BASE, MsrValue.QuadPart);
@@ -566,9 +615,9 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
     gp = (exit_qualification & CONTROL_REG_ACCESS_REG) >> 8;
     cr = exit_qualification & CONTROL_REG_ACCESS_NUM;
 
-#if DEBUG_LEVEL>1
-    Print(("VmxDispatchCrAccess(): gp: 0x%x cr: 0x%x exit_qualification: 0x%x\n", gp, cr, exit_qualification));
-#endif
+//#if DEBUG_LEVEL>1
+//    Print(("VmxDispatchCrAccess(): gp: 0x%x cr: 0x%x exit_qualification: 0x%x\n", gp, cr, exit_qualification));
+//#endif
 
     //Access type:
     //  0 = MOV to CR
@@ -628,7 +677,7 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 			}
 			else if (INTDebugHappen &&  !KDEHappen)
 			{
-				DbgPrint(("Ice Debugger Detected!\n"));
+				Print(("Ice Debugger Detected!\n"));
 			}
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
@@ -776,3 +825,315 @@ static BOOLEAN NTAPI VmxDispatchInterrupt(
 }
 
 
+ULONG GetSegmentLimitGuest(ULONG SegmentSelector){
+        ULONG ret_value = 0;
+        PGDT_ENTRY pgdt_entry;
+        GDT_BASE gdt_base;
+        ULONG index;
+        
+        pgdt_entry = (PGDT_ENTRY)VmxRead(0x6816);
+        index = SegmentSelector >> 3;
+        
+        ret_value = pgdt_entry[index].SegmentLimitLo + (pgdt_entry[index].SegmentLimitHi << 16);
+        
+        if (pgdt_entry[index].Granularity)
+                ret_value *= 0x1000;
+        return ret_value;
+}
+
+
+ULONG SegmentSelectorToAccessRightsGuest(ULONG SegmentSelector){
+        ULONG ret_value = 0;
+        PSEGMENT_ACCESS_RIGHTS pAccessRights;
+        PGDT_ENTRY pgdt_entry;
+        GDT_BASE gdt_base;
+        ULONG index;
+        
+        index = SegmentSelector >> 3;
+        
+        pgdt_entry = (PGDT_ENTRY)VmxRead(0x6816);
+        
+        pAccessRights = (PSEGMENT_ACCESS_RIGHTS)&ret_value;
+        
+        __asm{
+                pushad
+                mov     eax, pgdt_entry
+                mov     ecx, index
+                shl     ecx, 3
+                add     eax, ecx
+                add     eax, 5
+                mov     eax, [eax]
+                and     eax, 0F0FFh
+                mov     ret_value, eax
+                popad
+        }
+                
+        
+        /*
+        pAccessRights->SegmentType = pgdt_entry[index].Type;
+        pAccessRights->DescriptorType = pgdt_entry[index].DescriptorType;
+        pAccessRights->Dpl = pgdt_entry[index].Dpl;
+        pAccessRights->Present = pgdt_entry[index].Present;
+        pAccessRights->Available = pgdt_entry[index].Available;
+        pAccessRights->DefaultOperationSize = pgdt_entry[index].DefaultOperationSize;
+        */
+        if (SegmentSelector == 0x30)
+                pAccessRights->Granularity = 0; //pgdt_entry[index].Granularity;
+        //if (SegmentSelector == 0x3B)
+        //        pAccessRights->Granularity = 0;
+                
+        
+        
+                     
+        return ret_value;
+}   
+
+
+ULONG GetSegmentBaseGuest(ULONG SegmentSelector){
+        ULONG ret_value = 0;
+        PGDT_ENTRY pgdt_entry;
+        GDT_BASE gdt_base;
+        ULONG index;
+        
+        index = SegmentSelector >> 3;
+        
+        pgdt_entry = (PGDT_ENTRY)VmxRead(0x6816);
+         
+        ret_value = pgdt_entry[index].BaseLow + 
+                    (pgdt_entry[index].BaseMid << 16) + 
+                    (pgdt_entry[index].BaseHi << 24);
+        
+        return ret_value;
+}             
+
+/*
+
+        As this engine doesn't support MP system when SoftIce is active, I leave
+        this code here as a refference on how TaskSwitch should be handled!!!!
+
+*/
+//this is required when using SoftICE on mp systems as Sice uses
+//NMI to stop/resume other cpus...
+//If a task switch causes a VM exit, none of the following are modified by the
+//task switch: old task-state segment (TSS); new TSS; old TSS descriptor; new
+//TSS descriptor; RFLAGS.NT or the TR register
+
+void HandleTaskSwitch(PPUSHAD_REGS x86, PTASK_SWITCH_EQUALIFICATION ts){
+        GDT_BASE gdt_base;
+        PGDT_ENTRY pgdt_entry;
+        PKTSS ptss, ptss_prev;
+        ULONG index, index_prev, dummy;
+        ULONG tr_old;
+        
+        //if (ts->SourceOfTaskSwitch != 3)
+        //        return;
+        
+        //first all TSS has to be filed with current state to allow 
+        //return to TASK!!!!...
+        //__asm sgdt gdt_base
+        //pgdt_entry = (PGDT_ENTRY)(gdt_base.BaseLo + (gdt_base.BaseHi << 16));        
+        
+        pgdt_entry = (PGDT_ENTRY)VmxRead(0x6816);        //get GDT base for Guest...
+        
+        //Guest TR selector 000000111B 0000080EH
+        tr_old = VmxRead(0x80E);
+        index_prev = tr_old >> 3;
+        
+        ptss_prev = (PKTSS)(pgdt_entry[index_prev].BaseLow +
+                           (pgdt_entry[index_prev].BaseMid << 16) +
+                           (pgdt_entry[index_prev].BaseHi << 24));
+                    
+        ptss_prev->Eax = x86->regEax;
+        ptss_prev->Ecx = x86->regEcx;
+        ptss_prev->Ebx = x86->regEbx;
+        ptss_prev->Edx = x86->regEdx;
+        ptss_prev->Ebp = x86->regEbp;
+        ptss_prev->Esi = x86->regEsi;
+        ptss_prev->Edi = x86->regEdi;
+        
+        //Guest RSP 000001110B 0000681CH
+        ptss_prev->Esp = VmxRead(0x681C);
+        //Guest RIP 000001111B 0000681EH
+        ptss_prev->Eip = VmxRead(0x681E);
+        ptss_prev->Eip -= VmxRead(0x440C);       //<---- exit instruction length... blah...
+                                                //      as it was set up earlier... so we have to
+                                                //      sub it here...
+                                                
+        //Guest RFLAGS 000010000B 00006820H
+        ptss_prev->EFlags = VmxRead(0x6820);  
+        //Guest CR3 000000001B 00006802H
+        //ptss_prev->CR3 = VmxRead(0x6802);
+        
+        //Guest ES selector 000000000B 00000800H
+        ptss_prev->Es = (UINT16)VmxRead(0x800);
+        //Guest CS selector 000000001B 00000802H
+        ptss_prev->Cs = (UINT16)VmxRead(0x802);
+        //Guest SS selector 000000010B 00000804H
+        ptss_prev->Ss = (UINT16)VmxRead(0x804);
+        //Guest DS selector 000000011B 00000806H
+        ptss_prev->Ds = (UINT16)VmxRead(0x806);
+        //Guest FS selector 000000100B 00000808H
+        ptss_prev->Fs = (UINT16)VmxRead(0x808);
+        //Guest GS selector 000000101B 0000080AH
+        ptss_prev->Gs = (UINT16)VmxRead(0x80A);
+        //Guest LDTR selector 000000110B 0000080CH
+        ptss_prev->LDT = (UINT16)VmxRead(0x80C);          
+          
+        //now clear busy flag from this task...
+        if (ts->SourceOfTaskSwitch == 1)                //iret clears Busy flag in task...
+                pgdt_entry[index_prev].Type = 9;        //so clear it... task switch only
+                                                        //occurs here if NT flag is set...
+                
+        
+        index = ts->Selector;
+                
+        index = index >> 3;
+        
+                
+        ptss = (PKTSS)(pgdt_entry[index].BaseLow +
+                      (pgdt_entry[index].BaseMid << 16) +
+                      (pgdt_entry[index].BaseHi << 24));
+        
+        x86->regEax = ptss->Eax;
+        x86->regEcx = ptss->Ecx;
+        x86->regEdx = ptss->Edx;
+        x86->regEbx = ptss->Ebx;
+        x86->regEbp = ptss->Ebp;
+        x86->regEsi = ptss->Esi;
+        x86->regEdi = ptss->Edi;
+        
+        //issue sequence of VmWrites to properly set needed fields...
+        //
+        
+        //Guest ES selector 000000000B 00000800H
+        VmxWrite(0x800, ptss->Es);
+        //Guest CS selector 000000001B 00000802H
+        VmxWrite(0x802, ptss->Cs);
+        //Guest SS selector 000000010B 00000804H
+        VmxWrite(0x804, ptss->Ss);
+        //Guest DS selector 000000011B 00000806H
+        VmxWrite(0x806, ptss->Ds);
+        //Guest FS selector 000000100B 00000808H
+        VmxWrite(0x808, ptss->Fs);
+        //Guest GS selector 000000101B 0000080AH
+        VmxWrite(0x80A, ptss->Gs);
+        //Guest LDTR selector 000000110B 0000080CH
+        VmxWrite(0x80C, ptss->LDT);
+        //Guest TR selector 000000111B 0000080EH
+        VmxWrite(0x80E, ts->Selector);
+        
+        //set access rights...
+        //Guest ES limit 000000000B 00004800H
+        VmxWrite(0x4800, 0xFFFFFFFF);
+        //Guest CS limit 000000001B 00004802H
+        VmxWrite(0x4802, 0xFFFFFFFF);
+        //Guest SS limit 000000010B 00004804H
+        VmxWrite(0x4804, 0xFFFFFFFF);
+        //Guest DS limit 000000011B 00004806H
+        VmxWrite(0x4806, 0xFFFFFFFF);
+        //Guest FS limit 000000100B 00004808H
+        dummy = GetSegmentLimitGuest(ptss->Fs);
+        VmxWrite(0x4808, dummy);
+        //Guest GS limit 000000101B 0000480AH
+        VmxWrite(0x480A, 0xFFFFFFFF);
+        //Guest LDTR limit 000000110B 0000480CH
+        VmxWrite(0x480C, 0);
+        //Guest TR limit 000000111B 0000480EH
+        dummy = GetSegmentLimitGuest(ts->Selector);
+        VmxWrite(0x480E, dummy);
+        
+        //before setting Access Rights set TaskState to Busy...
+        pgdt_entry[index].Type = 11;
+        
+        //Guest ES access rights 000001010B 00004814H
+        dummy = SegmentSelectorToAccessRightsGuest(ptss->Es);
+        VmxWrite(0x4814, dummy);
+        //Guest CS access rights 000001011B 00004816H
+        dummy = SegmentSelectorToAccessRightsGuest(ptss->Cs);
+        VmxWrite(0x4816, dummy);
+        //Guest SS access rights 000001100B 00004818H
+        dummy = SegmentSelectorToAccessRightsGuest(ptss->Ss);
+        VmxWrite(0x4818, dummy);
+        //Guest DS access rights 000001101B 0000481AH
+        dummy = SegmentSelectorToAccessRightsGuest(ptss->Ds);
+        VmxWrite(0x481A, dummy);
+        //Guest FS access rights 000001110B 0000481CH
+        dummy = SegmentSelectorToAccessRightsGuest(ptss->Fs);
+        VmxWrite(0x481C, dummy);
+        //Guest GS access rights 000001111B 0000481EH
+        dummy = 0;
+        __asm bts dummy, 16
+        VmxWrite(0x481E, dummy);
+        //Guest LDTR access rights 000010000B 00004820H
+        dummy = 0;
+        __asm bts dummy, 16
+        VmxWrite(0x4820, dummy);
+        //Guest TR access rights 000010001B 00004822H
+        dummy = SegmentSelectorToAccessRightsGuest(ts->Selector);
+        VmxWrite(0x4822, dummy);
+        
+        //Guest ES base 000000011B 00006806H
+        dummy = GetSegmentBaseGuest(ptss->Es);
+        VmxWrite(0x6806, dummy);
+        //Guest CS base 000000100B 00006808H
+        dummy = GetSegmentBaseGuest(ptss->Cs);
+        VmxWrite(0x6808, dummy);
+        //Guest SS base 000000101B 0000680AH
+        dummy = GetSegmentBaseGuest(ptss->Ss);
+        VmxWrite(0x680A, dummy);
+        //Guest DS base 000000110B 0000680CH
+        dummy = GetSegmentBaseGuest(ptss->Ds);
+        VmxWrite(0x680C, dummy);
+        //Guest FS base 000000111B 0000680EH
+        dummy = GetSegmentBaseGuest(ptss->Fs);
+        VmxWrite(0x680E, dummy);
+        //Guest GS base 000001000B 00006810H
+        dummy = GetSegmentBaseGuest(ptss->Gs);
+        VmxWrite(0x6810, dummy);
+        //Guest LDTR base 000001001B 00006812H
+        VmxWrite(0x6812, 0);
+        //Guest TR base 000001010B 00006814H
+        dummy = GetSegmentBaseGuest(ts->Selector);
+        VmxWrite(0x6814, dummy);
+        
+        
+        //set eflags, stack, cr3 and eip...
+        //Guest RSP 000001110B 0000681CH
+        VmxWrite(0x681C, ptss->Esp);
+        //Guest RIP 000001111B 0000681EH
+        VmxWrite(0x681E, ptss->Eip);
+        //Guest RFLAGS 000010000B 00006820H
+        if (ts->SourceOfTaskSwitch == 3){               //is this task switch trough IDT...
+                dummy = ptss->EFlags;                  
+                __asm bts dummy, 14                     //set NT flag...
+                __asm bts dummy, 1                      //set reserved bit just in case...
+                VmxWrite(0x6820, dummy);
+        }else{
+                dummy = ptss->EFlags;                  
+                VmxWrite(0x6820, dummy);
+        }  
+        
+        
+        //Guest interruptibility state 000010010B 00004824H
+        //Guest activity state 000010011B 00004826H
+        
+        if (ts->SourceOfTaskSwitch == 1){
+                dummy = VmxRead(0x4824);
+                __asm btr dummy, 3
+                VmxWrite(0x4824, dummy);
+        }else{
+                dummy = VmxRead(0x4824);
+                __asm bts dummy, 3
+                VmxWrite(0x4824, dummy);
+        }  
+        
+        
+        //VmxWrite(0x4826, 0);
+        
+        //Guest CR3 000000001B 00006802H
+        VmxWrite(0x6802, ptss->CR3);
+        
+        if (ts->SourceOfTaskSwitch == 3)
+                ptss->Backlink = (UINT16)tr_old;        //iretd doesn't update backlink field...
+        return;
+}
