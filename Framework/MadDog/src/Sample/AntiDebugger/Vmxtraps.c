@@ -673,11 +673,11 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
         {
 			if(KDEHappen && INTDebugHappen)
 			{
-				Print(("Kernel Debugger Detected!\n"));
+				DbgPrint("Kernel Debugger Detected!\n");
 			}
 			else if (INTDebugHappen &&  !KDEHappen)
 			{
-				Print(("Ice Debugger Detected!\n"));
+				DbgPrint("Ice Debugger Detected!\n");
 			}
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
