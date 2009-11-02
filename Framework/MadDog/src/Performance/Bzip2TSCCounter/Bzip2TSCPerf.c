@@ -64,8 +64,8 @@ int __cdecl main(int argc, char **argv) {
 			system("bunzip2 -f a.mp3.bz2");
 		}
 		//printf("%d, %d, %d, %d\n", eax, ebx, ecx, edx);
-		printf ("Total Delta TSC: %lu %ld\n",(ULONG32)(result>>32),(ULONG32)(result));
-		printf ("Average Delta TSC: %lu %ld\n", (ULONG32)((result/TEST_LOOP)>>32), (ULONG32)((result/TEST_LOOP)));
+		printf ("Total Delta TSC: %lu %lu\n",(ULONG32)(result>>32),(ULONG32)(result));
+		printf ("Average Delta TSC: %lu %lu\n", (ULONG32)((result/TEST_LOOP)>>32), (ULONG32)((result/TEST_LOOP)));
 	} __except (EXCEPTION_EXECUTE_HANDLER) {
 		printf ("CPUID caused exception");
 		return 0;
