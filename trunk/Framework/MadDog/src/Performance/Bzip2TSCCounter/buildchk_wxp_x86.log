@@ -58,6 +58,11 @@ cl /Fo"f:\workspace\code\maddog\src\performance\bzip2tsccounter\objchk_wxp_x86\i
  /FIE:\WinDDK\6001.18001\inc\api\warning.h
  .\bzip2tscperf.c 
 bzip2tscperf.c
+f:\workspace\code\maddog\src\performance\bzip2tsccounter\bzip2tscperf.c(34) : warning C4047: 'function' : 'DWORD' differs in levels of indirection from 'void *'
+warnings in directory f:\workspace\code\maddog\src\performance\bzip2tsccounter
+f:\workspace\code\maddog\src\performance\bzip2tsccounter\bzip2tscperf.c(34) : warning C4047: 'function' : 'DWORD' differs in levels of indirection from 'void *'
+f:\workspace\code\maddog\src\performance\bzip2tsccounter\bzip2tscperf.c(34) : warning C4024: 'CreateProcessA' : different types for formal and actual parameter 6
+f:\workspace\code\maddog\src\performance\bzip2tsccounter\bzip2tscperf.c(34) : warning C4024: 'CreateProcessA' : different types for formal and actual parameter 6
  link.exe /out:F:\Workspace\Code\MadDog\bin\Sample\AntiDebugger\bin\i386\Bzip2TSCPerf.exe /machine:ix86 @f:\workspace\code\maddog\src\performance\bzip2tsccounter\objchk_wxp_x86\i386\lnk.rsp
 Microsoft (R) Incremental Linker Version 8.00.50727.278
 Copyright (C) Microsoft Corporation.  All rights reserved.
