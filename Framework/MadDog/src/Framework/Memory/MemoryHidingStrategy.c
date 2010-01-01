@@ -744,7 +744,7 @@ NTSTATUS NTAPI HvMmInitManager (
 	PVOID pPdePage,SparePage;
 	NTSTATUS Status;
 	PHYSICAL_ADDRESS l1, l2, l3;
-	char a[50]="I am s spare page!";
+	char a[50]="I am a spare page!";
 	//Step 1. Allocate memory for Cpu->SparePage First
 	SparePage = ExAllocatePoolWithTag (NonPagedPool, PAGE_SIZE, LAB_TAG);
     SparePagePA = MmGetPhysicalAddress (SparePage);
