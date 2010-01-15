@@ -759,6 +759,8 @@ NTSTATUS NTAPI HvMmInitManager (
 	MmAPMInit();
 
 	pPdePage = ExAllocatePoolWithTag (NonPagedPool, PAGE_SIZE, LAB_TAG);
+	DbgPrint("pPdePage VA:0x%llx\n",pPdePage);
+	
 	if (!pPdePage)
 	return STATUS_INSUFFICIENT_RESOURCES;
 	RtlZeroMemory (pPdePage, PAGE_SIZE);

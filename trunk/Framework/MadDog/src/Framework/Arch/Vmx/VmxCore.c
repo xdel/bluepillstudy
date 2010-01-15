@@ -159,7 +159,8 @@ static NTSTATUS NTAPI PtVmxInitialize (
 //#ifndef _X86_
     PVOID tmp = HvMmAllocateContiguousPages (1, NULL,&AllocatedPage);
     g_HostStackBaseAddress = (ULONG) tmp;
-	
+
+	DbgPrint("g_HostStackBaseAddress VA: 0x%llx\n", g_HostStackBaseAddress);
 	#ifdef USE_MEMORY_MEMORYHIDING_STRATEGY
 		//MmChangeRequireHidingAllocPage(AllocatedPage,FALSE);
 	#endif
