@@ -1,9 +1,30 @@
+/* 
+ * Copyright holder: Invisible Things Lab
+ * 
+ * This software is protected by domestic and International
+ * copyright laws. Any use (including publishing and
+ * distribution) of this software requires a valid license
+ * from the copyright holder.
+ *
+ * This software is provided for the educational use only
+ * during the Black Hat training. This software should not
+ * be used on production systems.
+ *
+ */
+ 
+ /* Copyright (C) 2010 Trusted Computing Lab in Shanghai Jiaotong University
+ * 
+ * 09/10/11	Miao Yu <superymkfounder@hotmail.com> , Implement SPAD related functions 
+ */	
+
 #pragma once
 
 #include <ntddk.h>
 #include "HvCore.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
+#define FN_PROTECT			0x500
+#define FN_UNPROTECT		0x501
 #define FN_ENTERKDE			0x1000
 #define FN_EXITKDE			0x2000
 

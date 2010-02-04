@@ -1,3 +1,22 @@
+/* 
+ * Copyright holder: Invisible Things Lab
+ * 
+ * This software is protected by domestic and International
+ * copyright laws. Any use (including publishing and
+ * distribution) of this software requires a valid license
+ * from the copyright holder.
+ *
+ * This software is provided for the educational use only
+ * during the Black Hat training. This software should not
+ * be used on production systems.
+ *
+ */
+ 
+ /* Copyright (C) 2010 Trusted Computing Lab in Shanghai Jiaotong University
+ * 
+ * 09/10/11	Miao Yu <superymkfounder@hotmail.com>
+ */
+
 #include "common.h"
 
 /**
@@ -16,8 +35,6 @@ BOOLEAN CmIsBitSet (
 /**
  * effects:Raise the interruption level to dispatch level, then
  * install VM Root hypervisor by call <CallbackProc>
- * 首先设置运行在哪个logical processor,然后提升中断优先级，侵染，
- * 最后下降中断优先级
  */
 NTSTATUS NTAPI CmDeliverToProcessor (
   CCHAR cProcessorNumber,

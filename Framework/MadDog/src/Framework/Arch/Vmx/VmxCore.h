@@ -1,5 +1,23 @@
-/**
- * File:vmx/vmx.h------>common/hvmUtil.h
+/* 
+ * Copyright holder: Invisible Things Lab
+ * 
+ * This software is protected by domestic and International
+ * copyright laws. Any use (including publishing and
+ * distribution) of this software requires a valid license
+ * from the copyright holder.
+ *
+ * This software is provided for the educational use only
+ * during the Black Hat training. This software should not
+ * be used on production systems.
+ *
+ */
+ 
+ /* Copyright (C) 2010 Trusted Computing Lab in Shanghai Jiaotong University
+ * 
+ * 09/10/11	Miao Yu <superymkfounder@hotmail.com> 
+ */	
+ 
+/*
  * 
  * This file contains all the VMX-related functions which will be needed 
  * in the hvm file.
@@ -11,6 +29,7 @@
 #include "common.h"
 #include "traps.h"
 #include "cpuid.h"
+#include "chicken.h"
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 
 #define	ARCH_VMX	2
