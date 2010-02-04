@@ -11,6 +11,7 @@ SOURCES=\
 	hvm.c \
 	common.c \
 	traps.c \
+	chicken.c \
 
 I386_SOURCES=\
     cpuid.asm \

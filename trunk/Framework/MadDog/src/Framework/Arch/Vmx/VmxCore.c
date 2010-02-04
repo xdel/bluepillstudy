@@ -1,8 +1,21 @@
-//#include "cpuid.h"
-//#include "common.h"
-//#include "vmcs.h"
+/* 
+ * Copyright holder: Invisible Things Lab
+ * 
+ * This software is protected by domestic and International
+ * copyright laws. Any use (including publishing and
+ * distribution) of this software requires a valid license
+ * from the copyright holder.
+ *
+ * This software is provided for the educational use only
+ * during the Black Hat training. This software should not
+ * be used on production systems.
+ *
+ */
+ /* Copyright (C) 2010 Trusted Computing Lab in Shanghai Jiaotong University
+ * 
+ * 09/10/11	Miao Yu <superymkfounder@hotmail.com> 
+ */	
 #include "VmxCore.h"
-//#include "vmxtraps.h"
 
 //+++++++++++++++++++++Inner Functions++++++++++++++++++++++++
 
@@ -36,7 +49,7 @@ static NTSTATUS NTAPI PtVmxInitialize (
   PVOID GuestEsp //points to the guest environment-protection register file.
 );
 /**
- * effects:启动VMCB块对应的Guest Machine
+ * effects:Start the indicated guest machine
  */
 static NTSTATUS NTAPI PtVmxVirtualize (
   PCPU Cpu
@@ -53,7 +66,6 @@ static NTSTATUS VmxSetupVMCS (
 
 /**
  * VM Exit Event Dispatcher
- * VMExit事件分发逻辑
  */
 static VOID NTAPI PtVmxDispatchEvent (
   PCPU Cpu,
@@ -70,7 +82,6 @@ static VOID NTAPI PtVmxAdjustRip (
 
 /**
  * Shutdown VM
- * 关闭虚拟机
  */
 static NTSTATUS NTAPI PtVmxShutdown (
   PCPU Cpu,
@@ -142,8 +153,6 @@ VOID NTAPI _PtVmxInitFeatureMSR(
 }
 /**
  * effects: Initialize the guest VM with the callback eip and the esp
- * 构建Guest VM，传入的<GuestEip>和<GuestEsp>指明了再次进入Guest VM模式下继续执行的指令地址
- * 和堆栈地址。
  */
 static NTSTATUS NTAPI PtVmxInitialize (
     PCPU Cpu,
@@ -417,7 +426,6 @@ static NTSTATUS VmxSetupVMCS (
 
 /**
  * VM Exit Event Dispatcher
- * VMExit事件分发逻辑
  */
 static VOID NTAPI PtVmxDispatchEvent (
     PCPU Cpu,
@@ -559,9 +567,7 @@ static NTSTATUS NTAPI PtVmxShutdown (
 	return STATUS_UNSUCCESSFUL;
 }
 
-/**
- * VMExit事件处理逻辑
- */
+
 static VOID VmxHandleInterception (
     PCPU Cpu,
     PGUEST_REGS GuestRegs,
@@ -572,9 +578,17 @@ static VOID VmxHandleInterception (
     ULONG32 Exitcode;
     PNBP_TRAP Trap;
 
-    if (!Cpu || !GuestRegs)
-        return;
-
+	if (!Cpu || !GuestRegs)
+       	return;
+	/*ChickenAddInterceptTsc (Cpu);
+	if (ChickenShouldUninstall (Cpu)) 
+	{
+		Print (("VmxHandleInterception(): CPU#%d: Chicken Says to uninstall\n", Cpu->ProcessorNumber));
+		// call HvmSetupTimeBomb()
+		PtVmxShutdown(Cpu, GuestRegs, FALSE);
+		return;
+	}*/
+  
     Exitcode = VmxRead (VM_EXIT_REASON);
 
     //Print(("VmxHandleInterception(): Exitcode %x\n", Exitcode));

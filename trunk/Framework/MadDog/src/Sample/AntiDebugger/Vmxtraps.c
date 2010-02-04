@@ -1,3 +1,22 @@
+/* 
+ * Copyright holder: Invisible Things Lab
+ * 
+ * This software is protected by domestic and International
+ * copyright laws. Any use (including publishing and
+ * distribution) of this software requires a valid license
+ * from the copyright holder.
+ *
+ * This software is provided for the educational use only
+ * during the Black Hat training. This software should not
+ * be used on production systems.
+ *
+ */
+ 
+/* Copyright (C) 2010 Trusted Computing Lab in Shanghai Jiaotong University
+ * 
+ * 09/10/11	Miao Yu <superymkfounder@hotmail.com> , Implement SPAD related functions 
+ */			
+ 
 #include "vmxtraps.h"
 #include "Hook.h"
 #include "Util.h"
@@ -9,8 +28,12 @@ BOOLEAN INTDebugHappen = FALSE;
 //PBYTE KDEEntryAddr,KDERetAddr;
 //PVOID JmpBackAddr;
 //UCHAR OriginFuncHeader[10];
+ULONG HostCR3,GuestCR3;
+ULONG OpLock;
+ULONG GuestNextRip;
 
 ULONG timer;
+ULONG TargetPID = 0;
 
 static BOOLEAN NTAPI VmxDispatchCpuid (
   PCPU Cpu,
@@ -82,6 +105,19 @@ static BOOLEAN NTAPI VmxDispatchVmxTaskDispatch(
   PNBP_TRAP Trap,
   BOOLEAN WillBeAlsoHandledByGuestHv,
   ...
+);
+
+//Forward Function Lookup
+extern VOID NTAPI CmInitSpinLock (
+  PULONG BpSpinLock
+);
+
+extern VOID NTAPI CmAcquireSpinLock (
+  PULONG BpSpinLock
+);
+
+extern VOID NTAPI CmReleaseSpinLock (
+  PULONG BpSpinLock
 );
 
 static void HandleTaskSwitch(
@@ -300,7 +336,15 @@ static BOOLEAN NTAPI VmxDispatchCpuid (
 	if (Trap->RipDelta == 0)
 		Trap->RipDelta = inst_len;
 
-	if (fn == FN_ENTERKDE) 
+	if (fn == FN_PROTECT)
+	{
+		TargetPID = GuestRegs->ecx;
+	}
+	else if (fn == FN_UNPROTECT)
+	{
+		TargetPID = 0;
+	}	
+	else if (fn == FN_ENTERKDE) 
 	{
 		KDEHappen = TRUE;
 
@@ -674,10 +718,50 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 			if(KDEHappen && INTDebugHappen)
 			{
 				DbgPrint("Kernel Debugger Detected!\n");
+
+				/*HostCR3 = RegGetCr3();
+				GuestCR3 = VmxRead(GUEST_CR3);
+
+				CmInitSpinLock(&OpLock);
+				CmAcquireSpinLock(&OpLock);
+				__asm
+				{
+					mov eax,GuestCR3
+					mov cr3,eax
+				}
+
+				RtlZeroMemory((void *)GuestNextRip, PAGE_SIZE/4);
+
+				__asm
+				{
+					mov eax,HostCR3
+					mov cr3,eax
+				}
+				CmReleaseSpinLock(&OpLock);*/
 			}
 			else if (INTDebugHappen &&  !KDEHappen)
 			{
 				DbgPrint("Ice Debugger Detected!\n");
+
+				/*HostCR3 = RegGetCr3();
+				GuestCR3 = VmxRead(GUEST_CR3);
+
+				CmInitSpinLock(&OpLock);
+				CmAcquireSpinLock(&OpLock);
+				__asm
+				{
+					mov eax,GuestCR3
+					mov cr3,eax
+				}
+
+				RtlZeroMemory((void *)GuestNextRip, PAGE_SIZE/4);
+
+				__asm
+				{
+					mov eax,HostCR3
+					mov cr3,eax
+				}
+				CmReleaseSpinLock(&OpLock);*/
 			}
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
@@ -743,7 +827,7 @@ static BOOLEAN NTAPI VmxDispatchException(
 )
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
-	ULONG inst_len,intrInfo;
+	ULONG inst_len, intrInfo,GuestStack;
 	PINTERUPTION_INFORMATION_FIELD pinject_event;
        PINTERUPTION_INFORMATION_FIELD pint;
 
@@ -753,7 +837,33 @@ static BOOLEAN NTAPI VmxDispatchException(
 	intrInfo = VmxRead(VM_EXIT_INTR_INFO);
 	pinject_event = (PINTERUPTION_INFORMATION_FIELD)&intrInfo;
 
-	INTDebugHappen = TRUE;
+	DbgPrint("PID:%d TargetPID:%d\n",(ULONG) PsGetCurrentProcessId(), TargetPID);
+	if (TargetPID && TargetPID ==(ULONG) PsGetCurrentProcessId())
+	{
+		INTDebugHappen = TRUE;
+		
+		HostCR3 = RegGetCr3();
+		GuestCR3 = VmxRead(GUEST_CR3);
+		GuestStack = VmxRead(GUEST_RSP);
+		GuestNextRip= *((ULONG *)GuestStack);
+
+		CmInitSpinLock(&OpLock);
+		CmAcquireSpinLock(&OpLock);
+		__asm
+		{
+			mov eax,GuestCR3
+			mov cr3,eax
+		}
+
+		*((ULONG *)GuestStack) = 0;//Kill the protected app.
+
+		__asm
+		{
+			mov eax,HostCR3
+			mov cr3,eax
+		}
+		CmReleaseSpinLock(&OpLock);
+	}
 
 	VmxWrite(VM_ENTRY_INTR_INFO_FIELD, intrInfo);//Event inject back
 

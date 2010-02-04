@@ -1,3 +1,22 @@
+/* 
+ * Copyright holder: Invisible Things Lab
+ * 
+ * This software is protected by domestic and International
+ * copyright laws. Any use (including publishing and
+ * distribution) of this software requires a valid license
+ * from the copyright holder.
+ *
+ * This software is provided for the educational use only
+ * during the Black Hat training. This software should not
+ * be used on production systems.
+ *
+ */
+ 
+ /* Copyright (C) 2010 Trusted Computing Lab in Shanghai Jiaotong University
+ * 
+ * 09/10/11	Miao Yu <superymkfounder@hotmail.com>
+ */
+ 
 #pragma once
 #include <ntddk.h>
 #include "HvCore.h"
@@ -19,11 +38,8 @@ static ULONG32 NTAPI VmxAdjustControls (
     ULONG32 Msr
 );
 
-/**
- * effects: 用于填充VMCB中Guest状态描述中的段选择器部分
- */
 static NTSTATUS NTAPI VmxFillGuestSelectorData (
     PVOID GdtBase,
-    ULONG Segreg,//SEGREGS枚举中的段选择符号，用于描述要Fill哪个段选择器
+    ULONG Segreg,
     USHORT Selector
 );
