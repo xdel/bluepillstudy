@@ -28,3 +28,10 @@ VOID ReleaseSpinLock();
 
 VOID WPON();
 VOID WPOFF();
+
+NTSTATUS MmPTEEnableWrite (
+    PULONG pPde,                            // pde's address
+    PULONG pPte,                            // pte's address
+    PVOID PageVA,                           // va to be patched
+    ULONG EnableWrite
+);

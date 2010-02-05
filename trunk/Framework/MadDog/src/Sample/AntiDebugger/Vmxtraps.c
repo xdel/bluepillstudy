@@ -29,6 +29,7 @@ BOOLEAN INTDebugHappen = FALSE;
 //PVOID JmpBackAddr;
 //UCHAR OriginFuncHeader[10];
 ULONG HostCR3,GuestCR3;
+PULONG Pde, Pte;
 ULONG OpLock;
 ULONG GuestNextRip;
 
@@ -719,7 +720,7 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 			{
 				DbgPrint("Kernel Debugger Detected!\n");
 
-				/*HostCR3 = RegGetCr3();
+				HostCR3 = RegGetCr3();
 				GuestCR3 = VmxRead(GUEST_CR3);
 
 				CmInitSpinLock(&OpLock);
@@ -730,38 +731,21 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 					mov cr3,eax
 				}
 
-				RtlZeroMemory((void *)GuestNextRip, PAGE_SIZE/4);
-
+				Pde = (PULONG)GET_PDE_VADDRESS(GuestNextRip);
+    				Pte  = (PULONG)GET_PTE_VADDRESS(GuestNextRip);
+				//MmPTEEnableWrite(Pde, Pte, (PVOID)GuestNextRip, 1);
+				//RtlZeroMemory((void *)GuestNextRip, 3);
+				//MmPTEEnableWrite(Pde, Pte, (PVOID)GuestNextRip, 0);
 				__asm
 				{
 					mov eax,HostCR3
 					mov cr3,eax
 				}
-				CmReleaseSpinLock(&OpLock);*/
+				CmReleaseSpinLock(&OpLock);
 			}
 			else if (INTDebugHappen &&  !KDEHappen)
 			{
 				DbgPrint("Ice Debugger Detected!\n");
-
-				/*HostCR3 = RegGetCr3();
-				GuestCR3 = VmxRead(GUEST_CR3);
-
-				CmInitSpinLock(&OpLock);
-				CmAcquireSpinLock(&OpLock);
-				__asm
-				{
-					mov eax,GuestCR3
-					mov cr3,eax
-				}
-
-				RtlZeroMemory((void *)GuestNextRip, PAGE_SIZE/4);
-
-				__asm
-				{
-					mov eax,HostCR3
-					mov cr3,eax
-				}
-				CmReleaseSpinLock(&OpLock);*/
 			}
             Cpu->Vmx.GuestCR3 = *(((PULONG) GuestRegs) + gp);
 
@@ -845,7 +829,6 @@ static BOOLEAN NTAPI VmxDispatchException(
 		HostCR3 = RegGetCr3();
 		GuestCR3 = VmxRead(GUEST_CR3);
 		GuestStack = VmxRead(GUEST_RSP);
-		GuestNextRip= *((ULONG *)GuestStack);
 
 		CmInitSpinLock(&OpLock);
 		CmAcquireSpinLock(&OpLock);
@@ -854,9 +837,9 @@ static BOOLEAN NTAPI VmxDispatchException(
 			mov eax,GuestCR3
 			mov cr3,eax
 		}
-
+		GuestNextRip= *((ULONG *)GuestStack);
 		*((ULONG *)GuestStack) = 0;//Kill the protected app.
-
+		
 		__asm
 		{
 			mov eax,HostCR3
