@@ -23,6 +23,9 @@ static ULONG lock;
 static PULONG plock;
 ULONG g_uCr0 = 0;
 
+extern VOID NTAPI MmInvalidatePage (
+  PVOID Page
+);
 
 PBYTE Memsearch( const PBYTE target, const PBYTE search, ULONG32 tlen, ULONG32 slen)
 {
@@ -109,3 +112,43 @@ VOID ReleaseSpinLock()
 		lock	btr dword ptr [plock], 0; Release the Spin Lock
 	}
 }
+
+NTSTATUS MmPTEEnableWrite (
+    PULONG pPde,                            // pde's address
+    PULONG pPte,                            // pte's address
+    PVOID PageVA,                           // va to be patched
+    ULONG EnableWrite
+)
+{
+    ULONG Pte,Pde;
+    
+    if (!pPde || !pPte || !PageVA)
+        return STATUS_INVALID_PARAMETER;
+    /*
+    Pde = *pPde;
+    if(Pde&0x80 != 0) //if this is a large page
+	{
+		Pde &= 0x1fff;
+		Pde |= (NewPhysicalAddress.QuadPart & 0xfffffffffe000);
+		*pPde = Pde;
+		
+    	}
+    if(Pde&0x80 == 0)
+    	{
+    */
+    Pte = *pPte;
+    // set new pa
+    Pte &= 0xfff;
+    //Pte = 0;
+    //Pte |= (NewPhysicalAddress.QuadPart & 0xffffffffff000);
+    if(EnableWrite)
+		Pte |= 0x2;
+    else
+		Pte &= ~0x2;
+    *pPte = Pte;
+    	
+    // flush the tlb cache
+    MmInvalidatePage (PageVA);
+
+    return STATUS_SUCCESS;
+};
