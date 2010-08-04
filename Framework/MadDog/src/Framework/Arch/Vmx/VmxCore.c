@@ -310,7 +310,6 @@ static NTSTATUS NTAPI PtVmxVirtualize (
 		MmHidingStrategyHideAllAllocatedGuestPages();
 	#endif
 	
-    //VmxDumpVmcs();
     VmxLaunch ();
 
     // never returns
@@ -610,6 +609,7 @@ static VOID VmxHandleInterception (
     }
 
     // we found a trap handler
+    //VmxDumpVmcs();
     Status = TrExecuteGeneralTrapHandler(//<-------------1.3 Finished
         Cpu, 
         GuestRegs, 

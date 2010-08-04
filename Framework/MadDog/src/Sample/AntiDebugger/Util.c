@@ -64,7 +64,7 @@ VOID WPON()
 	{
 		sti
 		push eax;
-		mov eax, g_uCr0; //恢復原有 CR0 屬性
+		mov eax, g_uCr0; 
 		mov cr0, eax;
 		pop eax;
 	};
@@ -87,7 +87,7 @@ pop eax;
 cli
 };
 
-g_uCr0 = uAttr; //保存原有的 CRO 屬性
+g_uCr0 = uAttr; 
 
 }
 

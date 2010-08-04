@@ -718,7 +718,7 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
         {
 			if(KDEHappen && INTDebugHappen)
 			{
-				DbgPrint("Kernel Debugger Detected!\n");
+				DbgPrint("Kernel/User Debugger Detected!\n");
 
 				HostCR3 = RegGetCr3();
 				GuestCR3 = VmxRead(GUEST_CR3);
@@ -837,8 +837,8 @@ static BOOLEAN NTAPI VmxDispatchException(
 			mov eax,GuestCR3
 			mov cr3,eax
 		}
-		GuestNextRip= *((ULONG *)GuestStack);
-		*((ULONG *)GuestStack) = 0;//Kill the protected app.
+		//GuestNextRip= *((ULONG *)GuestStack);
+		//*((ULONG *)GuestStack) = 0;//Kill the protected app.
 		
 		__asm
 		{
