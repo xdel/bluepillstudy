@@ -49,4 +49,9 @@ NTSTATUS NTAPI MmMapGuestPages (
   PVOID FirstPage,
   ULONG uNumberOfPages
 );
+
+
+NTSTATUS NTAPI MmMapGuestKernelPages (
+);
+
 #endif

@@ -39,9 +39,6 @@ static NTSTATUS NTAPI MmCreateMapping (
   BOOLEAN bLargePage
 );
 
-static NTSTATUS NTAPI MmMapGuestKernelPages (
-);
-
 /*NTSTATUS NTAPI MmMapGuestTSS64 (
   PVOID Tss64,
   USHORT Tss64Limit
@@ -696,65 +693,6 @@ NTSTATUS NTAPI MmMapGuestKernelPages (
 
     return STATUS_SUCCESS;
 }
-
-// unchecked
-/*
-NTSTATUS MmMapGuestTSS64 (
-  PTSS64 Tss64,
-  USHORT Tss64Limit
-)
-{
-  if (!Tss64)
-    return STATUS_INVALID_PARAMETER;
-
-  DbgPrint ("MmMapGuestTSS64(): Mapping TSS64 at 0x%p, limit %d\n", Tss64, Tss64Limit);
-  MmMapGuestPages (Tss64, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64, Tss64Limit));
-
-  if (Tss64->RSP0) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping RSP0 at 0x%p\n", Tss64->RSP0);
-    MmMapGuestPages (Tss64->RSP0, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->RSP0, PAGE_SIZE));
-  }
-  if (Tss64->RSP1) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping RSP1 at 0x%p\n", Tss64->RSP1);
-    MmMapGuestPages (Tss64->RSP1, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->RSP1, PAGE_SIZE));
-  }
-  if (Tss64->RSP2) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping RSP2 at 0x%p\n", Tss64->RSP2);
-    MmMapGuestPages (Tss64->RSP2, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->RSP2, PAGE_SIZE));
-  }
-
-  if (Tss64->IST1) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping IST1 at 0x%p\n", Tss64->IST1);
-    MmMapGuestPages (Tss64->IST1, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->IST1, PAGE_SIZE));
-  }
-  if (Tss64->IST2) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping IST2 at 0x%p\n", Tss64->IST2);
-    MmMapGuestPages (Tss64->IST2, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->IST2, PAGE_SIZE));
-  }
-  if (Tss64->IST3) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping IST3 at 0x%p\n", Tss64->IST3);
-    MmMapGuestPages (Tss64->IST3, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->IST3, PAGE_SIZE));
-  }
-  if (Tss64->IST4) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping IST4 at 0x%p\n", Tss64->IST4);
-    MmMapGuestPages (Tss64->IST4, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->IST4, PAGE_SIZE));
-  }
-  if (Tss64->IST5) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping IST5 at 0x%p\n", Tss64->IST5);
-    MmMapGuestPages (Tss64->IST5, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->IST5, PAGE_SIZE));
-  }
-  if (Tss64->IST6) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping IST6 at 0x%p\n", Tss64->IST6);
-    MmMapGuestPages (Tss64->IST6, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->IST6, PAGE_SIZE));
-  }
-  if (Tss64->IST7) {
-    DbgPrint ("MmMapGuestTSS64(): Mapping IST7 at 0x%p\n", Tss64->IST7);
-    MmMapGuestPages (Tss64->IST7, ADDRESS_AND_SIZE_TO_SPAN_PAGES (Tss64->IST7, PAGE_SIZE));
-  }
-
-  return STATUS_SUCCESS;
-}
-*/
 
 /**
  * effects: Initialize the Memory Manager.
