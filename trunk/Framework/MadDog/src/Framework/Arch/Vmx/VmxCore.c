@@ -433,10 +433,12 @@ static VOID NTAPI PtVmxDispatchEvent (
 {//Finished
  // Print(("VmxDispatchEvent(): exitcode = %x\n", VmxRead (VM_EXIT_REASON)));
 
-  VmxHandleInterception(
-      Cpu, 
-      GuestRegs, 
-      FALSE /* this intercept will not be handled by guest hv */);
+	// [Superymk] Modified here
+	MmMapGuestKernelPages();
+  	VmxHandleInterception(
+      	Cpu, 
+      	GuestRegs, 
+      	FALSE /* this intercept will not be handled by guest hv */);
 }
 
 static VOID VmxGenerateTrampolineToGuest (
@@ -579,14 +581,6 @@ static VOID VmxHandleInterception (
 
 	if (!Cpu || !GuestRegs)
        	return;
-	/*ChickenAddInterceptTsc (Cpu);
-	if (ChickenShouldUninstall (Cpu)) 
-	{
-		Print (("VmxHandleInterception(): CPU#%d: Chicken Says to uninstall\n", Cpu->ProcessorNumber));
-		// call HvmSetupTimeBomb()
-		PtVmxShutdown(Cpu, GuestRegs, FALSE);
-		return;
-	}*/
   
     Exitcode = VmxRead (VM_EXIT_REASON);
 
@@ -609,7 +603,6 @@ static VOID VmxHandleInterception (
     }
 
     // we found a trap handler
-    //VmxDumpVmcs();
     Status = TrExecuteGeneralTrapHandler(//<-------------1.3 Finished
         Cpu, 
         GuestRegs, 
