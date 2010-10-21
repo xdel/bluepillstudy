@@ -98,7 +98,7 @@ VOID HookKiDispatchException ()
 		return;
 
 	KDEEntryAddr = GetKiDispatchExceptionAddr();
-	DbgPrint("Initialization: KDEEntryAddr = 0x%llX\n", KDEEntryAddr);
+	/*DbgPrint("Initialization: KDEEntryAddr = 0x%llX\n", KDEEntryAddr);
 
     if (KDEEntryAddr == 0) {
         DbgPrint("KiDispatchException == NULL\n");
@@ -121,7 +121,7 @@ VOID HookKiDispatchException ()
 
     g_bHooked = TRUE;
 
-	ReleaseSpinLock();
+	ReleaseSpinLock();*/
 }
 
 //
@@ -131,7 +131,7 @@ VOID UnHookKiDispatchException ()
 
 	//AcquireSpinLock();
 
-	if(!g_bHooked)
+	/*if(!g_bHooked)
 		return;
 
     WPOFF();
@@ -140,7 +140,7 @@ VOID UnHookKiDispatchException ()
 
     WPON();
 	
-    g_bHooked = FALSE;
+    g_bHooked = FALSE;*/
 
 	//ReleaseSpinLock();
 }

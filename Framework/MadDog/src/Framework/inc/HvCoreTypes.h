@@ -119,7 +119,7 @@ typedef struct _WORMHOLE
 	PVOID DriverObjectStartADDR;//Used to hide the hypervisor itself from the kernel space
 	ULONG DriverObjectSize;
 	
-	UCHAR Trampoline[0x600];
+	UCHAR Trampoline[0x600]; // [Superymk] BUG:Need to ensure <Trampoline> won't be swapped out
 	
 } WORMHOLE,*PWORMHOLE;
 

@@ -184,7 +184,6 @@ NTSTATUS NTAPI TrExecuteGeneralTrapHandler (
 }
 /**
  * Search Registered Traps
- * ²éÑ¯ÒÑ×¢²áµÄTraps
  */
 NTSTATUS NTAPI TrFindRegisteredTrap (
     PCPU Cpu,

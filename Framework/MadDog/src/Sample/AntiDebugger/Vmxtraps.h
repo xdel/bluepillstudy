@@ -21,6 +21,7 @@
 
 #include <ntddk.h>
 #include "HvCore.h"
+#include "Hook.h"
 
 //+++++++++++++++++++++Definitions+++++++++++++++++++++++++++
 #define FN_PROTECT			0x500
@@ -36,6 +37,11 @@
 #define     PTE_BASE        0xC0000000
 #define     PDE_BASE        0xc0300000
 
+#define DR7_DR3_GlOBAL			0x80
+#define DR7_DR3_HITONEXECUTE	~0x30000000
+#define DR7_DR3_4BITLENGTH		0xc0000000
+
+#define DR6_B3_BIT		3
 //+++++++++++++++++++++Public Functions++++++++++++++++++++++++
 
 typedef struct{

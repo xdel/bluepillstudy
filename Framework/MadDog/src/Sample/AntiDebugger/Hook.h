@@ -21,5 +21,7 @@
 #include <ntddk.h>
 #include <windef.h>
 
+extern PVOID KDEEntryAddr;
+extern PVOID KDECallRetAddr;
 VOID HookKiDispatchException ();
 VOID UnHookKiDispatchException();
