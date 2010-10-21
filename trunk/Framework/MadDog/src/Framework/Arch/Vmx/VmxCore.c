@@ -434,7 +434,7 @@ static VOID NTAPI PtVmxDispatchEvent (
  // Print(("VmxDispatchEvent(): exitcode = %x\n", VmxRead (VM_EXIT_REASON)));
 
 	// [Superymk] Modified here
-	MmMapGuestKernelPages();
+	//MmMapGuestKernelPages();
   	VmxHandleInterception(
       	Cpu, 
       	GuestRegs, 
@@ -534,7 +534,6 @@ static VOID VmxGenerateTrampolineToGuest (
 
 /**
  * Shutdown VM
- * ¹Ø±ÕÐéÄâ»ú
  */
 static NTSTATUS NTAPI PtVmxShutdown (
   PCPU Cpu,
@@ -568,7 +567,6 @@ static NTSTATUS NTAPI PtVmxShutdown (
 	return STATUS_UNSUCCESSFUL;
 }
 
-
 static VOID VmxHandleInterception (
     PCPU Cpu,
     PGUEST_REGS GuestRegs,
@@ -584,7 +582,7 @@ static VOID VmxHandleInterception (
   
     Exitcode = VmxRead (VM_EXIT_REASON);
 
-    //Print(("VmxHandleInterception(): Exitcode %x\n", Exitcode));
+		//DbgPrint("VmxHandleInterception(): Exitcode %x\n", Exitcode);
 
     if (Exitcode == EXIT_REASON_CR_ACCESS
         && GuestRegs->eax == MADDOG_EXIT_EAX)

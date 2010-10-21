@@ -21,6 +21,13 @@
 #include "Hook.h"
 #include "Util.h"
 
+#define DR0 0
+#define DR1 1
+#define DR2 2
+#define DR3 3
+
+//extern ULONG32 print;
+ULONG32 dr7ValOrigin = 0;
 BOOLEAN KDEHappen = FALSE;
 BOOLEAN INTDebugHappen = FALSE;
 
@@ -77,6 +84,14 @@ static BOOLEAN NTAPI VmxDispatchMsrWrite (
 );
 
 static BOOLEAN NTAPI VmxDispatchCrAccess (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+);
+
+static BOOLEAN NTAPI VmxDispatchDrAccess (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
   PNBP_TRAP Trap,
@@ -261,6 +276,21 @@ NTSTATUS NTAPI VmxRegisterTraps (
 
 	Status = HvInitializeGeneralTrap (
 		Cpu, 
+		EXIT_REASON_DR_ACCESS,
+		FALSE,
+		0,  // length of the instruction, 0 means length need to be get from vmcs later. 
+		VmxDispatchDrAccess, 
+		&Trap,
+		LAB_TAG);
+	if (!NT_SUCCESS (Status)) 
+	{
+		Print(("VmxRegisterTraps(): Failed to register VmxDispatchDrAccess with status 0x%08hX\n", Status));
+		return Status;
+	}
+	MadDog_RegisterTrap (Cpu, Trap);
+
+	Status = HvInitializeGeneralTrap (
+		Cpu, 
 		EXIT_REASON_INVD, 
 		FALSE,
 		0,  // length of the instruction, 0 means length need to be get from vmcs later. 
@@ -312,6 +342,8 @@ NTSTATUS NTAPI VmxRegisterTraps (
 }
 
 //+++++++++++++++++++++Static Functions++++++++++++++++++++++++
+static ULONG32 NTAPI AddDREntry(PVOID Addr);
+
 /**
  * effects: Defines the handler of the VM Exit Event which is caused by CPUID.
  * In this function we will return "Hello World!" by pass value through eax,ebx
@@ -592,6 +624,33 @@ static BOOLEAN NTAPI VmxDispatchMsrWrite (
   return TRUE;
 }
 
+static BOOLEAN NTAPI VmxDispatchDrAccess (
+  PCPU Cpu,
+  PGUEST_REGS GuestRegs,
+  PNBP_TRAP Trap,
+  BOOLEAN WillBeAlsoHandledByGuestHv,
+  ...
+)
+{
+    ULONG32 exit_qualification;
+    ULONG32 gp, cr;
+    ULONG value;
+    ULONG inst_len;
+
+    if (!Cpu || !GuestRegs)
+        return TRUE;
+
+	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
+    if (Trap->RipDelta == 0)
+        Trap->RipDelta = inst_len;
+
+	exit_qualification = (ULONG32) VmxRead (EXIT_QUALIFICATION);
+	//DbgPrint("DR Access:%d\n", exit_qualification);
+	if(exit_qualification & (1 << 13))
+		DbgPrint("Attack Detected!\n");
+	return TRUE;
+}
+
 static BOOLEAN NTAPI VmxDispatchCrAccess (
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
@@ -672,55 +731,13 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
     switch (exit_qualification & CONTROL_REG_ACCESS_TYPE) 
     {
     case TYPE_MOV_TO_CR:
-        /*if (cr == 0) 
-        {
-            if (!(*(((PULONG) GuestRegs) + gp) & X86_CR0_WP))
-            {
-                // someone want to turn off the write protect
-#if DEBUG_LEVEL>1
-                _KdPrint (("VmxDispatchCrAccess(): Turnoff WP, gp: 0x%x cr: 0x%x\n", gp, cr));
-#endif
-                return TRUE;
-            }
-
-            Cpu->Vmx.GuestCR0 = *(((PULONG) GuestRegs) + gp);
-            VmxWrite (GUEST_CR0, Cpu->Vmx.GuestCR0);
-            return TRUE;
-
-//======================================================================
-            if (Cpu->Vmx.GuestCR0 & X86_CR0_PG) //enable paging
-            {
-                //_KdPrint(("VmxDispatchCrAccess():paging\n"));
-                VmxWrite (GUEST_CR3, Cpu->Vmx.GuestCR3);
-                if (Cpu->Vmx.GuestEFER & EFER_LME)
-                    Cpu->Vmx.GuestEFER |= EFER_LMA;
-                else
-                    Cpu->Vmx.GuestEFER &= ~EFER_LMA;
-            } 
-            else    //disable paging
-            {
-                //_KdPrint(("VmxDispatchCrAccess():disable paging\n"));                         
-                Cpu->Vmx.GuestCR3 = VmxRead (GUEST_CR3);
-                VmxWrite (GUEST_CR3, g_IdentityPageTableBasePhysicalAddress_Legacy.QuadPart);
-                Cpu->Vmx.GuestEFER &= ~EFER_LMA;
-            }
-#ifdef _X86_
-            VmxWrite (CR0_READ_SHADOW, Cpu->Vmx.GuestCR0 & X86_CR0_PG);
-#else
-            VmxWrite (CR0_READ_SHADOW, Cpu->Vmx.GuestCR0 & X86_CR0_PG);
-#endif
-            VmxUpdateGuestEfer (Cpu);
-            return FALSE;
-//======================================================================
-        }*/
-
         if (cr == 3) 
         {
 			if(KDEHappen && INTDebugHappen)
 			{
 				DbgPrint("Kernel/User Debugger Detected!\n");
 
-				HostCR3 = RegGetCr3();
+				/*HostCR3 = RegGetCr3();
 				GuestCR3 = VmxRead(GUEST_CR3);
 
 				CmInitSpinLock(&OpLock);
@@ -741,7 +758,7 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
 					mov eax,HostCR3
 					mov cr3,eax
 				}
-				CmReleaseSpinLock(&OpLock);
+				CmReleaseSpinLock(&OpLock);*/
 			}
 			else if (INTDebugHappen &&  !KDEHappen)
 			{
@@ -801,7 +818,44 @@ static BOOLEAN NTAPI VmxDispatchCrAccess (
     return TRUE;
 }
 
+// We assume operating on DR3 at the moment
+static ULONG32 NTAPI AddDREntry(PVOID Addr)
+{
+	ULONG32 dr7Val = 0;
+	__asm {
+		mov eax, Addr
+		mov dr3, eax
 
+		mov eax, dr7
+		mov dr7Val, eax;
+	}
+	dr7ValOrigin = dr7Val;
+	//dr7Val = dr7Val | DR7_DR3_GlOBAL | DR7_DR3_4BITLENGTH & DR7_DR3_HITONEXECUTE;
+	dr7Val|=0xAA;
+	VmxWrite(GUEST_DR7, dr7Val);
+	return DR3;
+}
+
+// We assume operating on DR3 at the moment
+static void NTAPI ClrDREntry(ULONG32 DRx)
+{
+	__asm {
+		mov eax, 0
+		mov dr3, eax
+	}
+	VmxWrite(GUEST_DR7, dr7ValOrigin);
+}
+
+static BOOLEAN NTAPI ChkBitCR6(ULONG32 CR6Bit)
+{
+	ULONG32 CR6Value = 0;
+	__asm{
+		mov eax, dr7
+		mov CR6Value, eax
+	}
+	return CR6Value & (1 << CR6Bit);
+}
+	
 static BOOLEAN NTAPI VmxDispatchException(
   PCPU Cpu,
   PGUEST_REGS GuestRegs,
@@ -812,46 +866,73 @@ static BOOLEAN NTAPI VmxDispatchException(
 {
 	ULONG32 fn, eax, ebx, ecx, edx;
 	ULONG inst_len, intrInfo,GuestStack;
+	ULONG32 use_drx;
 	PINTERUPTION_INFORMATION_FIELD pinject_event;
-       PINTERUPTION_INFORMATION_FIELD pint;
-
+    PINTERUPTION_INFORMATION_FIELD pint;
+	ULONG32 exit_qualification;
+	
+	exit_qualification = (ULONG32) VmxRead (EXIT_QUALIFICATION);
 	if (!Cpu || !GuestRegs)
 		return TRUE;
 	
 	intrInfo = VmxRead(VM_EXIT_INTR_INFO);
 	pinject_event = (PINTERUPTION_INFORMATION_FIELD)&intrInfo;
 
-	DbgPrint("PID:%d TargetPID:%d\n",(ULONG) PsGetCurrentProcessId(), TargetPID);
-	if (TargetPID && TargetPID ==(ULONG) PsGetCurrentProcessId())
+	//DbgPrint("PID:%d TargetPID:%d\n",(ULONG) PsGetCurrentProcessId(), TargetPID);
+	DbgPrint("Interrupt:%d\n",(ULONG)pinject_event->Vector);
+	DbgPrint("Guest EIP:%lx\n",VmxRead(GUEST_RIP));
+	//Since int1 has already intercepted, further steps are needed to distinguish the interrupt resource.
+	//When the address in drx is hit, hardware will generate an int1
+	switch(pinject_event->Vector)
 	{
-		INTDebugHappen = TRUE;
-		
-		HostCR3 = RegGetCr3();
-		GuestCR3 = VmxRead(GUEST_CR3);
-		GuestStack = VmxRead(GUEST_RSP);
+		case 1:
+			//if(ChkBitCR6(DR6_B3_BIT))//[TODO]Modify this to use last empty debug register
+			if(exit_qualification & (1<<3)) // [Superymk] TODO Not safe, use DR6 instead
+			{
+				if(!KDEHappen)
+				{
+					//Enter KDE
+					KDEHappen = TRUE;
+					//Get KDE return address
+					KDECallRetAddr = (PVOID)(*((PULONG32)GuestRegs->esp));
+					use_drx = AddDREntry(KDECallRetAddr);//[TODO]Modify this to use last empty debug register
+				}
+				else
+				{
+					//Exit KDE, dispose tracing use DRx
+					KDEHappen = FALSE;
+					INTDebugHappen = FALSE;
+					ClrDREntry(DR3);//[TODO]Modify this to use last empty debug register
+					// Unmonitor KiDispatchException, using debug register(drx)
+					VmxWrite (
+						CPU_BASED_VM_EXEC_CONTROL, 
+						PtVmxAdjustControls (CPU_BASED_ACTIVATE_MSR_BITMAP, 
+						MSR_IA32_VMX_PROCBASED_CTLS) );	
+				}	
+				break;
+			}	
+			else{}			
+		case 3:
+		default:
+		if (TargetPID && TargetPID ==(ULONG) PsGetCurrentProcessId())
+		{
+			INTDebugHappen = TRUE;
+			// Monitor KiDispatchException, using debug register(drx)
+			VmxWrite (
+				CPU_BASED_VM_EXEC_CONTROL, 
+				PtVmxAdjustControls (CPU_BASED_ACTIVATE_MSR_BITMAP | CPU_BASED_MOV_DR_EXITING, 
+				MSR_IA32_VMX_PROCBASED_CTLS) );	
 
-		CmInitSpinLock(&OpLock);
-		CmAcquireSpinLock(&OpLock);
-		__asm
-		{
-			mov eax,GuestCR3
-			mov cr3,eax
+			use_drx = AddDREntry(KDEEntryAddr);//[TODO]Modify this to use last empty debug register
+			DbgPrint("DR3 is set:%lx\n", (ULONG)KDEEntryAddr);
+			//print=1;
 		}
-		//GuestNextRip= *((ULONG *)GuestStack);
-		//*((ULONG *)GuestStack) = 0;//Kill the protected app.
-		
-		__asm
-		{
-			mov eax,HostCR3
-			mov cr3,eax
-		}
-		CmReleaseSpinLock(&OpLock);
+
+		VmxWrite(VM_ENTRY_INTR_INFO_FIELD, intrInfo);//Event inject back
+
 	}
-
-	VmxWrite(VM_ENTRY_INTR_INFO_FIELD, intrInfo);//Event inject back
-
 	inst_len = VmxRead (VM_EXIT_INSTRUCTION_LEN);
-	VmxWrite(VM_ENTRY_INSTRUCTION_LEN,inst_len);  //softice properly catches int3
+	VmxWrite(VM_ENTRY_INSTRUCTION_LEN, inst_len);  //softice properly catches int3
 
 	Trap->RipDelta = 0;//Don't modify guest eip
 	return TRUE;
